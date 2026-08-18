@@ -71,4 +71,15 @@ public class HeaderRepository {
 		
 		return result;
 	}
+
+	public HeaderModel getMaxId() throws Exception {
+		SQLManager sqlManager = new SQLManager();
+		ArrayList<Object> parameters = new ArrayList<>();
+		
+		String sql_query = "select max(id) as id from " + this.table_name;
+		
+		Collection<HeaderModel> result =  sqlManager.select(HeaderModel.class, sql_query, parameters);
+		return result.iterator().next();
+		
+	}
 }

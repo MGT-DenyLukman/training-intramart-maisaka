@@ -4,9 +4,17 @@ import jp.co.intra_mart.foundation.context.Contexts;
 import jp.co.intra_mart.foundation.user_context.model.UserContext;
 import jp.co.intra_mart.foundation.user_context.model.UserProfile;
 import jp.co.intra_mart.foundation.user_context.model.UserCategory;
+import jp.co.intra_mart.foundation.user_context.model.Department;
+import jp.co.intra_mart.foundation.user_context.model.DepartmentPost;
 
 
 import java.util.List;
+import java.util.Collection;
+import java.util.Map;
+import java.util.HashMap;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 //import java.io.FileNotFoundException;
@@ -30,9 +38,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 //import org.springframework.web.bind.annotation.ResponseBody;
 //import org.springframework.web.servlet.HandlerMapping;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
 //import wf.training_test.general.domain.repository.*;
 //import wf.training_test.general.domain.service.*;
 //import wf.training_test.general.domain.model.*;
+import wf.training_maisaka.general.domain.model.EstSchedulePaymentModel;
+import wf.training_maisaka.general.domain.model.HeaderModel;
+import wf.training_maisaka.general.domain.repository.HeaderRepository;
 import wf.training_maisaka.general.domain.service.WorkflowService;
 
 @Controller("training_maisaka_new")
@@ -41,7 +53,7 @@ public class ImartController {
 
 	@RequestMapping(value = "apply")
 	public final String apply(final Model model, final ImartForm ApplyForm) throws Exception {
-		
+		WorkflowService service = new WorkflowService();
 		
 		if (PageType.pageTyp_App.toString().equals(ApplyForm.getImwPageType())) {
 			String userDataId = "";
@@ -50,6 +62,48 @@ public class ImartController {
 			
 			ApplyForm.setImwUserDataId(userDataId);
 			
+
+			// START set applicant information
+			ImartForm FormClassRow = new ImartForm();
+			UserContext userContext = Contexts.get(UserContext.class);
+			UserProfile userProfile = userContext.getUserProfile();
+			List<DepartmentPost> deptPost = userContext.getAllPosts();
+			Department dept = userContext.getCurrentDepartment();
+			
+			service.debug("DEPT CONTROLLER", dept);
+			service.debug("DEPT POST CONTROLLER", deptPost);
+
+			
+			FormClassRow.setF_applicant_name(userProfile.getUserName());
+			FormClassRow.setF_applicant_number(userProfile.getUserCd());
+
+			LocalDate today = LocalDate.now();
+			
+			
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+			String formattedDate = today.format(formatter);
+
+			FormClassRow.setF_application_date(formattedDate);
+			if(dept != null) {
+				FormClassRow.setF_applicant_dept_name(dept.getDepartmentName());
+			}
+			if(deptPost.size() > 0) {
+				String post = "";
+				for(DepartmentPost item : deptPost) {
+					post += item.getPostName();
+				}
+				if(!post.isEmpty()) {
+					FormClassRow.setF_applicant_pos_name(post);
+				}
+			}
+			HeaderRepository headerDB = new HeaderRepository();
+			HeaderModel varHeaderMaxId = headerDB.getMaxId();
+			service.debug("varHeaderMaxId", varHeaderMaxId);
+			FormClassRow.setF_application_number("PI-" + String.format("%06d", (Integer.parseInt(varHeaderMaxId.getId()) + 1)));
+
+			model.addAttribute("FormClassRow", FormClassRow);
+			// END set applicant information
+
 			model.addAttribute("ApplyForm", ApplyForm);
 			return "wf/training_maisaka/general/apply.jsp";
 			
@@ -92,10 +146,18 @@ public class ImartController {
 				agreementStatusRenewal = agreementStatus.split("_")[1];
 			}
 			
+			//Service.debug("FormClassRows est sch pay Detail", FormClassRows.getD_estimated_schedule_payment());
+
+			int esTotalAmount = 0;
+			for(EstSchedulePaymentModel item : FormClassRows.getD_estimated_schedule_payment()) {
+				Integer amount = Integer.parseInt(item.getPayment_amount().replace(",",""));
+				esTotalAmount += amount;
+			}
 
 			model.addAttribute("FormClassRows", FormClassRows);
 			model.addAttribute("agreementStatus", agreementStatus);
 			model.addAttribute("agreementStatusRenewal", agreementStatusRenewal);
+			model.addAttribute("esTotalAmount", esTotalAmount);
 			model.addAttribute("ApplyForm", ApplyForm);
 		} catch(Exception e) {
 			System.out.println("Error page detail : " + e);

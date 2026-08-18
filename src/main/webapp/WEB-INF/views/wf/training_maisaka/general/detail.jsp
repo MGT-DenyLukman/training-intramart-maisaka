@@ -9,6 +9,7 @@
 <%@ taglib prefix="f" uri="http://terasoluna.org/functions"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core"%>
 <%@ taglib prefix="im" uri="http://www.intra-mart.co.jp/taglib/im-tenant"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.ArrayList"%>
@@ -53,7 +54,6 @@
     
 
 
-	</script>
 	
 
 	
@@ -305,8 +305,6 @@
 					</tbody>
 					</table>
 
-					<!-- START COMMENTED -->
-					<!-- 
 					  <header class="imui-chapter-title">
 						<h2>PL Impact</h2>
 					</header>
@@ -361,21 +359,25 @@
 									<th><label class="imui-required">Amount</label></th>
 									<th><label class="imui-required">Date</label></th>
 							</tr>
-							<tr>
-									<td><input type="text" name="f_es_amount"/></td>
-									<td>
-										<input type="text" name="f_es_date"  id="f_es_date"/>
-									<im:calendar floatable="true" altField="#f_es_date" />
-									</td>
-							</tr>
+							<c:forEach items="${FormClassRows. d_estimated_schedule_payment}" var="row">
+								<tr>
+										<td><input type="text" name="f_es_amount_${row.id }" value="${row.payment_amount }" disabled/></td>
+										<td>
+											<input type="text" name="f_es_date_${row.id}"  id="f_es_date_${row.id}" value="${fn:replace(row.payment_date, '-', '/')}"  disabled/>
+										<im:calendar floatable="true" altField="#f_es_date_${row.id}" disabled/>
+										</td>
+								</tr>
+							</c:forEach>
 							<tr>
 									<th><label class="imui-required">Total Amount</label></th>
 							</tr>
 							<tr>
-									<td><input type="number"  name="f_es_total_amount"/></td>
+									<td><input type="text"  name="f_es_total_amount" value="${esTotalAmount }" disabled/></td>
 							</tr>
 						</tbody>
 					</table>
+					<!-- START COMMENTED -->
+					<!-- 
 					
 					  <header class="imui-chapter-title">
 						<h2>Agreement Classification</h2>
@@ -609,5 +611,33 @@
     <input type="hidden" name=imwCallOriginalParams value="${f:h(ApplyForm.imwCallOriginalParams)}" />
 </form>
 
+	<script>
+    	function formatOutputNumber($element, value,  maxDecimal){
+    		if(parseInt(value) < 1000) {
+				$element.val(value)
+    		}else{
+				var val = value;
+				var cleaned = val.replace(/[^\d.]/g, "");            // 数字と.以外を除去
+
+				var dotIndex = cleaned.indexOf(".");
+				if (dotIndex !== -1) {                               // 最初の.だけ残す
+				  cleaned = cleaned.substring(0, dotIndex)
+						  + "." + cleaned.substring(dotIndex + 1).replace(/\./g, "");
+				}
+				if (maxDecimal !== undefined && cleaned.indexOf(".") !== -1) {
+				  var p = cleaned.split(".");                        // 小数桁数制限
+				  if (p[1].length > maxDecimal) cleaned = p[0] + "." + p[1].substring(0, maxDecimal);
+				}
+				var formatted = cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ",");  // カンマ
+				if (val !== formatted) $element.val(formatted);
+    			
+    		}
+    	}
+    	
+    	$(document).ready(function(){
+			const val = "${esTotalAmount}";
+    		formatOutputNumber($('input[name="f_es_total_amount"]'), val,   2)
+    	})
+	</script>
 
     <script src="ui/js/script-detail-reapply-after-load.js" type="text/javascript"></script>

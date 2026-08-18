@@ -9,6 +9,7 @@
 <%@ taglib prefix="f" uri="http://terasoluna.org/functions"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core"%>
 <%@ taglib prefix="im" uri="http://www.intra-mart.co.jp/taglib/im-tenant"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <%@ page import="java.util.List"%>
 <%@ page import="java.util.ArrayList"%>
@@ -84,6 +85,10 @@
 		$(function() {
 			formatNumberInput($('input[name="f_total_amount"]'), 2);
 			formatNumberInput($('input[name="f_deprec_amount_per_month"]'), 2);
+			
+			$('input[name^="f_es_amount"]').each(function() {
+				formatNumberInput($(this), 2);
+			})
 		})
     </script>
 
@@ -485,8 +490,6 @@
 					</tbody>
 					</table>
 
-					<!-- START COMMENTED -->
-					<!-- 
 					  <header class="imui-chapter-title">
 						<h2>PL Impact</h2>
 					</header>
@@ -541,22 +544,26 @@
 									<th><label class="imui-required">Amount</label></th>
 									<th><label class="imui-required">Date</label></th>
 							</tr>
-							<tr>
-									<td><input type="text" name="f_es_amount"/></td>
-									<td>
-										<input type="text" name="f_es_date"  id="f_es_date"/>
-									<im:calendar floatable="true" altField="#f_es_date" />
-									</td>
-							</tr>
+							<c:forEach items="${FormClassRows. d_estimated_schedule_payment}" var="row">
+								<tr>
+										<td><input type="text" name="f_es_amount_${row.id }" value="${row.payment_amount }" /></td>
+										<td>
+											<input type="text" name="f_es_date_${row.id}"  id="f_es_date_${row.id}" value="${fn:replace(row.payment_date, '-', '/')}"  />
+										<im:calendar floatable="true" altField="#f_es_date_${row.id}" />
+										</td>
+								</tr>
+							</c:forEach>
 							<tr>
 									<th><label class="imui-required">Total Amount</label></th>
 							</tr>
 							<tr>
-									<td><input type="number"  name="f_es_total_amount"/></td>
+									<td><input type="text"  name="f_es_total_amount" value="${esTotalAmount }" disabled/></td>
 							</tr>
 						</tbody>
 					</table>
 					
+					<!-- START COMMENTED -->
+					<!-- 
 					  <header class="imui-chapter-title">
 						<h2>Agreement Classification</h2>
 					</header>

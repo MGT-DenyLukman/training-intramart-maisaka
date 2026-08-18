@@ -1,9 +1,12 @@
 package wf.training_maisaka.general.domain.service;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 import wf.training_maisaka.general.app.ImartForm;
 import wf.training_maisaka.general.domain.repository.AgreementDetailTempRepository;
+import wf.training_maisaka.general.domain.repository.EstSchedulePaymentRepository;
+import wf.training_maisaka.general.domain.model.EstSchedulePaymentModel;
 import wf.training_maisaka.general.domain.model.AgreementDetailModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,6 +18,7 @@ public class WorkflowService {
 		try {
 		
 		AgreementDetailTempRepository agreementDetailTempDB = new AgreementDetailTempRepository();
+		EstSchedulePaymentRepository estSchPayDB = new EstSchedulePaymentRepository();
 		Collection<AgreementDetailModel> agreementDetailTempData = agreementDetailTempDB.selectData(column, value);
 
 		AgreementDetailModel entityData = agreementDetailTempData.iterator().next();
@@ -46,6 +50,14 @@ public class WorkflowService {
 				
 			}
 			result.setF_deprec_amount_per_month(entityData.getDeprec_amount_per_month());
+			
+			
+			//multiple data
+			Collection<EstSchedulePaymentModel> entityEstSchData = estSchPayDB.selectData(column, value);
+
+			result.setD_estimated_schedule_payment(entityEstSchData);
+
+			
 		}catch(Exception e) {
 			 e.printStackTrace();
 		}

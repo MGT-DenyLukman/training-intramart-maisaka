@@ -1,15 +1,25 @@
 package wf.training_maisaka.general.app;
 
 
+import java.util.Collection;
+
 
 
 //import wf.training_maisaka.general.domain.model.DetailTableModel;
 //import wf.path_test.general.domain.model.AttachmentModel;
+import wf.training_maisaka.general.domain.model.EstSchedulePaymentModel;
 
 public class ImartForm extends ImartWorkflowForm {
 	private String f_id;
 	private String f_system_matter_id;
 	private String f_user_data_id;
+	
+	private String f_application_number;
+	private String f_application_date;
+	private String f_applicant_number;
+	private String f_applicant_dept_name;
+	private String f_applicant_name;
+	private String f_applicant_pos_name;
 
 	private String f_counter_party ;
 	private String f_currency ;
@@ -27,6 +37,60 @@ public class ImartForm extends ImartWorkflowForm {
 	private String f_purchase_category ;
 	private String f_starting_usage_date ;
 	private String f_deprec_amount_per_month ;
+	
+	// multiple data
+	
+	private String f_budget_pl_impact;
+	private String f_budget_pl_month;
+	private String f_pl_impact;
+	private String f_pl_month;
+	
+	private String f_asset_number;
+	private String f_book_value;
+	
+	private Collection<EstSchedulePaymentModel> d_estimated_schedule_payment;
+	
+	
+	
+	
+	
+	public String getF_application_number() {
+		return f_application_number;
+	}
+	public void setF_application_number(String f_application_number) {
+		this.f_application_number = f_application_number;
+	}
+	public String getF_application_date() {
+		return f_application_date;
+	}
+	public void setF_application_date(String f_application_date) {
+		this.f_application_date = f_application_date;
+	}
+	public String getF_applicant_number() {
+		return f_applicant_number;
+	}
+	public void setF_applicant_number(String f_applicant_number) {
+		this.f_applicant_number = f_applicant_number;
+	}
+	public String getF_applicant_dept_name() {
+		return f_applicant_dept_name;
+	}
+	public void setF_applicant_dept_name(String f_applicant_dept_name) {
+		this.f_applicant_dept_name = f_applicant_dept_name;
+	}
+	public String getF_applicant_name() {
+		return f_applicant_name;
+	}
+	public void setF_applicant_name(String f_applicant_name) {
+		this.f_applicant_name = f_applicant_name;
+	}
+	public String getF_applicant_pos_name() {
+		return f_applicant_pos_name;
+	}
+	public void setF_applicant_pos_name(String f_applicant_pos_name) {
+		this.f_applicant_pos_name = f_applicant_pos_name;
+	}
+
 	
 
 	public String getF_id() {
@@ -142,6 +206,54 @@ public class ImartForm extends ImartWorkflowForm {
 	}
 	public void setF_deprec_amount_per_month(String f_deprec_amount_per_month) {
 		this.f_deprec_amount_per_month = f_deprec_amount_per_month;
+	}
+	
+	
+	//multiple data
+	public String getF_budget_pl_impact() {
+		return f_budget_pl_impact;
+	}
+	public void setF_budget_pl_impact(String f_budget_pl_impact) {
+		this.f_budget_pl_impact = f_budget_pl_impact;
+	}
+	public String getF_budget_pl_month() {
+		return f_budget_pl_month;
+	}
+	public void setF_budget_pl_month(String f_budget_pl_month) {
+		this.f_budget_pl_month = f_budget_pl_month;
+	}
+	public String getF_pl_impact() {
+		return f_pl_impact;
+	}
+	public void setF_pl_impact(String f_pl_impact) {
+		this.f_pl_impact = f_pl_impact;
+	}
+	public String getF_pl_month() {
+		return f_pl_month;
+	}
+	public void setF_pl_month(String f_pl_month) {
+		this.f_pl_month = f_pl_month;
+	}
+	
+	
+	
+	public String getF_asset_number() {
+		return f_asset_number;
+	}
+	public void setF_asset_number(String f_asset_number) {
+		this.f_asset_number = f_asset_number;
+	}
+	public String getF_book_value() {
+		return f_book_value;
+	}
+	public void setF_book_value(String f_book_value) {
+		this.f_book_value = f_book_value;
+	}
+	public Collection<EstSchedulePaymentModel> getD_estimated_schedule_payment() {
+		return d_estimated_schedule_payment;
+	}
+	public void setD_estimated_schedule_payment(Collection<EstSchedulePaymentModel> d_estimated_schedule_payment) {
+		this.d_estimated_schedule_payment = d_estimated_schedule_payment;
 	}
 
 
