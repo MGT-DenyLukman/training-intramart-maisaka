@@ -731,13 +731,19 @@
 							<th><label>Applicant Number</label></th>
 							<td><input name="f_applicant_number" value="${FormClassRow.f_applicant_number }" class="imui-text-readonly input_text_100"></td>
 							<th><label>Department Name</label></th>
-							<td><input name="f_applicant_dept_name" value="${FormClassRow.f_applicant_dept_name }" class="imui-text-readonly input_text_100"></td>
+							<td>
+								<input name="f_applicant_dept_name" value="${FormClassRow.f_applicant_dept_name }" class="imui-text-readonly input_text_100">
+								<div class="error_message"><label class="error">${dept_name_err_message }</label></div>
+							</td>
 						</tr>
 						<tr>
 							<th><label>Applicant Name</label></th>
 							<td><input name="f_applicant_name" value="${FormClassRow.f_applicant_name }" class="imui-text-readonly input_text_100"></td>
 							<th><label>Position Name</label></th>
-							<td><input name="f_applicant_pos_name" value="${FormClassRow.f_applicant_pos_name }" class="imui-text-readonly input_text_100"></td>
+							<td>
+								<input name="f_applicant_pos_name" value="${FormClassRow.f_applicant_pos_name }" class="imui-text-readonly input_text_100">
+								<div class="error_message"><label class="error">${pos_name_err_message }</label></div>
+							</td>
 						</tr>
 					</tbody>
 				</table>
@@ -1316,6 +1322,7 @@
 
 <!-- アクションボタン（Apply/Re-ApplyはpageTypeで分岐） -->
 <div class="imui-operation-parts">
+	<c:if test="${empty dept_name_err_message  && empty pos_name_err_message }">
 	<imart:decision case="0" value="${f:h(ApplyForm.imwPageType)}">	
 		<input type="button" value='Apply' id="openPage" name="openPage" class="imui-large-button"
 			escapeXml="true" escapeJs="false" />
@@ -1324,6 +1331,7 @@
 		<input type="button" value='Re-Apply' id="openPage" name="openPage" class="imui-large-button"
 			escapeXml="true" escapeJs="false" />
 	</imart:decision>
+	</c:if>
 
 </div>
 

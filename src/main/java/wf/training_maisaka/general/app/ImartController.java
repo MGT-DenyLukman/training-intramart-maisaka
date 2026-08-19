@@ -86,6 +86,8 @@ public class ImartController {
 			FormClassRow.setF_application_date(formattedDate);
 			if(dept != null) {
 				FormClassRow.setF_applicant_dept_name(dept.getDepartmentName());
+			}else {
+				model.addAttribute("dept_name_err_message", "please set user department");
 			}
 			if(deptPost.size() > 0) {
 				String post = "";
@@ -94,8 +96,11 @@ public class ImartController {
 				}
 				if(!post.isEmpty()) {
 					FormClassRow.setF_applicant_pos_name(post);
-				}
+				}			
+			}else {
+					model.addAttribute("pos_name_err_message", "please set user position");
 			}
+
 			HeaderRepository headerDB = new HeaderRepository();
 			HeaderModel varHeaderMaxId = headerDB.getMaxId();
 			service.debug("varHeaderMaxId", varHeaderMaxId);
