@@ -291,6 +291,7 @@
 				}
 			})
 			
+			
 			// toggle div section depends on checkbox
 			$('input[name="f_checkbox_toggle"]').on("change", function() {
 					const checkedValues = $('input[name="f_checkbox_toggle"]:checked').map(function() {
@@ -357,7 +358,7 @@
 					// section-est-payment
 					if (checkedValues.includes('section-payment')) {
 					    rules.f_es_amount_1 = {required: true};
-					    rules.f_es_date_1 = {required: true};
+					    rules.f_es_date_1 = {required: true, id:false, validDate: true};
 					    rules.f_es_total_amount = {required: true};
 					    
 					    messages = {
@@ -391,6 +392,8 @@
     		})
     		
     		formatOutputNumber( $('table#estimated_schedule tbody input[name="f_es_total_amount"]'), totalAmount.toString(), 2);
+    		$('table#estimated_schedule tbody input[name="f_es_total_amount"]').parents('td').find('.error_message').empty();
+    		$('table#estimated_schedule tbody input[name="f_es_total_amount"]').removeClass('imui-validation-error');
 		
 
     	}
@@ -500,7 +503,7 @@
 				rules[$("table#estimated_schedule tbody tr.row-payment:last td:first-child input").attr('name')] = {required: true};
 				messages[$("table#estimated_schedule tbody tr.row-payment:last td:first-child input").attr('name')] ={required: "estimated amount を入力してください！"} ;
 
-				rules[$("table#estimated_schedule tbody tr.row-payment:last .imuiCalendar").attr('name')] = {required: true};
+				rules[$("table#estimated_schedule tbody tr.row-payment:last .imuiCalendar").attr('name')] = {required: true, id:false, validDate: true};
 				messages[$("table#estimated_schedule tbody tr.row-payment:last .imuiCalendar").attr('name')] ={required: "estimated date を入力してください！"} ;
 				
 
@@ -518,43 +521,45 @@
 	
 	<!-- 入力バリデーション設定 -->
 	<script type="text/javascript">
+				//var valid = imuiValidate("#workflowOpenPageForm", rules, messages);
+
 		
-		
-		
-		
-		$(function(){
-			$('#openPage').click(function(){
+		function workflowValidate() {
 
 				
 				rules.f_effective_from = {
 						...rules.f_effective_from,
+						id: false,
 						validDate: true,
 						startDateLessThan: 'input[name="f_effective_to"]',
 				}
 
 				rules.f_effective_to = {
 						...rules.f_effective_to,
+						id: false,
 						validDate: true,
 						endDateGreaterThan: 'input[name="f_effective_from"]',
 				}
 
 				rules.f_estimated_delivery_from = {
 						...rules.f_estimated_delivery_from,
+						id: false,
 						validDate: true,
 						startDateLessThan: 'input[name="f_estimated_delivery_to"]',
 				}
 
 				rules.f_estimated_delivery_to = {
 						...rules.f_estimated_delivery_to,
+						id: false,
 						validDate: true,
 						endDateGreaterThan: 'input[name="f_estimated_delivery_from"]',
 				}
 				
 				rules.f_start_usage_date = {
 						...rules.f_start_usage_date,
+						id: false,
 						validDate: true,
 				}
-				//var valid = imuiValidate("#workflowOpenPageForm", rules, messages);
 
 				var validator = $('#workflowOpenPageForm').validate({
 					rules: rules,
@@ -573,13 +578,25 @@
 						var $element = $(element);
 						
 						$element.removeClass('imui-validation-error');
+						$element.parents('td').find('.error_message').empty();
 					}
 				})
+
+				var message_startDateLessThan = "開始日は終了日より後に設定できません。 ";
+				var message_endDateGreaterThan = "終了日は開始日より前に設定できません。 ";
+				var message_validDate = "有効な日付を入力してください。(yyyy/MM/dd)";
+				
+				
+				$.validator.messages.startDateLessThan = message_startDateLessThan;
+				$.validator.messages.endDateGreaterThan = message_endDateGreaterThan;
+				$.validator.messages.validDate = message_validDate;
 				
 				$.validator.addMethod("startDateLessThan", function(value, element, params) {
 					if(this.optional(element)) {
 						return true;
 					}
+					
+					console.log("PARAMS", params)
 					
 					var endDateValue = $(params).val();
 					if(!endDateValue) return true;
@@ -620,24 +637,25 @@
 					return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day
 				});
 				
-				var message_startDateLessThan = "開始日は終了日より後に設定できません。 ";
-				var message_endDateGreaterThan = "終了日は開始日より前に設定できません。 ";
-				var message_validDate = "有効な日付を入力してください。(yyyy/MM/dd)";
+				console.log(validator)
 				
-				
-				$.validator.messages.startDateLessThan = message_startDateLessThan;
-				$.validator.messages.endDateGreaterThan = message_endDateGreaterThan;
-				$.validator.messages.validDate = message_validDate;
+				return validator.form();
+			
+		}
+		
+		
+		
+		$(function(){
 
-				
-				
-				if(validator.form()){
+			$('#openPage').click(function(){
+				imuiResetForm("#workflowOpenPageForm");
+
+				if(workflowValidate()){
                     workflowOpenPage('${f:h(ApplyForm.imwPageType)}');
                 } else {
-                    imuiShowErrorMessage('インプットのエラーが発生しまいした。.', [], true, 2500, false);
+                    //imuiShowErrorMessage('インプットのエラーが発生しまいした。.', [], true, 2500, false);
                     
-
-					
+                    
 				}
 			})
 		})
@@ -812,7 +830,7 @@
 						  <th rowspan="2"><label class="imui-required">Effective Date</label></th>
 						  <th><label class="imui-required">From</label></th>
 						  <td>
-						  <input id="f_effective_from" name="f_effective_from" type="text"">
+						  <input id="f_effective_from" name="f_effective_from" type="text">
 							<im:calendar floatable="true" altField="#f_effective_from" />
 							<div class="error_message"></div>
 						  </td>
@@ -820,7 +838,7 @@
 						<tr class="doublerow">
 						  <th><label class="imui-required">To</label></th>
 						  <td>
-							  <input id="f_effective_to"  name="f_effective_to" type="text"">
+							  <input id="f_effective_to"  name="f_effective_to" type="text">
 							<im:calendar floatable="true" altField="#f_effective_to" />
 							<div class="error_message"></div>
 						  </td>
