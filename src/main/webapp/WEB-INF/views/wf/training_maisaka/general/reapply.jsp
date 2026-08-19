@@ -26,6 +26,10 @@
     <script src="ui/js/jquery.validate.js" type="text/javascript"></script>
     
     <style>
+    	table.imui-form:not(#agreement_detail) th {
+    		width: 250px;
+    	}
+
     	table tbody tr td:last-child input[type="text"], 
     	table tbody tr td:last-child select,
     	table tbody tr td:last-child input[type="date"] {
@@ -48,12 +52,127 @@
     		background: yellow;
     		width: fit-content;
     	}
+    	
+    	
+    	#payment-schedule-label,
+    	#payment-schedule-button {
+    		display: inline-block;
+    	}
+    	
+    	div.dependent-checkbox {
+    		display:none;
+    	}
+    	
+    	div.row-payment__amount {
+    		display: flex;
+    		gap: .5rem;
+    	}
+
+		/* Target the actual error text label instead of the input box */
+		label.error:not(:empty) {
+		    color: #d61657 !important;
+		    
+		    /* FIX: 'flex' forces the whole message block onto its own new line under the input */
+		    display: flex !important; 
+		    align-items: center;
+		    
+		    vertical-align: middle;
+		    margin-top:5px !important;
+		    clear: both;           /* Prevents floating elements from wrapping around it */
+		}
+		
+		/* Inject your exact custom sprite icon code before the text */
+		label.error:not(:empty)::before {
+		    content: "" !important;
+		    display: inline-block;
+		    vertical-align: middle;
+		    margin-top:0px;
+		    margin-right:5px;
+		    
+		    /* Your exact custom asset dimensions and coordinate properties */
+		    background: transparent url(ui/images/d.png) no-repeat -74px -162px !important;
+		    width: 18px;
+		    height: 18px;
+		    flex-shrink: 0;      /* Prevents the icon sprite from squeezing on narrow rows */
+		}
+		
+		label.error:empty {
+		    display: none !important;
+		}
+    	
     </style>
     
     
     <script type="text/javascript">
+
+		var rules = {
+			f_vendor: { required: true },
+			f_currency : {required : true}, 
+			f_total_amount : {required : true}, 
+			f_agreement_status : {required : true}, 
+			f_renewal : {required: {
+				depends: function() {return $('#extension').prop('checked')}
+			}},
+			f_auto_extension: {required: true},
+			f_purchased_order_req: {required: true},
+			f_title: {required: true},
+			f_effective_from: {required: true},
+			f_effective_to: {required: true},
+			f_estimated_delivery_from: {required: true},
+			f_estimated_delivery_to: {required: true},
+			f_start_usage_date: {required: {
+				depends: function() {return $('input[name="f_purchase_category"]').val() !=9}
+			}},
+			f_deprec_amount_per_month: {required: {
+				depends: function() {return $('input[name="f_purchase_category"]').val() !=9}
+			}},
+			
+			
+		};
+		
+		
+		
+		var messages = {
+			f_vendor: {required: "Vendor Nameを入力してください！" },
+			f_currency: {required: "Currencyを入力してください！" },
+			f_total_amount: {required: "Total Amountを入力してください！" },
+			f_agreement_status: {required: "Agreement Statusを入力してください！" },
+			f_renewal: {required: "Total Duration を選択してください！" },
+			f_auto_extension: {required: "Auto extensionを選択してください！" },
+			f_purchased_order_req: {required: "Purchased Orderを選択してください！" },
+			f_title: {required: "Titleを入力してください！" },
+			f_effective_from: {required: "Effective Date Fromを入力してください！" },
+			f_effective_to: {required: "Effective Date Toを入力してください！" },
+			f_estimated_delivery_from: {required: "Estimated Delivery Fromを入力してください！" },
+			f_estimated_delivery_to: {required: "Estimated Delivery Toを入力してください！" },
+			f_start_usage_date: {required: "Starting Usage Dateを入力してください！" },
+			f_deprec_amount_per_month: {required: "Deprec amount/monthを入力してください！" },
+
+		};
+
+    	function formatOutputNumber($element, value,  maxDecimal){
+    		if(parseInt(value) < 1000) {
+				$element.val(value)
+    		}else{
+				var val = value;
+				var cleaned = val.replace(/[^\d.]/g, "");            // 数字と.以外を除去
+
+				var dotIndex = cleaned.indexOf(".");
+				if (dotIndex !== -1) {                               // 最初の.だけ残す
+				  cleaned = cleaned.substring(0, dotIndex)
+						  + "." + cleaned.substring(dotIndex + 1).replace(/\./g, "");
+				}
+				if (maxDecimal !== undefined && cleaned.indexOf(".") !== -1) {
+				  var p = cleaned.split(".");                        // 小数桁数制限
+				  if (p[1].length > maxDecimal) cleaned = p[0] + "." + p[1].substring(0, maxDecimal);
+				}
+				var formatted = cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, ",");  // カンマ
+				if (val !== formatted) $element.val(formatted);
+    			
+    		}
+    	}
+    	
 		function formatNumberInput($input, maxDecimal) {
-			console.log("running")
 			  // 入力時にカンマ自動付与
 			  $input.on("input", function() {
 				var val = $(this).val();
@@ -85,10 +204,7 @@
 		$(function() {
 			formatNumberInput($('input[name="f_total_amount"]'), 2);
 			formatNumberInput($('input[name="f_deprec_amount_per_month"]'), 2);
-			
-			$('input[name^="f_es_amount"]').each(function() {
-				formatNumberInput($(this), 2);
-			})
+			formatNumberInput($('table#estimated_schedule tbody tr.row-payment input[name^="f_es_amount"]'), 2)		
 		})
     </script>
 
@@ -177,62 +293,381 @@
 			})
 			
 			
+			// toggle div section depends on checkbox
+			$('input[name="f_checkbox_toggle"]').on("change", function() {
+					const checkedValues = $('input[name="f_checkbox_toggle"]:checked').map(function() {
+						return $(this).val()
+					}).get();
+					
+					$('div.dependent-checkbox').each(function() {
+						if(checkedValues.includes($(this).attr('id'))) {
+							$(this).show();
+						}else{
+							$(this).hide();
+						}
+					})
+					
+					delete rules.f_budget_impact_to_fy;
+					delete rules.f_budget_impact_month;
+					delete rules.f_pl_impact_to_fy;
+					delete rules.f_pl_impact_month;
+
+					delete rules.f_asset_number;
+					delete rules.f_book_value;
+
+					delete rules.f_es_amount_1;
+					delete rules.f_es_date_1;
+					delete rules.f_es_total_amount;
+
+					delete messages.f_budget_impact_to_fy;
+					delete messages.f_budget_impact_month;
+					delete messages.f_pl_impact_to_fy;
+					delete messages.f_pl_impact_month;
+
+					delete messages.f_asset_number;
+					delete messages.f_book_value;
+
+					delete messages.f_es_amount_1;
+					delete messages.f_es_date_1;
+					delete messages.f_es_total_amount;
+					// section-impact
+					if (checkedValues.includes('section-pl-impact')) {
+					    rules.f_budget_impact_to_fy = {required: true};
+					    rules.f_budget_impact_month = {required: true};
+					    rules.f_pl_impact_to_fy = {required: true};
+					    rules.f_pl_impact_month = {required: true};
+					    
+					    messages = {
+					    		...messages,
+								f_budget_impact_to_fy: {required: "Budget PL impact to current FY入力してください！"},
+								f_budget_impact_month: {required: "Monthを入力してください！"},
+								f_pl_impact_to_fy: {required: "PL Impact to current FYを入力してください！"},
+								f_pl_impact_month: {required: "Monthを入力してください！"},
+					    }
+					}
+					// section-asset
+					if (checkedValues.includes('section-asset')) {
+					    rules.f_asset_number = {required: true};
+					    rules.f_book_value = {required: true};
+					    
+					    messages = {
+					    		...messages,
+								f_asset_number: {required: "Asset Numberを入力してください！"},
+								f_book_value: {required: "Book Valueを入力してください！"},
+					    }
+					}
+					// section-est-payment
+					if (checkedValues.includes('section-payment')) {
+					    rules.f_es_amount_1 = {required: true};
+					    rules.f_es_date_1 = {required: true, id:false, validDate: true};
+					    rules.f_es_total_amount = {required: true};
+					    
+					    messages = {
+					    		...messages,
+								f_es_amount_1: {required: "estimated amount を入力してください！"},
+								f_es_date_1: {required: "estimated date を入力してください！"},
+								f_es_total_amount: {required: "estimated total amount を入力してください！"},
+					    		
+					    }
+					}			
+					console.log("RULES when change checkbox", rules);
+					console.log("MESSAGES when change checkbox", messages);
+				})
+			
+			
+			
 		})
 	</script>
+
+
+	<!-- add row function -->
+    <script type="text/javascript">
+    	function calculateTotalAmount() {
+    		var rows = Array.from($('table#estimated_schedule tbody tr.row-payment input[name^="f_es_amount"]'));
+
+    		let totalAmount = 0;
+    		rows.forEach((item) => {
+    			if(item.value){
+					totalAmount += parseInt(item.value.replaceAll(",", ""))
+    			}
+    		})
+    		
+    		formatOutputNumber( $('table#estimated_schedule tbody input[name="f_es_total_amount"]'), totalAmount.toString(), 2);
+    		$('table#estimated_schedule tbody input[name="f_es_total_amount"]').parents('td').find('.error_message').empty();
+    		$('table#estimated_schedule tbody input[name="f_es_total_amount"]').removeClass('imui-validation-error');
+		
+
+    	}
+    	
+    	/*
+    	function refreshSequenceRowPayment() {
+
+    			var idx = 1;
+    			const esAmountStr = "f_es_amount_";
+				$('table#estimated_schedule tbody input[name^="f_es_amount"]').each(function() {
+					if(idx > 1) {
+						$(this).attr('name', esAmountStr + idx);
+						$(this).attr('id', esAmountStr + idx);
+					}
+					idx += 1;
+				})
+
+				var idx = 2;
+    			const esDateStr = "f_es_date_";
+				$('table#estimated_schedule tbody input[name^="f_es_date"].imuiCalendar').each(function() {
+						$(this).attr('name', esDateStr + idx);
+						$(this).attr('id', esDateStr + idx);
+					idx += 1;
+				})
+
+				var idx = 2;
+				$('table#estimated_schedule tbody input[type="hidden"][name^="f_es_date_"]').each(function() {
+					$(this).attr('name', esDateStr + idx + "_hidden");
+					$(this).attr('id', esDateStr + idx + "_hidden");
+					idx += 1;
+				})
+				
+				console.log("SEQUENCE ROW PAYMENT REFRESHED");
+    		
+    	}
+    	*/
+    
+    	function deleteRowPayment(e) {
+    		const closestTr = e.target.closest("tr");
+    		
+    		const elAmount = closestTr.querySelector('input[name^="f_es_amount"]');
+    		const elDate = closestTr.querySelector('input[name^="f_es_date"][type="text"]');
+
+			delete rules[$(elAmount).attr('name')]
+			delete messages[$(elAmount).attr('name')]
+
+			delete rules[$(elDate).attr('name')]
+			delete messages[$(elDate).attr('name')]
+			
+			closestTr.remove();
+			
+			//refreshSequenceRowPayment();
+
+			calculateTotalAmount();
+    	}
+    	
+    	// add row
+    	$(function(){
+    		$('#payment-schedule-button').click(() => {
+    			
+    			const lastElNameSplited = $('table#estimated_schedule tbody input[name^="f_es_amount"]:last').attr("name").split("_");
+    			console.log(lastElNameSplited);
+    			const counter = parseInt(lastElNameSplited.pop()) + 1;
+    			console.log(counter);
+
+    			const esAmountNameOrId = "f_es_amount_" + counter;
+    			const esDateNameOrId = "f_es_date_" + counter;
+				var htmlStr = '<tr class="row-payment">'
+				htmlStr += '<td><div class="row-payment__amount"><input oninput="calculateTotalAmount()" type="text" name=' +esAmountNameOrId+' >'
+				htmlStr += '<select name="f_amount_curreny_' + counter + '" class="select-currency">'
+				htmlStr += 	'<option value="IDR">IDR</option>'
+				htmlStr += 	'<option value="JPY">JPY</option>'
+				htmlStr += '</select>'
+				htmlStr += '</div>'
+				htmlStr += '<div class="error_message"></td>'
+				htmlStr += '<td>'
+				 htmlStr += "<input type='text' class='imuiCalendar' name='" +esDateNameOrId+"'"
+				  + "value='' style='height:20px;'"
+				  + "id='" +esDateNameOrId + "'>"
+				  + "<input type='hidden' id='"+esDateNameOrId+"_hidden' name='"+esDateNameOrId+"_hidden'><div class='error_message'></div>"
+				htmlStr += '</td>'
+				htmlStr += '<td><button onclick="deleteRowPayment(event)">Remove</button></td>'
+				htmlStr += "</tr>"
+				
+				$('table#estimated_schedule tbody tr.row-payment:last').after(htmlStr);
+				
+				//$("table#estimated_schedule tbody tr.row-payment:last .imuiCalendar").imuiCalendar(
+				$("table#estimated_schedule tbody .imuiCalendar").imuiCalendar(
+						{
+							"altField":"#f_es_date_" + counter ,
+							"nextText":"来月",
+							"format":"yyyy\/MM\/dd",
+							"dayNames":["日曜日","月曜日","火曜日","水曜日","木曜日","金曜日","土曜日"],
+							"dayNamesShort":["日","月","火","水","木","金","土"],
+							"prevText":"先月",
+							"url":"calendar\/tag\/caljson",
+							"currentText":"現在",
+							"calendarId":"JPN_CAL",
+							"firstDay":0,
+							"closeText":"閉じる",
+							"dayNamesMin":["日","月","火","水","木","金","土"],
+							"monthNamesShort":["1","2","3","4","5","6","7","8","9","10","11","12"],
+							"monthNames":["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
+						}
+					);
+
+				rules[$("table#estimated_schedule tbody tr.row-payment:last td:first-child input").attr('name')] = {required: true};
+				messages[$("table#estimated_schedule tbody tr.row-payment:last td:first-child input").attr('name')] ={required: "estimated amount を入力してください！"} ;
+
+				rules[$("table#estimated_schedule tbody tr.row-payment:last .imuiCalendar").attr('name')] = {required: true, id:false, validDate: true};
+				messages[$("table#estimated_schedule tbody tr.row-payment:last .imuiCalendar").attr('name')] ={required: "estimated date を入力してください！"} ;
+				
+
+				console.log("RULES from add row", rules);
+				console.log("MESSAGES from add row", messages);
+				$('table#estimated_schedule tbody tr.row-payment input[name^="f_es_amount"]').each(function() {
+					formatNumberInput($(this), 2); 
+				})
+    		})
+    		
+    		
+    	})
+    </script>
 
 	
 	<!-- 入力バリデーション設定 -->
 	<script type="text/javascript">
+				//var valid = imuiValidate("#workflowOpenPageForm", rules, messages);
 
-		var rules = {
-			f_vendor: { required: true },
-			f_currency : {required : true}, 
-			f_total_amount : {required : true}, 
-			f_agreement_status : {required : true}, 
-			f_renewal : {required: {
-				depends: function() {return $('#extension').prop('checked')}
-			}},
-			f_auto_extension: {required: true},
-			f_purchased_order_req: {required: true},
-			f_title: {required: true},
-			f_effective_from: {required: true},
-			f_effective_to: {required: true},
-			f_estimated_delivery_from: {required: true},
-			f_estimated_delivery_to: {required: true},
-			f_start_usage_date: {required: {
-				depends: function() {return $('input[name="f_purchase_category"]').val() !=9}
-			}},
-			f_deprec_amount_per_month: {required: {
-				depends: function() {return $('input[name="f_purchase_category"]').val() !=9}
-			}}
-		};
 		
-		var messages = {
-			f_vendor: {required: "Vendor Nameを入力してください！" },
-			f_currency: {required: "Currencyを入力してください！" },
-			f_total_amount: {required: "Total Amountを入力してください！" },
-			f_agreement_status: {required: "Agreement Statusを入力してください！" },
-			f_renewal: {required: "Total Duration を選択してください！" },
-			f_auto_etxension: {required: "Auto extensionを選択してください！" },
-			f_purchased_order_req: {required: "Purchased Orderを選択してください！" },
-			f_title: {required: "Titleを入力してください！" },
-			f_effective_from: {required: "Effective Date Fromを入力してください！" },
-			f_effective_to: {required: "Effective Date Toを入力してください！" },
-			f_estimated_delivery_from: {required: "Estimated Delivery Fromを入力してください！" },
-			f_estimated_delivery_to: {required: "Estimated Delivery Toを入力してください！" },
-			f_start_usage_date: {required: "Starting Usage Dateを入力してください！" },
-			f_deprec_amount_per_month: {required: "Deprec amount/monthを入力してください！" },
-		};
+		function workflowValidate() {
+
+				
+				rules.f_effective_from = {
+						...rules.f_effective_from,
+						id: false,
+						validDate: true,
+						startDateLessThan: 'input[name="f_effective_to"]',
+				}
+
+				rules.f_effective_to = {
+						...rules.f_effective_to,
+						id: false,
+						validDate: true,
+						endDateGreaterThan: 'input[name="f_effective_from"]',
+				}
+
+				rules.f_estimated_delivery_from = {
+						...rules.f_estimated_delivery_from,
+						id: false,
+						validDate: true,
+						startDateLessThan: 'input[name="f_estimated_delivery_to"]',
+				}
+
+				rules.f_estimated_delivery_to = {
+						...rules.f_estimated_delivery_to,
+						id: false,
+						validDate: true,
+						endDateGreaterThan: 'input[name="f_estimated_delivery_from"]',
+				}
+				
+				rules.f_start_usage_date = {
+						...rules.f_start_usage_date,
+						id: false,
+						validDate: true,
+				}
+
+				var validator = $('#workflowOpenPageForm').validate({
+					rules: rules,
+					messages: messages,
+					errorPlacement: function(error, element) {
+						var $element = $(element);
+						var error_message = error.get(0);
+						$element.parents('td').find('.error_message').html(error_message);
+					},
+					highlight: function(element, errorClass, validClass) {
+						var $element = $(element);
+						
+						$element.addClass('imui-validation-error');
+					},
+					unhighlight: function(element, errorClass, validClass) {
+						var $element = $(element);
+						
+						$element.removeClass('imui-validation-error');
+						$element.parents('td').find('.error_message').empty();
+					}
+				})
+
+				var message_startDateLessThan = "開始日は終了日より後に設定できません。 ";
+				var message_endDateGreaterThan = "終了日は開始日より前に設定できません。 ";
+				var message_validDate = "有効な日付を入力してください。(yyyy/MM/dd)";
+				
+				
+				$.validator.messages.startDateLessThan = message_startDateLessThan;
+				$.validator.messages.endDateGreaterThan = message_endDateGreaterThan;
+				$.validator.messages.validDate = message_validDate;
+				
+				$.validator.addMethod("startDateLessThan", function(value, element, params) {
+					if(this.optional(element)) {
+						return true;
+					}
+					
+					console.log("PARAMS", params)
+					
+					var endDateValue = $(params).val();
+					if(!endDateValue) return true;
+					
+					var startDate = new Date(value.replace(/\//g, '-'));
+					var endDate = new Date(endDateValue.replace(/\//g, '-'));
+					
+					return startDate <= endDate;
+				});
+				
+
+				$.validator.addMethod("endDateGreaterThan", function(value, element, params) {
+					if(this.optional(element)) {
+						return true;
+					}
+					var startDateValue = $(params).val();
+					if(!startDateValue) return true;
+					
+					var startDate = new Date(startDateValue.replace(/\//g, '-'));
+					var endDate = new Date(value.replace(/\//g, '-'));
+
+					
+					return  endDate >= startDate;
+				});
+				
+				$.validator.addMethod("validDate", function(value, element) {
+					if(this.optional(element)){
+						return true;
+					}
+					
+					var splitted = value.split("/");
+					var year = parseInt(splitted[0], 10);
+					var month = parseInt(splitted[1], 10) - 1;
+					var day = parseInt(splitted[2], 10);
+					
+					var date = new Date(year, month, day);
+
+					return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day
+				});
+				
+				console.log(validator)
+				
+				return validator.form();
+			
+		}
+		
+		
 		
 		$(function(){
+
 			$('#openPage').click(function(){
-				console.log($('#openPage').val(), "clicked");
-				var valid = imuiValidate("#workflowOpenPageForm", rules, messages);
+				imuiResetForm("#workflowOpenPageForm");
 				
-				if(valid){
+				$("tr.row-payment").each(function() {
+					$element = $(this);
+					
+					$esAmount = $element.find('input[name^="f_es_amount"]');
+					$esDate = $element.find('input[name^="f_es_date"].imui-calendar');
+					
+					console.log("DLKSJFKLSDJ", $esDate, $esDate.attr('name'));
+					rules[$esAmount.attr('name')] = {required: true}
+					rules[$esDate.attr('name')] = {required: true, validDate: true, id:false}
+				})
+
+				if(workflowValidate()){
                     workflowOpenPage('${f:h(ApplyForm.imwPageType)}');
                 } else {
-                    imuiShowErrorMessage('インプットのエラーが発生しまいした。.', [], true, 2500, false);
+                    //imuiShowErrorMessage('インプットのエラーが発生しまいした。.', [], true, 2500, false);
+                    
+                    
 				}
 			})
 		})
@@ -288,7 +723,45 @@
 		imwNodeId="${f:h(ApplyForm.imwNodeId)}"
 		imwFlowId="${f:h(ApplyForm.imwFlowId)}"
 		imwCallOriginalParams="${f:h(ApplyForm.imwCallOriginalParams)}"
-		imwNextScriptPath="${f:h(ApplyForm.imwCallOriginalPagePath)}">	
+		imwNextScriptPath="${f:h(ApplyForm.imwCallOriginalPagePath)}"
+		>	
+
+			<div>
+				  <header class="imui-chapter-title">
+					<h2>Applicant Information</h2>
+				</header>
+				
+				<table id="applicant_information" class="imui-form tab_header">
+					<tbody>
+						<tr>
+							<th><label>Application Number</label></th>
+							<td><input name="f_application_number" value="${FormClassRows.f_application_number }" class="imui-text-readonly input_text_100"></td>
+							<th><label>Application Date</label></th>
+							<td><input name="f_application_date" value="${FormClassRows.f_application_date }" class="imui-text-readonly input_text_100"></td>
+						</tr>
+						<tr>
+							<th><label>Applicant Number</label></th>
+							<td><input name="f_applicant_number" value="${FormClassRows.f_applicant_number }" class="imui-text-readonly input_text_100"></td>
+							<th><label>Department Name</label></th>
+							<td>
+								<input name="f_applicant_dept_name" value="${FormClassRows.f_applicant_dept_name }" class="imui-text-readonly input_text_100">
+								<div class="error_message"><label class="error">${dept_name_err_message }</label></div>
+							</td>
+						</tr>
+						<tr>
+							<th><label>Applicant Name</label></th>
+							<td><input name="f_applicant_name" value="${FormClassRows.f_applicant_name }" class="imui-text-readonly input_text_100"></td>
+							<th><label>Position Name</label></th>
+							<td>
+								<input name="f_applicant_pos_name" value="${FormClassRows.f_applicant_pos_name }" class="imui-text-readonly input_text_100">
+								<div class="error_message"><label class="error">${pos_name_err_message }</label></div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div>
 				  <header class="imui-chapter-title">
 					<h2>Agreement Detail</h2>
 				</header>
@@ -297,21 +770,27 @@
 					<tbody>
 						<tr>
 						  <th><label class="imui-required">Counter Party (vendor name, etc)</label></th>
-						  <td><input name="f_vendor" type="text" placeholder="..." value="${FormClassRows.f_counter_party }" ></td>
+						  <td>
+						  <input name="f_vendor" type="text" placeholder="..." value="${FormClassRows.f_counter_party }">
+							<div class="error_message"></div>
+						  </td>
 						</tr>
 
 						<tr>
 						  <th><label class="imui-required">Currency</label></th>
 						  <td>
-						  	<select name="f_currency" >
-						  		<option value="IDR">IDR</option>
+						  	<select name="f_currency" disabled>
+						  		<option value="IDR" ${FormClassRows.f_currency == "IDR" ? "selected" : ""}>IDR</option>
 						  	</select>
 						  </td>
 						</tr>
 
 						<tr>
 						  <th><label class="imui-required">Total Amount (Without Tax)</label></th>
-						  <td><input name="f_total_amount" type="text" placeholder="100,000,000.00" value="${FormClassRows.f_total_amount_no_tax }" ></td>
+						  <td>
+						  <input name="f_total_amount" type="text" placeholder="100,000,000.00" value="${FormClassRows.f_total_amount_no_tax }">
+							<div class="error_message"></div>
+						  </td>
 						</tr>
 
 						<tr>
@@ -319,32 +798,27 @@
 						  <td>
 						  		<input type="radio" id="one_time" name="f_agreement_status" value="1"
 						  			${FormClassRows.f_agreement_status == 1 ? "checked" : "" }
-						  			
 						  		/>
 						  		<label for="one_time">One Time/New</label>
 						  		<br>
-						  		<input type="radio" id="extension" name="f_agreement_status" value="2" 
+						  		<input type="radio" id="extension" name="f_agreement_status" value="2"
 									  ${FormClassRows.f_agreement_status == "2_a" || FormClassRows.f_agreement_status == "2_b" ? "checked" : "" }
-						  			
 						  		/>
 						  		<label for="extension">Amendment/Extension/Renewal</label>
 						  		<br>
 						  		<div id="extension-childs" style="padding-left: 2em">
 									  <p>Total Duration from first cooperation until now</p>
 									  <input type="radio" id="gt_1" name="f_renewal" value="a"
-									  ${agreementStatusRenewal == "a" ? "checked" : "" }
-						  			
+										  ${agreementStatusRenewal == "a" ? "checked" : "" }
 									  />
 									  <label for="gt_1">More than 1 year</label>
 									  <input type="radio" id="lte_1" name="f_renewal" value="b"
-									  ${agreementStatusRenewal == "b" ? "checked" : "" }
-						  			
+										  ${agreementStatusRenewal == "b" ? "checked" : "" }
 									  />
 									  <label for="lte_1">up to 1 year</label>
 						  		</div>
 						  		<input type="radio" id="umbrella" name="f_agreement_status" value="3"
 						  			${FormClassRows.f_agreement_status == 3 ? "checked" : "" }
-						  			
 						  		/>
 						  		<label for="umbrella">Umbrella Agreement</label>
 						  </td>
@@ -353,15 +827,13 @@
 						<tr>
 							<th><label class="imui-required">Include auto extension condition</label></th>
 							<td>
-						  		<input type="radio" id="auto_extension_y" name="f_auto_extension" value="1" 
+						  		<input type="radio" id="auto_extension_y" name="f_auto_extension" value="1"
 						  			${FormClassRows.f_is_auto_extension == 1 ? "checked" : "" }
-						  			
 						  		/>
 						  		<label for="auto_extension_y">Yes</label>
 						  		<br>
 						  		<input type="radio" id="auto_extension_n" name="f_auto_extension" value="0"
 						  			${FormClassRows.f_is_auto_extension == 0 ? "checked" : "" }
-						  			
 						  		/>
 						  		<label for="auto_extension_n">No</label>
 							</td>
@@ -370,15 +842,13 @@
 						<tr>
 							<th><label class="imui-required">Purchase Order Required</label></th>
 							<td>
-						  		<input type="radio" id="purchase_order_req_y" name="f_purchase_order_req" value="1" 
+						  		<input type="radio" id="purchase_order_req_y" name="f_purchase_order_req" value="1"
 						  			${FormClassRows.f_purchase_order_req == 1 ? "checked" : "" }
-						  			
 						  		/>
 						  		<label for="purchase_order_req_y">Yes</label>
 						  		<br>
 						  		<input type="radio" id="purchase_order_req_n" name="f_purchase_order_req" value="0"
 						  			${FormClassRows.f_purchase_order_req == 0 ? "checked" : "" }
-						  			
 						  		/>
 						  		<label for="purchase_order_req_n">No</label>
 							</td>
@@ -386,22 +856,27 @@
 
 						<tr>
 						  <th><label class="imui-required">Title described in Agreement</label></th>
-						  <td><input name="f_title" type="text" placeholder="..." value="${FormClassRows.f_title_in_agreement }" ></td>
+						  <td>
+						  <input name="f_title" type="text" placeholder="..." value="${FormClassRows.f_title_in_agreement }">
+							<div class="error_message"></div>
+						  </td>
 						</tr>
 
 						<tr class="doublerow">
 						  <th rowspan="2"><label class="imui-required">Effective Date</label></th>
 						  <th><label class="imui-required">From</label></th>
 						  <td>
-						  <input id="f_effective_from" name="f_effective_from" type="text" value="${FormClassRows.f_effective_date_from }" >
+						  <input id="f_effective_from" name="f_effective_from" type="text" value="${FormClassRows.f_effective_date_from }">
 							<im:calendar floatable="true" altField="#f_effective_from" />
+							<div class="error_message"></div>
 						  </td>
 						</tr>
 						<tr class="doublerow">
 						  <th><label class="imui-required">To</label></th>
 						  <td>
-							  <input id="f_effective_to"  name="f_effective_to" type="text"  value="${FormClassRows.f_effective_date_to }" >
+							  <input id="f_effective_to"  name="f_effective_to" type="text" value="${FormClassRows.f_effective_date_to }">
 							<im:calendar floatable="true" altField="#f_effective_to" />
+							<div class="error_message"></div>
 						  </td>
 						</tr>
 
@@ -409,14 +884,12 @@
 							<th><label class="imui-required">Related / Non Related Company</label></th>
 							<td>
 						  		<input type="radio" id="related_parties_y" name="f_related_company" value="1"
-						  			${FormClassRows.f_is_related_comp == 1 ? "checked" : "" }
-						  			
+										  ${FormClassRows.f_is_related_comp == 1 ? "checked" : "" }
 						  		/>
 						  		<label for="related_parties_y">Related Parties [Shareholders (KY, MFTBC, MC, MCAH, Daimler), Subsidiary (i.e. KRM, MKM, BAS, BBD, BMC, etc.), Affiliates (i.e. DSF, BSI, MMKSI, MMKI, etc.)]</label>
 						  		<br>
 						  		<input type="radio" id="related_parties_n" name="f_related_company" value="0"
-						  			${FormClassRows.f_is_related_comp == 0 ? "checked" : "" }
-						  			
+										  ${FormClassRows.f_is_related_comp == 0 ? "checked" : "" }
 						  		/>
 						  		<label for="related_parties_n">Non Related Parties</label>
 						  		<br>
@@ -428,26 +901,34 @@
 						  <th rowspan="2"><label class="imui-required">Estimated Delivery Schedule</label></th>
 						  <th><label class="imui-required">From</label></th>
 						  <td>
-						  <input id="f_estimated_delivery_from"  name="f_estimated_delivery_from" type="text" value="${FormClassRows.f_delivery_date_from}" >
+						  <input id="f_estimated_delivery_from"  name="f_estimated_delivery_from" type="text" value="${FormClassRows.f_delivery_date_from}"
+						  >
 							<im:calendar floatable="true" altField="#f_estimated_delivery_from" />
+							<div class="error_message"></div>
 						  </td>
 						</tr>
 						<tr class="doublerow">
 						  <th><label class="imui-required">To</label></th>
 						  <td>
-								  <input id="f_estimated_delivery_to"  name="f_estimated_delivery_to" type="text" value="${FormClassRows.f_delivery_date_to}" >
-								<im:calendar floatable="true" altField="#f_estimated_delivery_to"  /> 
+								  <input id="f_estimated_delivery_to"  name="f_estimated_delivery_to" type="text" value="${FormClassRows.f_delivery_date_to}"
+								  >
+								<im:calendar floatable="true" altField="#f_estimated_delivery_to" />
+								<div class="error_message"></div>
 						  </td>
 						</tr>
 						
 						<tr>
 						  <th><label>Agreement Summary (main points only) (In case of contract in foreign currency need to describe exchange rate)</label></th>
-						  <td><textarea id="agreement_summary" name="f_agreement_summary" >${FormClassRows.f_agreement_summary }</textarea></td>
+						  <td><textarea id="agreement_summary" name="f_agreement_summary">${FormClassRows.f_agreement_summary}</textarea></td>
 						</tr>
 							
 					</tbody>
 				</table>
+		</div>
+		
 
+
+			<div>
 				  <header class="imui-chapter-title">
 					<h2>Depreciation Check</h2>
 				</header>
@@ -459,19 +940,16 @@
 						  <td>
 						  		<input type="radio" id="tangible_asset" name="f_purchase_category" value="1"
 						  			${FormClassRows.f_purchase_category == 1 ? "checked" : "" }
-						  			
-						  		 />
+						  		/>
 						  		<label for="tangible_asset">Tangible Asset</label>
 
 						  		<input type="radio" id="intangible_asset" name="f_purchase_category" value="0"
 						  			${FormClassRows.f_purchase_category == 0 ? "checked" : "" }
-						  			
 						  		/>
 						  		<label for="intangible_asset">Intangible Asset</label>
 
 						  		<input type="radio" id="non_asset" name="f_purchase_category" value="9"
 						  			${FormClassRows.f_purchase_category == 9 ? "checked" : "" }
-						  			
 						  		/>
 						  		<label for="non_asset">Non-Asset</label>
 						  </td>
@@ -480,16 +958,44 @@
 						  <th><label class="imui-required">Starting Usage Date (Required if Asset)</label></th>
 						  <td>
 								  <input id="f_start_usage_date"  name="f_start_usage_date" type="text" value="${FormClassRows.f_starting_usage_date }">
-								<im:calendar floatable="true" altField="#f_start_usage_date"  />
-						  </td>
+								<im:calendar floatable="true" altField="#f_start_usage_date" />
+								<div class="error_message"></div>
+							  </td>
 						</tr>
 						<tr class="depreciation_required_asset">
 						  <th><label class="imui-required">Deprec Amount/Month (Required if Asset)</label></th>
-						  <td><input name="f_deprec_amount_per_month" type="text" placeholder="..." value="${FormClassRows.f_deprec_amount_per_month }" ></td>
+						  <td>
+						  <input name="f_deprec_amount_per_month" type="text" placeholder="..." value="${FormClassRows.f_deprec_amount_per_month }">
+							<div class="error_message"></div>
+						</td>
 						</tr>
 					</tbody>
 					</table>
+				</div>
+				
+			<div id="section-checkbox">
+				<header class="imui-chapter-title">
+						<h2>Checkbox Toggle</h2>
+				</header>
+				
+					<table class="imui-form tab_header">
+							<tbody>
+								<tr>
+										<th>
+												<label>Check item that need to be filled</label>
+										</th>
+										<td>
+											<label><input type="checkbox" name="f_checkbox_toggle" value="section-pl-impact" id="checkbox-section-pl-impact">PL Impact</label> <br>
+											<label><input type="checkbox" name="f_checkbox_toggle" value="section-asset" id="checkbox-section-asset"> Asset</label> <br>
+											<label><input type="checkbox" name="f_checkbox_toggle" value="section-payment" id="checkbox-section-payment"> Payment</label> <br>
+											<label><input type="checkbox" name="f_checkbox_toggle" value="section-upload" id="checkbox-section-upload"> Upload</label> <br>
+										</td>
+								</tr>
+							</tbody>
+					</table>
+			</div>
 
+				<div id="section-pl-impact" class="dependent-checkbox">
 					  <header class="imui-chapter-title">
 						<h2>PL Impact</h2>
 					</header>
@@ -503,16 +1009,36 @@
 									<th><label class="imui-required">Month</label></th>
 							</tr>
 							<tr>
-									<td><input type="text" name="f_budget_impact_to_fy"/></td>
-									<td><input type="text" name="f_budget_impact_month"/></td>
-									<td><input type="text" name="f_pl_impact_to_fy"/></td>
-									<td><input type="text" name="f_pl_impact_month"/></td>
+									<td>
+										<input type="text" name="f_budget_impact_to_fy"/>
+										<div class="error_message"></div>
+									</td>
+									<td>
+											<select name="f_budget_impact_month">
+													<c:forEach var="i" begin="1" end="12">
+													<option value="${i}">${i}月</option> 
+													</c:forEach>
+											</select>
+									</td>
+									<td>
+										<input type="text" name="f_pl_impact_to_fy"/>
+										<div class="error_message"></div>
+									</td>
+									<td>
+											<select name="f_pl_impact_month">
+													<c:forEach var="i" begin="1" end="12">
+													<option value="${i}">${i}月</option> 
+													</c:forEach>
+											</select>
+									</td>
 							</tr>
 						</tbody>
 					</table>
+			</div>
 					
 					
 					
+				<div id="section-asset" class="dependent-checkbox">
 					  <header class="imui-chapter-title">
 						<h2>Asset</h2>
 					</header>
@@ -524,13 +1050,21 @@
 									<th><label class="imui-required">Book Value</label></th>
 							</tr>
 							<tr>
-									<td><input type="text" name="f_asset_number"/></td>
-									<td><input type="text" name="f_book_value"/></td>
+									<td>
+										<input type="text" name="f_asset_number"/>
+										<div class="error_message"></div>
+									</td>
+									<td>
+										<input type="text" name="f_book_value"/>
+										<div class="error_message"></div>
+									</td>
 							</tr>
 						</tbody>
 					</table>
+			</div>
 					
 					
+					<div id="section-payment" class="dependent-checkbox">
 					  <header class="imui-chapter-title">
 						<h2>Estimated Schedule (Payment Conditions)</h2>
 					</header>
@@ -538,32 +1072,51 @@
 					<table id="estimated_schedule" class="imui-form tab_header">
 						<tbody>
 							<tr>
-								<th colspan="2"><label class="imui-required">Payment (Total Cash flow Impact)</label></th>
+								<th colspan="3"><label class="imui-required" id="payment-schedule-label">Payment (Total Cash flow Impact)</label></th>
 							</tr>
-							<tr>
+							<tr class="row-header">
 									<th><label class="imui-required">Amount</label></th>
 									<th><label class="imui-required">Date</label></th>
+									<th><label class=""><button id="payment-schedule-button">+ Add Row</button></label></th>
 							</tr>
 							<c:forEach items="${FormClassRows. d_estimated_schedule_payment}" var="row">
-								<tr>
-										<td><input type="text" name="f_es_amount_${row.id }" value="${row.payment_amount }" /></td>
-										<td>
-											<input type="text" name="f_es_date_${row.id}"  id="f_es_date_${row.id}" value="${fn:replace(row.payment_date, '-', '/')}"  />
-										<im:calendar floatable="true" altField="#f_es_date_${row.id}" />
-										</td>
-								</tr>
+							<tr class="row-payment">
+									<td>
+										<div class="row-payment__amount">
+										<input oninput="calculateTotalAmount()" type="text" name="f_es_amount_${row.id }" value="${row.payment_amount }"/>
+										<select name="f_amount_currency_${row.id }" class="select-currency">
+												<option value="IDR">IDR</option>
+												<option value="JPY">JPY</option>
+										</select>
+										</div>
+										<div class="error_message"></div>
+									</td>
+									<td>
+										<input type="text" name="f_es_date_${row.id}"  id="f_es_date_${row.id}" value="${fn:replace(row.payment_date, '-', '/')}" />
+									<im:calendar floatable="true" altField="#f_es_date_${row.id }" />
+										<div class="error_message"></div>
+									</td>
+									<td>
+										<button onclick="deleteRowPayment(event)">Remove</button>
+									</td>
+							</tr>
 							</c:forEach>
 							<tr>
 									<th><label class="imui-required">Total Amount</label></th>
 							</tr>
 							<tr>
-									<td><input type="text"  name="f_es_total_amount" value="${esTotalAmount }" disabled/></td>
+									<td>
+									<input type="text"  name="f_es_total_amount" value="${esTotalAmount}" readonly/>
+										<div class="error_message"></div>
+									</td>
 							</tr>
 						</tbody>
 					</table>
+				</div>
 					
 					<!-- START COMMENTED -->
 					<!-- 
+					<div>
 					  <header class="imui-chapter-title">
 						<h2>Agreement Classification</h2>
 					</header>
@@ -633,8 +1186,10 @@
 							</tr>
 						</tbody>
 					</table>
+				</div>
 
 					
+					<div>
 					  <header class="imui-chapter-title">
 						<h2>PSD Check (by UH or DH, PSD)</h2>
 					</header>
@@ -664,7 +1219,9 @@
 								</tr>
 						</tbody>
 					</table>
+					</div>
 
+					<div>
 					  <header class="imui-chapter-title">
 						<h2>Compliance Check By CCO</h2>
 					</header>
@@ -700,9 +1257,10 @@
 								</tr>
 						</tbody>
 					</table>
+					</div>
 					
 					
-					 <div class="imui-form-container-full">
+				 <div class="imui-form-container-full">
 					  <header class="imui-chapter-title">
 						<h2>Filled By Legal</h2>
 					</header>
@@ -722,11 +1280,10 @@
 								</tr>
 						</tbody>
 					</table>
-					</div>
+				</div>
 					
 					
 
-					
 						
 					-->
 					<!-- END COMMENTED -->
@@ -736,7 +1293,7 @@
 			
 </workflow:workflowOpenPage>
 				
-					 <div class="imui-form-container-full">
+					 <div id="section-upload" class="dependent-checkbox imui-form-container-full">
 						  <header class="imui-chapter-title">
 							<h2>Upload Document by DIC : Agreement, DD, etc</h2>
 						</header>
@@ -758,13 +1315,13 @@
 									</tr>
 							</tbody>
 						</table>
-					</div>
 					  <header class="imui-chapter-title">
 						<h2>To see the uploaded document</h2>
 					</header>
 
 					<table id="uploaded_document" class="imui-form tab_header">
 					</table>
+					</div>
 			</div>
 		</imui:tabItem>
 
@@ -780,6 +1337,7 @@
 
 <!-- アクションボタン（Apply/Re-ApplyはpageTypeで分岐） -->
 <div class="imui-operation-parts">
+	<c:if test="${empty dept_name_err_message  && empty pos_name_err_message }">
 	<imart:decision case="0" value="${f:h(ApplyForm.imwPageType)}">	
 		<input type="button" value='Apply' id="openPage" name="openPage" class="imui-large-button"
 			escapeXml="true" escapeJs="false" />
@@ -788,6 +1346,7 @@
 		<input type="button" value='Re-Apply' id="openPage" name="openPage" class="imui-large-button"
 			escapeXml="true" escapeJs="false" />
 	</imart:decision>
+	</c:if>
 
 </div>
 
@@ -796,4 +1355,15 @@
     <input type="hidden" name=imwCallOriginalParams value="${f:h(ApplyForm.imwCallOriginalParams)}" />
 </form>
 
+
+	<script type="text/javascript">
+			$(document).ready(function(){
+				const val = "${esTotalAmount}";
+				formatOutputNumber($('input[name="f_es_total_amount"]'), val,   2)
+			})
+			
+			$(function(){
+				$('tr.row-payment:first button').hide();
+			})
+	</script>
     <script src="ui/js/script-detail-reapply-after-load.js" type="text/javascript"></script>

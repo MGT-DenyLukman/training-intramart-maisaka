@@ -31,7 +31,6 @@ public class MatterEndProcessServiceImpl implements MatterEndProcessService {
 		HeaderModel entity_Header = getEntity_Header(parameter.getSystemMatterId());
 		AgreementDetailModel entity_Agreement = getEntity_AgreementDetail(parameter.getSystemMatterId());
 		
-		// ＝＝＝＝＝＝＝＝＝続ける必要＝＝＝＝＝＝＝＝＝＝＝＝＝
 		
 		service.debug("parameter matter end", parameter);
 

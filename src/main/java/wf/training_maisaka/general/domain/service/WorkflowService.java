@@ -4,8 +4,12 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 import wf.training_maisaka.general.app.ImartForm;
+
+import  wf.training_maisaka.general.domain.repository.HeaderInfoRepository;
 import wf.training_maisaka.general.domain.repository.AgreementDetailTempRepository;
 import wf.training_maisaka.general.domain.repository.EstSchedulePaymentRepository;
+
+import  wf.training_maisaka.general.domain.model.HeaderInfoModel;
 import wf.training_maisaka.general.domain.model.EstSchedulePaymentModel;
 import wf.training_maisaka.general.domain.model.AgreementDetailModel;
 
@@ -13,17 +17,31 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WorkflowService {
 	
-	public ImartForm getAgreementDetailTemp(String column, String value) {
+	public ImartForm getDataForForm(String column, String value) {
 		ImartForm result = new ImartForm();
 		try {
 		
+		HeaderInfoRepository headerInfoDB = new HeaderInfoRepository();
 		AgreementDetailTempRepository agreementDetailTempDB = new AgreementDetailTempRepository();
 		EstSchedulePaymentRepository estSchPayDB = new EstSchedulePaymentRepository();
 		Collection<AgreementDetailModel> agreementDetailTempData = agreementDetailTempDB.selectData(column, value);
+		Collection<HeaderInfoModel> headerInfoData = headerInfoDB.selectData(column, value);
 
 		AgreementDetailModel entityData = agreementDetailTempData.iterator().next();
+		HeaderInfoModel entityHeaderInfo = headerInfoData.iterator().next();
+
 		
 			this.debug("get temp data", entityData);
+			this.debug("get header info data", entityHeaderInfo);
+
+			String applicationDate = entityHeaderInfo.getApplication_date().replaceAll("-", "/");
+			
+			result.setF_application_number(entityHeaderInfo.getApplication_number());
+			result.setF_application_date(applicationDate);
+			result.setF_applicant_number(entityHeaderInfo.getApplicant_number());
+			result.setF_applicant_name(entityHeaderInfo.getApplicant_name());
+			result.setF_applicant_dept_name(entityHeaderInfo.getApplicant_department_name());
+			result.setF_applicant_pos_name(entityHeaderInfo.getApplicant_position_name());
 		
 			String effectiveFrom = entityData.getEffective_date_from().replaceAll("-", "/");
 			String effectiveTo = entityData.getEffective_date_to().replaceAll("-", "/");

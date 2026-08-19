@@ -115,25 +115,25 @@
 					<tbody>
 						<tr>
 							<th><label>Application Number</label></th>
-							<td><input name="f_application_number" value="${FormClassRow.f_application_number }" class="imui-text-readonly input_text_100"></td>
+							<td><input name="f_application_number" value="${FormClassRows.f_application_number }" class="imui-text-readonly input_text_100"></td>
 							<th><label>Application Date</label></th>
-							<td><input name="f_application_date" value="${FormClassRow.f_application_date }" class="imui-text-readonly input_text_100"></td>
+							<td><input name="f_application_date" value="${FormClassRows.f_application_date }" class="imui-text-readonly input_text_100"></td>
 						</tr>
 						<tr>
 							<th><label>Applicant Number</label></th>
-							<td><input name="f_applicant_number" value="${FormClassRow.f_applicant_number }" class="imui-text-readonly input_text_100"></td>
+							<td><input name="f_applicant_number" value="${FormClassRows.f_applicant_number }" class="imui-text-readonly input_text_100"></td>
 							<th><label>Department Name</label></th>
 							<td>
-								<input name="f_applicant_dept_name" value="${FormClassRow.f_applicant_dept_name }" class="imui-text-readonly input_text_100">
+								<input name="f_applicant_dept_name" value="${FormClassRows.f_applicant_dept_name }" class="imui-text-readonly input_text_100">
 								<div class="error_message"><label class="error">${dept_name_err_message }</label></div>
 							</td>
 						</tr>
 						<tr>
 							<th><label>Applicant Name</label></th>
-							<td><input name="f_applicant_name" value="${FormClassRow.f_applicant_name }" class="imui-text-readonly input_text_100"></td>
+							<td><input name="f_applicant_name" value="${FormClassRows.f_applicant_name }" class="imui-text-readonly input_text_100"></td>
 							<th><label>Position Name</label></th>
 							<td>
-								<input name="f_applicant_pos_name" value="${FormClassRow.f_applicant_pos_name }" class="imui-text-readonly input_text_100">
+								<input name="f_applicant_pos_name" value="${FormClassRows.f_applicant_pos_name }" class="imui-text-readonly input_text_100">
 								<div class="error_message"><label class="error">${pos_name_err_message }</label></div>
 							</td>
 						</tr>

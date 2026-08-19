@@ -87,7 +87,6 @@ public class HeaderInfoRepository {
 		return result;
 	}
 
-	/*
 	public HeaderInfoModel getMaxId() throws Exception {
 		SQLManager sqlManager = new SQLManager();
 		ArrayList<Object> parameters = new ArrayList<>();
@@ -98,5 +97,4 @@ public class HeaderInfoRepository {
 		return result.iterator().next();
 		
 	}
-	*/
 }

@@ -48,12 +48,11 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			HeaderRepository headerDB = new HeaderRepository();
 			HeaderInfoRepository headerInfoDB = new HeaderInfoRepository();
 			AgreementDetailTempRepository agreementDetailTempDB = new AgreementDetailTempRepository();
+			EstSchedulePaymentRepository estSchedulePayDB = new EstSchedulePaymentRepository();
 			
 			HeaderModel entity_Header = getEntity_Header(parameter, userParameter);
 			HeaderInfoModel entity_HeaderInfo = getEntity_HeaderInfo(parameter, userParameter);
 			AgreementDetailModel entity_AgreementDetail = getEntity_AgreementDetail(parameter, userParameter);
-			
-			EstSchedulePaymentRepository estSchedulePayDB = new EstSchedulePaymentRepository();
 			
 			Collection<EstSchedulePaymentModel> entity_EstSchPayment = getEntity_EstSchedulePayment(parameter, userParameter);
 			
@@ -82,13 +81,24 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 		System.out.println("MASUK RE-APPLY");
 		try {
 			HeaderRepository headerDB = new HeaderRepository();
+			HeaderInfoRepository headerInfoDB = new HeaderInfoRepository();
 			AgreementDetailTempRepository agreementDetailTempDB = new AgreementDetailTempRepository();
+			EstSchedulePaymentRepository estSchedulePayDB = new EstSchedulePaymentRepository();
 			
 			HeaderModel entity_Header = getEntity_Header(parameter, userParameter);
+			HeaderInfoModel entity_HeaderInfo = getEntity_HeaderInfo(parameter, userParameter);
 			AgreementDetailModel entity_AgreementDetail = getEntity_AgreementDetail(parameter, userParameter);
+
+			Collection<EstSchedulePaymentModel> entity_EstSchPayment = getEntity_EstSchedulePayment(parameter, userParameter);
 			
 			headerDB.updateData(entity_Header);
+			headerInfoDB.updateData(entity_HeaderInfo);
 			agreementDetailTempDB.updateData(entity_AgreementDetail);
+			estSchedulePayDB.deleteData("system_matter_id", parameter.getSystemMatterId());
+
+			for(EstSchedulePaymentModel row : entity_EstSchPayment) {
+				estSchedulePayDB.insertData(row);
+			}
 			
 
         } catch (final WorkflowException e) {

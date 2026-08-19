@@ -144,6 +144,7 @@
 		
 
 
+		/*
 		var rules = {
 			f_vendor: { required: true },
 			f_currency : {required : true}, 
@@ -196,6 +197,7 @@
 				}
 			})
 		})
+		*/
 
 // ============================ END when apply =============================
 

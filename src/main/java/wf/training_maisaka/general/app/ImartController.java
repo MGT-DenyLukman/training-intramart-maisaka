@@ -43,8 +43,8 @@ import edu.emory.mathcs.backport.java.util.Arrays;
 //import wf.training_test.general.domain.service.*;
 //import wf.training_test.general.domain.model.*;
 import wf.training_maisaka.general.domain.model.EstSchedulePaymentModel;
-import wf.training_maisaka.general.domain.model.HeaderModel;
-import wf.training_maisaka.general.domain.repository.HeaderRepository;
+import wf.training_maisaka.general.domain.model.HeaderInfoModel;
+import wf.training_maisaka.general.domain.repository.HeaderInfoRepository;
 import wf.training_maisaka.general.domain.service.WorkflowService;
 
 @Controller("training_maisaka_new")
@@ -101,10 +101,9 @@ public class ImartController {
 					model.addAttribute("pos_name_err_message", "please set user position");
 			}
 
-			HeaderRepository headerDB = new HeaderRepository();
-			HeaderModel varHeaderMaxId = headerDB.getMaxId();
-			service.debug("varHeaderMaxId", varHeaderMaxId);
-			FormClassRow.setF_application_number("PI-" + String.format("%06d", (Integer.parseInt(varHeaderMaxId.getId()) + 1)));
+			HeaderInfoRepository headerInfoDB = new HeaderInfoRepository();
+			HeaderInfoModel varHeaderInfoMaxId = headerInfoDB.getMaxId();
+			FormClassRow.setF_application_number("PI-" + String.format("%06d", (Integer.parseInt(varHeaderInfoMaxId.getId()) + 1)));
 
 			model.addAttribute("FormClassRow", FormClassRow);
 			// END set applicant information
@@ -116,9 +115,10 @@ public class ImartController {
 			return "wf/training_maisaka/general/apply.jsp";
 		
 		} else {
+			// REAPPLY
 			WorkflowService Service = new WorkflowService();
 			ImartForm FormClassRows = new ImartForm();
-			FormClassRows = Service.getAgreementDetailTemp("system_matter_id", ApplyForm.getImwSystemMatterId());
+			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId());
 			
 			//check if agreement_status has "_"
 			String agreementStatus = FormClassRows.getF_agreement_status();
@@ -127,10 +127,54 @@ public class ImartController {
 				agreementStatusRenewal = agreementStatus.split("_")[1];
 			}
 
+			UserContext userContext = Contexts.get(UserContext.class);
+			UserProfile userProfile = userContext.getUserProfile();
+			List<DepartmentPost> deptPost = userContext.getAllPosts();
+			Department dept = userContext.getCurrentDepartment();
+			
+			service.debug("DEPT CONTROLLER", dept);
+			service.debug("DEPT POST CONTROLLER", deptPost);
+
+			
+			FormClassRows.setF_applicant_name(userProfile.getUserName());
+			FormClassRows.setF_applicant_number(userProfile.getUserCd());
+
+			LocalDate today = LocalDate.now();
+			
+			
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+			String formattedDate = today.format(formatter);
+
+			FormClassRows.setF_application_date(formattedDate);
+			if(dept != null) {
+				FormClassRows.setF_applicant_dept_name(dept.getDepartmentName());
+			}else {
+				model.addAttribute("dept_name_err_message", "please set user department");
+			}
+			if(deptPost.size() > 0) {
+				String post = "";
+				for(DepartmentPost item : deptPost) {
+					post += item.getPostName();
+				}
+				if(!post.isEmpty()) {
+					FormClassRows.setF_applicant_pos_name(post);
+				}			
+			}else {
+					model.addAttribute("pos_name_err_message", "please set user position");
+			}
+
+			int esTotalAmount = 0;
+			for(EstSchedulePaymentModel item : FormClassRows.getD_estimated_schedule_payment()) {
+				Integer amount = Integer.parseInt(item.getPayment_amount().replace(",",""));
+				esTotalAmount += amount;
+			}
+
+			model.addAttribute("esTotalAmount", esTotalAmount);
 			model.addAttribute("FormClassRows", FormClassRows);
 			model.addAttribute("agreementStatus", agreementStatus);
 			model.addAttribute("agreementStatusRenewal", agreementStatusRenewal);
 			model.addAttribute("ApplyForm", ApplyForm);
+			Service.debug("APPLY FORM", ApplyForm);
 			return "wf/training_maisaka/general/reapply.jsp";
 			
 		}
@@ -142,7 +186,7 @@ public class ImartController {
 		try {
 			WorkflowService Service = new WorkflowService();
 			ImartForm FormClassRows = new ImartForm();
-			FormClassRows = Service.getAgreementDetailTemp("system_matter_id", ApplyForm.getImwSystemMatterId());
+			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId());
 			
 			//check if agreement_status has "_"
 			String agreementStatus = FormClassRows.getF_agreement_status();
@@ -159,6 +203,7 @@ public class ImartController {
 				esTotalAmount += amount;
 			}
 
+			Service.debug("FormClassRows detail controller", FormClassRows);
 			model.addAttribute("FormClassRows", FormClassRows);
 			model.addAttribute("agreementStatus", agreementStatus);
 			model.addAttribute("agreementStatusRenewal", agreementStatusRenewal);
@@ -174,13 +219,11 @@ public class ImartController {
 
 	@RequestMapping(value = "process")
 	public final String process(final Model model, final ImartForm ApplyForm) throws Exception {
+		
 		try {
 			WorkflowService Service = new WorkflowService();
 			ImartForm FormClassRows = new ImartForm();
-			FormClassRows = Service.getAgreementDetailTemp("system_matter_id", ApplyForm.getImwSystemMatterId());
-			
-			Service.debug("Apply Form process controller", ApplyForm);
-			Service.debug("FormClassRows process controller", FormClassRows);
+			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId());
 			
 			//check if agreement_status has "_"
 			String agreementStatus = FormClassRows.getF_agreement_status();
@@ -189,30 +232,28 @@ public class ImartController {
 				agreementStatusRenewal = agreementStatus.split("_")[1];
 			}
 			
-			
-			UserContext userContext = Contexts.get(UserContext.class);
-//			UserProfile userProfile = userContext.getUserProfile();
-			List<UserCategory> userCategories = userContext.getUserCategoryList();
-			
-			if(userCategories != null) {
-				for(UserCategory item :userCategories) {
-					Service.debug("user categoris controller", item);
-				}
-			}
-			
-			
+			//Service.debug("FormClassRows est sch pay Detail", FormClassRows.getD_estimated_schedule_payment());
 
+			int esTotalAmount = 0;
+			for(EstSchedulePaymentModel item : FormClassRows.getD_estimated_schedule_payment()) {
+				Integer amount = Integer.parseInt(item.getPayment_amount().replace(",",""));
+				esTotalAmount += amount;
+			}
+
+			Service.debug("FormClassRows detail controller", FormClassRows);
 			model.addAttribute("FormClassRows", FormClassRows);
 			model.addAttribute("agreementStatus", agreementStatus);
 			model.addAttribute("agreementStatusRenewal", agreementStatusRenewal);
+			model.addAttribute("esTotalAmount", esTotalAmount);
 			model.addAttribute("ApplyForm", ApplyForm);
 		} catch(Exception e) {
-			System.out.println("Error page detail : " + e);
+			System.out.println("Error page process : " + e);
 			e.printStackTrace();
 		}
 		
 		return "wf/training_maisaka/general/process.jsp";
 	}
+
 
 	/*
 	@RequestMapping(value = "detail")

@@ -27,6 +27,16 @@ public class EstSchedulePaymentRepository {
 		
 		sqlManager.insert(table_name, columnVal);
 	}
+	
+	public void deleteData(String column, String value) throws Exception {
+		SQLManager sqlManager = new SQLManager();
+		ArrayList<Object> parameters = new ArrayList<>();
+		
+		String sql = "delete from " + table_name + " where " + column + " = ?";
+		parameters.add(value);
+		sqlManager.delete(sql, parameters);
+		
+	}
 
 
 	private	ColumnValues setData(EstSchedulePaymentModel varEstSchedulePayData, String condition) {
