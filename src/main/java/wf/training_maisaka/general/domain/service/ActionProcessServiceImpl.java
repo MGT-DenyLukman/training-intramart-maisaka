@@ -21,10 +21,12 @@ import java.util.Set;
 import wf.training_maisaka.general.ActionProcessService;
 
 import wf.training_maisaka.general.domain.repository.HeaderRepository;
+import wf.training_maisaka.general.domain.repository.HeaderInfoRepository;
 import wf.training_maisaka.general.domain.repository.AgreementDetailTempRepository;
 import wf.training_maisaka.general.domain.repository.EstSchedulePaymentRepository;
 
 import wf.training_maisaka.general.domain.model.HeaderModel;
+import wf.training_maisaka.general.domain.model.HeaderInfoModel;
 import wf.training_maisaka.general.domain.model.AgreementDetailModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,9 +46,11 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 		String number = null;
 		try {
 			HeaderRepository headerDB = new HeaderRepository();
+			HeaderInfoRepository headerInfoDB = new HeaderInfoRepository();
 			AgreementDetailTempRepository agreementDetailTempDB = new AgreementDetailTempRepository();
 			
 			HeaderModel entity_Header = getEntity_Header(parameter, userParameter);
+			HeaderInfoModel entity_HeaderInfo = getEntity_HeaderInfo(parameter, userParameter);
 			AgreementDetailModel entity_AgreementDetail = getEntity_AgreementDetail(parameter, userParameter);
 			
 			EstSchedulePaymentRepository estSchedulePayDB = new EstSchedulePaymentRepository();
@@ -54,8 +58,9 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			Collection<EstSchedulePaymentModel> entity_EstSchPayment = getEntity_EstSchedulePayment(parameter, userParameter);
 			
 			headerDB.insertData(entity_Header);
-			agreementDetailTempDB.insertData(entity_AgreementDetail);
+			headerInfoDB.insertData(entity_HeaderInfo);
 			
+			agreementDetailTempDB.insertData(entity_AgreementDetail);
 			
 			for(EstSchedulePaymentModel row : entity_EstSchPayment) {
 				estSchedulePayDB.insertData(row);
@@ -102,6 +107,24 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 		 	result.setUser_data_id(parameter.getUserDataId());
 		 	result.setStatus("1");
 		 	result.setMail_status("0");
+		 	
+		 	return result;
+	 }
+
+	 private HeaderInfoModel getEntity_HeaderInfo(final ActionProcessParameter parameter, final Map<String, Object> userParameter) {
+		 	HeaderInfoModel result = new HeaderInfoModel();
+		 	
+		 	result.setSystem_matter_id(parameter.getSystemMatterId());
+		 	result.setUser_data_id(parameter.getUserDataId());
+		 	
+		 	result.setApplication_number(getEntity_TryCatch_UserParameter(userParameter,"f_application_number"));
+		 	result.setApplication_date(getEntity_TryCatch_UserParameter(userParameter,"f_application_date"));
+
+		 	result.setApplicant_number(getEntity_TryCatch_UserParameter(userParameter,"f_applicant_number"));
+		 	result.setApplicant_name(getEntity_TryCatch_UserParameter(userParameter,"f_applicant_name"));
+
+		 	result.setApplicant_department_name(getEntity_TryCatch_UserParameter(userParameter,"f_applicant_dept_name"));
+		 	result.setApplicant_position_name(getEntity_TryCatch_UserParameter(userParameter,"f_applicant_pos_name"));
 		 	
 		 	return result;
 	 }
