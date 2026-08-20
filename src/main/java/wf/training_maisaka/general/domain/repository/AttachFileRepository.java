@@ -54,11 +54,10 @@ public class AttachFileRepository {
 		ArrayList<Object> parameters = new ArrayList<>();
 		
 		String sql_query = this.select_data_all;
-		if("system_matter_id".equals(column)) {
-			sql_query = this.select_data_by_matter_id;
+		if(!column.isEmpty() || column != null) {
+			sql_query = "select * from " + table_name + " where " + column + " = ?";
 			parameters.add(value);
-		}
-		
+		}		
 		Collection<AttachFileModel> result =  sqlManager.select(AttachFileModel.class, sql_query, parameters);
 		return result;
 		

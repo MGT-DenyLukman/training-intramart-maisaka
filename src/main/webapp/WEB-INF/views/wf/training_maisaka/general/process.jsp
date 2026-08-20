@@ -599,35 +599,17 @@
 			
 </workflow:workflowOpenPage>
 				
-					 <div class="imui-form-container-full">
-						  <header class="imui-chapter-title">
-							<h2>Upload Document by DIC : Agreement, DD, etc</h2>
-						</header>
-
-						<table class="imui-form">
-							<tbody>
-									<tr>
-											<th><label class="imui-required">Upload File</label></th>
-										<td>
-											<imui:fileUpload
-													enableDelete="true"
-													uniqueFileName="true"
-													storeTo="file_attachment/"
-													onSuccess="callbackSuccess"
-													onError="callbackError"
-													onRemove="callbackRemove"
-											/>
-										</td>
-									</tr>
-							</tbody>
-						</table>
-					</div>
 					  <header class="imui-chapter-title">
 						<h2>To see the uploaded document</h2>
 					</header>
 
-					<table id="uploaded_document" class="imui-form tab_header">
-					</table>
+						<table id="uploaded_document" class="imui-form tab_header">
+							<tbody>
+									<c:forEach items="${FormClassRows.d_file_attachment}" var="row">
+										<tr><td><a href="training_maisaka/download/${row.file_real_name}">${row.file_name}</a></td></tr>
+									</c:forEach>
+							</tbody>
+						</table>
 			</div>
 		</imui:tabItem>
 

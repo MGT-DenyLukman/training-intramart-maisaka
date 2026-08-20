@@ -7,14 +7,22 @@ import jp.co.intra_mart.foundation.user_context.model.UserCategory;
 import jp.co.intra_mart.foundation.user_context.model.Department;
 import jp.co.intra_mart.foundation.user_context.model.DepartmentPost;
 
+import jp.co.intra_mart.foundation.service.client.file.PublicStorage;
+
+import java.io.FileNotFoundException;
+import java.net.URLDecoder;
 
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.HashMap;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.servlet.HandlerMapping;
 
 
 //import java.io.FileNotFoundException;
@@ -39,12 +47,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 //import org.springframework.web.servlet.HandlerMapping;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
-//import wf.training_test.general.domain.repository.*;
-//import wf.training_test.general.domain.service.*;
-//import wf.training_test.general.domain.model.*;
+
+import wf.training_maisaka.general.domain.repository.HeaderInfoRepository;
+import wf.training_maisaka.general.domain.repository.AttachFileRepository;
+
 import wf.training_maisaka.general.domain.model.EstSchedulePaymentModel;
 import wf.training_maisaka.general.domain.model.HeaderInfoModel;
-import wf.training_maisaka.general.domain.repository.HeaderInfoRepository;
+import wf.training_maisaka.general.domain.model.AttachFileModel;
+
 import wf.training_maisaka.general.domain.service.WorkflowService;
 
 @Controller("training_maisaka_new")
@@ -202,6 +212,8 @@ public class ImartController {
 				Integer amount = Integer.parseInt(item.getPayment_amount().replace(",",""));
 				esTotalAmount += amount;
 			}
+			
+			// get uploaded files 
 
 			Service.debug("FormClassRows detail controller", FormClassRows);
 			model.addAttribute("FormClassRows", FormClassRows);
@@ -254,6 +266,40 @@ public class ImartController {
 		return "wf/training_maisaka/general/process.jsp";
 	}
 
+	@RequestMapping(value = "download/**")
+	public String download(final Model model, HttpServletRequest request) throws Exception {
+		
+		try {
+			WorkflowService service = new WorkflowService();
+
+		String urlStr = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+		
+		String fileRealName = urlStr.substring(urlStr.lastIndexOf('/') + 1);
+
+		
+		AttachFileRepository attachFileDB = new AttachFileRepository();
+		List<AttachFileModel> rowsFile = new ArrayList<AttachFileModel>(attachFileDB.selectData("file_real_name", fileRealName));
+		
+		
+		service.debug("entity", rowsFile.get(0));
+
+		String fileName = rowsFile.get(0).getFile_name();
+		String fileRealPath = rowsFile.get(0).getFile_path();
+		String fileDecode = URLDecoder.decode(fileRealPath.toString(), "UTF-8");
+		
+		final PublicStorage storage = new PublicStorage(fileDecode);
+		if (!storage.isFile()) {
+			
+			throw new FileNotFoundException("Could not find a file");
+		}
+		
+		model.addAttribute("downloadFileName", fileName);
+		model.addAttribute("storage", storage);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return "AppCommonService.Downloadview";
+	}
 
 	/*
 	@RequestMapping(value = "detail")
@@ -277,32 +323,6 @@ public class ImartController {
 		return "wf/training_test/general/detail.jsp";
 	}
 	
-
-	@RequestMapping(value = "download/**")
-	public String download(final Model model, HttpServletRequest request) throws Exception {
-		
-
-		String urlStr = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-		
-		String fileId = urlStr.substring(urlStr.lastIndexOf('/') + 1);
-
-		
-		AttachmentRepository FileRepository = new AttachmentRepository();
-		List<AttachmentModel> rowsFile = new ArrayList<AttachmentModel>(FileRepository.SelectTempInfo(fileId.toString(), "id"));
-		String fileName = rowsFile.get(0).getFile_name();
-		String fileRealPath = rowsFile.get(0).getFile_path();
-		String fileDecode = URLDecoder.decode(fileRealPath.toString(), "UTF-8");
-		
-		final PublicStorage storage = new PublicStorage(fileDecode);
-		if (!storage.isFile()) {
-			
-			throw new FileNotFoundException("Could not find a file");
-		}
-		
-		model.addAttribute("download_file_name", fileName);
-		model.addAttribute("storage", storage);
-		return "DownloadAttachmentService.Downloadview";
-	}
 
 	@PostMapping("ajaxtest")
 	@ResponseBody

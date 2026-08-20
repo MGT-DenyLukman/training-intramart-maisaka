@@ -1319,8 +1319,13 @@
 						<h2>To see the uploaded document</h2>
 					</header>
 
-					<table id="uploaded_document" class="imui-form tab_header">
-					</table>
+						<table id="uploaded_document" class="imui-form tab_header">
+							<tbody>
+									<c:forEach items="${FormClassRows.d_file_attachment}" var="row">
+										<tr><td><a href="training_maisaka/download/${row.file_real_name}">${row.file_name}</a></td></tr>
+									</c:forEach>
+							</tbody>
+						</table>
 					</div>
 			</div>
 		</imui:tabItem>

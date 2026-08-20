@@ -8,6 +8,7 @@ import java.util.Collection;
 //import wf.training_maisaka.general.domain.model.DetailTableModel;
 //import wf.path_test.general.domain.model.AttachmentModel;
 import wf.training_maisaka.general.domain.model.EstSchedulePaymentModel;
+import wf.training_maisaka.general.domain.model.AttachFileModel;
 
 public class ImartForm extends ImartWorkflowForm {
 	private String f_id;
@@ -49,6 +50,8 @@ public class ImartForm extends ImartWorkflowForm {
 	private String f_book_value;
 	
 	private Collection<EstSchedulePaymentModel> d_estimated_schedule_payment;
+	
+	private Collection<AttachFileModel> d_file_attachment;
 	
 	
 	
@@ -254,6 +257,12 @@ public class ImartForm extends ImartWorkflowForm {
 	}
 	public void setD_estimated_schedule_payment(Collection<EstSchedulePaymentModel> d_estimated_schedule_payment) {
 		this.d_estimated_schedule_payment = d_estimated_schedule_payment;
+	}
+	public Collection<AttachFileModel> getD_file_attachment() {
+		return d_file_attachment;
+	}
+	public void setD_file_attachment(Collection<AttachFileModel> d_file_attachment) {
+		this.d_file_attachment = d_file_attachment;
 	}
 
 

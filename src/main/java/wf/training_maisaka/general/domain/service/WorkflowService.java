@@ -11,10 +11,12 @@ import wf.training_maisaka.general.app.ImartForm;
 import  wf.training_maisaka.general.domain.repository.HeaderInfoRepository;
 import wf.training_maisaka.general.domain.repository.AgreementDetailTempRepository;
 import wf.training_maisaka.general.domain.repository.EstSchedulePaymentRepository;
+import wf.training_maisaka.general.domain.repository.AttachFileRepository;
 
 import  wf.training_maisaka.general.domain.model.HeaderInfoModel;
 import wf.training_maisaka.general.domain.model.EstSchedulePaymentModel;
 import wf.training_maisaka.general.domain.model.AgreementDetailModel;
+import wf.training_maisaka.general.domain.model.AttachFileModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,6 +29,9 @@ public class WorkflowService {
 		HeaderInfoRepository headerInfoDB = new HeaderInfoRepository();
 		AgreementDetailTempRepository agreementDetailTempDB = new AgreementDetailTempRepository();
 		EstSchedulePaymentRepository estSchPayDB = new EstSchedulePaymentRepository();
+		AttachFileRepository attachFileDB = new AttachFileRepository();
+
+
 		Collection<AgreementDetailModel> agreementDetailTempData = agreementDetailTempDB.selectData(column, value);
 		Collection<HeaderInfoModel> headerInfoData = headerInfoDB.selectData(column, value);
 
@@ -77,6 +82,11 @@ public class WorkflowService {
 			Collection<EstSchedulePaymentModel> entityEstSchData = estSchPayDB.selectData(column, value);
 
 			result.setD_estimated_schedule_payment(entityEstSchData);
+
+			// file attachment
+			Collection<AttachFileModel> attachFileData = attachFileDB.selectData(column, value);
+			
+			result.setD_file_attachment(attachFileData);
 
 			
 		}catch(Exception e) {

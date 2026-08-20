@@ -276,7 +276,7 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 					entity.setFile_size(varFileSize.get(i));
 					entity.setFile_type(varFileType.get(i));
 
-					String filePath = "training_maisaka/" + parameter.getSystemMatterId() + "/file_attachment" + entity.getFile_real_name();
+					String filePath = "training_maisaka/" + parameter.getSystemMatterId() + "/file_attachment/" + entity.getFile_real_name();
 					entity.setFile_path(filePath);
 					
 					result.add(entity);
@@ -300,7 +300,7 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 				entity.setFile_size(varFileSize);
 				entity.setFile_type(varFileType);
 
-				String filePath = "training_maisaka/" + parameter.getSystemMatterId() + "/" + entity.getFile_real_name();
+				String filePath = "training_maisaka/" + parameter.getSystemMatterId() + "/file_attachment/" + entity.getFile_real_name();
 				entity.setFile_path(filePath);
 				
 				result.add(entity);
