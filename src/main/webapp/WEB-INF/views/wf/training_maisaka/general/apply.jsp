@@ -244,9 +244,10 @@
 			var fileExtension = receiveFileName.split('.').pop().toLowerCase();
 			
 			$(".file_attachment").prepend("<div class='" + receivePhysicalFileName + "'>"
-				+ "<input type='hidden' id='f_upload_file_id' name='f_upload_file_id' class='f_upload_file_id'>"
+				+ "<input type='hidden' value='0' id='f_upload_file_id' name='f_upload_file_id' class='f_upload_file_id'>"
 				+ "<input type='hidden' value='" + receiveFileName + "' id='f_upload_file_name' name='f_upload_file_name'>"
 				+ "<input type='hidden' value='" + receivePhysicalFileName + "' id='f_upload_file_real_name' name='f_upload_file_real_name'>"
+				+ "<input type='hidden' value='" + fileSize + "' id='f_upload_file_size' name='f_upload_file_size'>"
 				+ "<input type='hidden' value='" + fileExtension + "' id='f_upload_file_type' name='f_upload_file_type'>"
 				+ "</div>");
 			

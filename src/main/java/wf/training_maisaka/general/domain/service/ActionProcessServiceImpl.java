@@ -24,10 +24,12 @@ import wf.training_maisaka.general.domain.repository.HeaderRepository;
 import wf.training_maisaka.general.domain.repository.HeaderInfoRepository;
 import wf.training_maisaka.general.domain.repository.AgreementDetailTempRepository;
 import wf.training_maisaka.general.domain.repository.EstSchedulePaymentRepository;
+import wf.training_maisaka.general.domain.repository.AttachFileRepository;
 
 import wf.training_maisaka.general.domain.model.HeaderModel;
 import wf.training_maisaka.general.domain.model.HeaderInfoModel;
 import wf.training_maisaka.general.domain.model.AgreementDetailModel;
+import wf.training_maisaka.general.domain.model.AttachFileModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.SimpleDateFormat;
@@ -43,18 +45,26 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 	@Override
 	public final String apply(final ActionProcessParameter parameter, final Map<String, Object> userParameter) throws Exception{
 		System.out.println("MASUK APPLY");
+		
+		WorkflowService service = new WorkflowService();
+		service.debug("userParameter impl actionprocess", userParameter);
+		
+
 		String number = null;
 		try {
 			HeaderRepository headerDB = new HeaderRepository();
 			HeaderInfoRepository headerInfoDB = new HeaderInfoRepository();
 			AgreementDetailTempRepository agreementDetailTempDB = new AgreementDetailTempRepository();
 			EstSchedulePaymentRepository estSchedulePayDB = new EstSchedulePaymentRepository();
+			AttachFileRepository attachFileDB = new AttachFileRepository();
 			
 			HeaderModel entity_Header = getEntity_Header(parameter, userParameter);
 			HeaderInfoModel entity_HeaderInfo = getEntity_HeaderInfo(parameter, userParameter);
 			AgreementDetailModel entity_AgreementDetail = getEntity_AgreementDetail(parameter, userParameter);
 			
 			Collection<EstSchedulePaymentModel> entity_EstSchPayment = getEntity_EstSchedulePayment(parameter, userParameter);
+			
+			List<AttachFileModel> entity_Files = getEntity_Files(parameter, userParameter);
 			
 			headerDB.insertData(entity_Header);
 			headerInfoDB.insertData(entity_HeaderInfo);
@@ -63,6 +73,10 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			
 			for(EstSchedulePaymentModel row : entity_EstSchPayment) {
 				estSchedulePayDB.insertData(row);
+			}
+			
+			for(AttachFileModel row : entity_Files) {
+				attachFileDB.insertData(row);
 			}
 
 			
@@ -233,4 +247,71 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			 return "";
 		 }
 	 }
+	 
+	 private List<AttachFileModel> getEntity_Files(final ActionProcessParameter parameter, final Map<String, Object> userParameter) throws Exception {
+		 List<AttachFileModel> result = new ArrayList<>();
+		WorkflowService service = new WorkflowService();
+		 
+		 try {
+			 if(userParameter == null) {return result;}
+			Object varFileId = userParameter.get("f_upload_file_id");
+			
+			if(varFileId == null) {return result;}
+
+			if(varFileId instanceof List) {
+				List<String> varFileName = (List<String>) userParameter.get("f_upload_file_name");
+				List<String> varFileRealName = (List<String>) userParameter.get("f_upload_file_real_name");
+				List<String> varFileSize = (List<String>) userParameter.get("f_upload_file_size");
+				List<String> varFileType = (List<String>) userParameter.get("f_upload_file_type");
+				
+				for(int i=0; i<varFileName.size(); i++) {
+					AttachFileModel entity = new AttachFileModel();
+					
+					entity.setSystem_matter_id(parameter.getSystemMatterId());
+					entity.setUser_data_id(parameter.getUserDataId());
+					
+					entity.setFile_name(varFileName.get(i));
+					entity.setFile_real_name(varFileRealName.get(i));
+					entity.setFile_size(varFileSize.get(i));
+					entity.setFile_type(varFileType.get(i));
+
+					String filePath = "training_maisaka/" + parameter.getSystemMatterId() + "/" + entity.getFile_real_name();
+					entity.setFile_path(filePath);
+					
+					result.add(entity);
+					
+				}
+				
+
+			}else {
+				String varFileName = (String) userParameter.get("f_upload_file_name");
+				String varFileRealName = (String) userParameter.get("f_upload_file_real_name");
+				String varFileSize = (String) userParameter.get("f_upload_file_size");
+				String varFileType = (String) userParameter.get("f_upload_file_type");
+
+				AttachFileModel entity = new AttachFileModel();
+
+				entity.setSystem_matter_id(parameter.getSystemMatterId());
+				entity.setUser_data_id(parameter.getUserDataId());
+				
+				entity.setFile_name(varFileName);
+				entity.setFile_real_name(varFileRealName);
+				entity.setFile_size(varFileSize);
+				entity.setFile_type(varFileType);
+
+				String filePath = "training_maisaka/" + parameter.getSystemMatterId() + "/" + entity.getFile_real_name();
+				entity.setFile_path(filePath);
+				
+				result.add(entity);
+
+			}
+			 
+		 }catch(Exception e) {
+			 e.printStackTrace();
+		 }
+
+		 
+		 return result;
+	 }
+	 
  }
