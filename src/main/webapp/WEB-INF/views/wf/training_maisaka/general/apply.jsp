@@ -98,6 +98,11 @@
 		label.error:empty {
 		    display: none !important;
 		}
+		
+		#upload_file {
+			position: absolute;
+			z-index: -1;
+		}
     	
     </style>
     
@@ -209,7 +214,22 @@
 
 	<script type="text/javascript">
 		//function for attachment
+		function triggerRequiredCheck() {
+			var countUploadedFiles = $('.f_upload_file_id').length
+
+			console.log("COUNT UPLOADED FILES", countUploadedFiles);
+			if(countUploadedFiles > 0){
+				$('#upload_file').val(countUploadedFiles);
+			}else{
+				$('#upload_file').val("");
+			}
+			
+			workflowValidate();
+			
+		}
+
 		function callbackSuccess(e, data) {
+			console.log("UPLOADED FILE", data)
 			var file = data.files[0];
 			var fileName = file.name;
 			var fileSize = file.size;
@@ -224,23 +244,31 @@
 			var fileExtension = receiveFileName.split('.').pop().toLowerCase();
 			
 			$(".file_attachment").prepend("<div class='" + receivePhysicalFileName + "'>"
-				+ "<input type='hidden' id='f_upload_file_id' name='f_upload_file_id'>"
+				+ "<input type='hidden' id='f_upload_file_id' name='f_upload_file_id' class='f_upload_file_id'>"
 				+ "<input type='hidden' value='" + receiveFileName + "' id='f_upload_file_name' name='f_upload_file_name'>"
 				+ "<input type='hidden' value='" + receivePhysicalFileName + "' id='f_upload_file_real_name' name='f_upload_file_real_name'>"
 				+ "<input type='hidden' value='" + fileExtension + "' id='f_upload_file_type' name='f_upload_file_type'>"
 				+ "</div>");
+			
+				triggerRequiredCheck();
+			
 		}
 		function callbackRemove(e, data) {
+			console.log("REMOVED FILE", data)
 			var file = data.response[0];
 			var fileName = file.name;
 			$("." + fileName).remove();
+
+				triggerRequiredCheck();
 		}
 		function callbackError(e, data) {
+			console.log("ERROR FILE", data)
 			var file = data.files[0];
 			var fileName = file.name;
 			var fileSize = file.size;
 			var fileType = file.type;
 			
+			triggerRequiredCheck();
 		}
 	</script>
 
@@ -525,7 +553,7 @@
 
 		
 		function workflowValidate() {
-
+				$('.error_message').empty();
 				
 				rules.f_effective_from = {
 						...rules.f_effective_from,
@@ -560,6 +588,13 @@
 						id: false,
 						validDate: true,
 				}
+				
+				rules.upload_file = {
+						required: true,
+				}
+				
+				messages.upload_file = {required:"upload file required"};
+				
 
 				var validator = $('#workflowOpenPageForm').validate({
 					rules: rules,
@@ -567,7 +602,12 @@
 					errorPlacement: function(error, element) {
 						var $element = $(element);
 						var error_message = error.get(0);
-						$element.parents('td').find('.error_message').html(error_message);
+						if($element.attr('id') == 'upload_file'){
+							console.log('LKDJFLKSjdfl');
+							$('#section-upload').find('.error_message').html(error_message);
+						}else{
+							$element.parents('td').find('.error_message').html(error_message);
+						}
 					},
 					highlight: function(element, errorClass, validClass) {
 						var $element = $(element);
@@ -585,11 +625,13 @@
 				var message_startDateLessThan = "開始日は終了日より後に設定できません。 ";
 				var message_endDateGreaterThan = "終了日は開始日より前に設定できません。 ";
 				var message_validDate = "有効な日付を入力してください。(yyyy/MM/dd)";
+				var message_ensureUploadedFileExist = "file is required!";
 				
 				
 				$.validator.messages.startDateLessThan = message_startDateLessThan;
 				$.validator.messages.endDateGreaterThan = message_endDateGreaterThan;
 				$.validator.messages.validDate = message_validDate;
+				$.validator.messages.ensureUploadedFileExist = message_ensureUploadedFileExist;
 				
 				$.validator.addMethod("startDateLessThan", function(value, element, params) {
 					if(this.optional(element)) {
@@ -636,7 +678,7 @@
 
 					return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day
 				});
-				
+
 				console.log(validator)
 				
 				return validator.form();
@@ -649,6 +691,7 @@
 
 			$('#openPage').click(function(){
 				imuiResetForm("#workflowOpenPageForm");
+				
 
 				if(workflowValidate()){
                     workflowOpenPage('${f:h(ApplyForm.imwPageType)}');
@@ -1238,8 +1281,11 @@
 					
 					
 
+					-->
+					<!-- END COMMENTED -->
 					
 						<div class="file_attachment">
+							<input type="text" id="upload_file" name="upload_file" value="">
 							<c:forEach items="${FormClassRows.d_list_attachment}" var="attachment">
 								<div class="${attachment.file_real_name}">
 									<input
@@ -1270,8 +1316,6 @@
 							</c:forEach>
 						</div>	
 						
-					-->
-					<!-- END COMMENTED -->
 					
 
 
@@ -1296,6 +1340,7 @@
 													onError="callbackError"
 													onRemove="callbackRemove"
 											/>
+											<div class="error_message"></div>
 										</td>
 									</tr>
 							</tbody>
