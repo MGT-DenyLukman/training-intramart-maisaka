@@ -3,6 +3,9 @@ package wf.training_maisaka.general.domain.service;
 import java.util.Collection;
 import java.util.ArrayList;
 
+import jp.co.intra_mart.foundation.service.client.file.PublicStorage;
+import jp.co.intra_mart.foundation.service.client.file.SessionScopeStorage;
+
 import wf.training_maisaka.general.app.ImartForm;
 
 import  wf.training_maisaka.general.domain.repository.HeaderInfoRepository;
@@ -81,6 +84,30 @@ public class WorkflowService {
 		}
 		
 		return  result;
+	}
+	
+	public final Boolean AttachmentFileTransfer(String system_matter_id, String file_real_name) throws Exception{
+		PublicStorage createDir = new PublicStorage("training_maisaka/" + system_matter_id + "/file_attachment");
+		PublicStorage createFile = new PublicStorage("training_maisaka/" + system_matter_id + "/file_attachment/" + file_real_name);
+		
+		SessionScopeStorage getOriginalFile = new SessionScopeStorage("file_attachment/" + file_real_name);
+
+		try {
+			createDir.makeDirectories();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		try {
+			if(!createFile.isFile()) {
+				createFile.save(org.apache.commons.io.IOUtils.toByteArray(getOriginalFile.open()));
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		return true;
 	}
 	
 	public void debug(String title, Object obj) {

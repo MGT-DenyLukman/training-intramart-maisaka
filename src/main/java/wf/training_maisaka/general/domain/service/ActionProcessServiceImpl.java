@@ -77,6 +77,7 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			
 			for(AttachFileModel row : entity_Files) {
 				attachFileDB.insertData(row);
+				service.AttachmentFileTransfer(row.getSystem_matter_id(), row.getFile_real_name());
 			}
 
 			
@@ -275,7 +276,7 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 					entity.setFile_size(varFileSize.get(i));
 					entity.setFile_type(varFileType.get(i));
 
-					String filePath = "training_maisaka/" + parameter.getSystemMatterId() + "/" + entity.getFile_real_name();
+					String filePath = "training_maisaka/" + parameter.getSystemMatterId() + "/file_attachment" + entity.getFile_real_name();
 					entity.setFile_path(filePath);
 					
 					result.add(entity);
