@@ -41,9 +41,10 @@ import jp.co.intra_mart.foundation.workflow.code.PageType;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-//import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.PathVariable;
 //import org.springframework.web.servlet.HandlerMapping;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
@@ -56,6 +57,7 @@ import wf.training_maisaka.general.domain.model.HeaderInfoModel;
 import wf.training_maisaka.general.domain.model.AttachFileModel;
 
 import wf.training_maisaka.general.domain.service.WorkflowService;
+import wf.training_maisaka.general.domain.service.GeneratePDFService;
 
 @Controller("training_maisaka_new")
 @RequestMapping("training_maisaka/")
@@ -300,6 +302,55 @@ public class ImartController {
 			e.printStackTrace();
 		}
 		return "AppCommonService.Downloadview";
+	}
+	
+	@RequestMapping(value = "downloadpdf/**")
+	public String downloadPDF(final Model  model, HttpServletRequest request) throws Exception {
+		try {
+		String urlStr = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
+		String systemMatterId = urlStr.substring(urlStr.lastIndexOf('/') + 1);
+		
+		HeaderInfoRepository headerInfoDB = new HeaderInfoRepository();
+		HeaderInfoModel entityHeaderInfo = headerInfoDB.selectData("system_matter_id", systemMatterId).iterator().next();
+		
+		String fileName  = entityHeaderInfo.getApplication_number() + ".pdf";
+
+		String file_decode = URLDecoder.decode("/generated_pdf/" + systemMatterId + ".pdf", "UTF-8");
+		final PublicStorage storage = new PublicStorage(file_decode);
+		
+		if(!storage.isFile()) {
+			throw new FileNotFoundException("Could not find a file");
+		}
+		
+		model.addAttribute("downloadFileName", fileName);
+		model.addAttribute("storage", storage);
+				
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			return "error when download generated pdf";
+		}
+		return "AppCommonService.Downloadview";
+	}
+	
+	@PostMapping("generatepdf")
+	@ResponseBody
+	public String generatePDF(final Model model, final HttpServletRequest request) throws Exception {
+		try {
+			String matterId =request.getParameter("system_matter_id");
+			
+			GeneratePDFService generatePDFService = new GeneratePDFService();
+			
+			generatePDFService.createPDF(matterId);
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			
+			return "error: " + e.getMessage();
+		}
+		
+		return "success";
+		
 	}
 
 	/*

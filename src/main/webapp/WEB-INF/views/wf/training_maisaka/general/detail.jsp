@@ -618,6 +618,8 @@
 		<input type="button" value='Confirm' id="openPage" name="openPage" class="imui-large-button"
 			escapeXml="true" escapeJs="false" />
 	</imart:decision>
+		<input type="button" value='PDF' id="generatePDF" name="generatePDF" class="imui-large-button"
+			escapeXml="true" escapeJs="false" />
 </div>
 
 <!-- 戻る用フォーム -->
@@ -656,6 +658,25 @@
     	$(function(){
     		$('#openPage').click(function(){
     			workflowOpenPage('${f:h(ApplyForm.imwPageType)}');
+    		})
+    		
+    		$("#generatePDF").click(function() {
+    			console.log("generated PDF button clicked");	
+    			
+    			$.ajax({
+    				type: "POST",
+    				url: "training_maisaka/generatepdf",
+    				data: {
+    					system_matter_id: '${f:h(ApplyForm.imwSystemMatterId)}',
+    				},
+    				success: function(response) {
+    					console.log("success response: ", response);
+    					window.location.href = "/imart/training_maisaka/downloadpdf/${f:h(ApplyForm.imwSystemMatterId)}";
+    				},
+    				error: function(xhr, status, e) {
+    					console.log("AJAX ERROR : ", e);
+    				}
+    			})
     		})
     	})
 	</script>
