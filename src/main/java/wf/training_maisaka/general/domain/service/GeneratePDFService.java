@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 
 import java.net.URLDecoder;
 import java.util.Collection;
+import java.text.NumberFormat;
 
 import org.apache.commons.io.IOUtils;
 
@@ -73,11 +74,20 @@ public class GeneratePDFService {
 					+ ""
 					+ "				table th {"
 					+ "						text-align: left;"
+					+ "						background-color: #ddd;"
 					+ "				}"
 					+ ""
 					+ "				table td,"
 					+ "				table th {"
 					+ "						border: 1px solid black;"
+					+ "						pading: 4px;"
+					+ "				}"
+					+ ""
+					+ ""
+					+ ""
+					+ ""
+					+ "				table#agreement_detail td {"
+					+ "						width: 600px;"
 					+ "				}"
 					+ "		</style>"
 					+ "</head>"
@@ -85,7 +95,10 @@ public class GeneratePDFService {
 					+ "<body>"
 					+ "		<h1 class='title'>Purchase Agreement</h1>"
 					+ ""
-					+ "		<h4>Applicant Information</h4>"
+				  +"<header class='imui-chapter-title'>"
+					+"<h2>Application Information</h2>"
+				+"</header>"
+					+ ""
 					+ "		<table id='applicant_information' class='imui-form tab_header'>"
 						+"		<tbody>"
 								+"		<tr>"
@@ -116,153 +129,109 @@ public class GeneratePDFService {
 				+"<table id='agreement_detail' class='imui-form tab_header'>"
 					+"<tbody>"
 						+"<tr>"
-						  +"<th><label class='imui-required'>Counter Party (vendor name, etc)</label></th>"
-						  +"<td><input name='f_vendor' type='text' placeholder='...' value='"+entityAgreementDetail.getCounter_party()+"' disabled></td>"
+						  +"<th colspan='2'><label class='imui-required'>Counter Party (vendor name, etc)</label></th>"
+						  +"<td>"+entityAgreementDetail.getCounter_party()+"</td>"
 						+"</tr>"
 
 						+"<tr>"
-						  +"<th><label class='imui-required'>Currency</label></th>"
-						  +"<td>"
-						  	+"<select name='f_currency' disabled>"
-						  		+"<option value='IDR'>IDR</option>"
-						  	+"</select>"
-						  +"</td>"
+						  +"<th colspan='2'><label class='imui-required'>Currency</label></th>"
+						  +"<td>IDR</td>"
 						+"</tr>"
 
 						+"<tr>"
-						  +"<th><label class='imui-required'>Total Amount (Without Tax)</label></th>"
-						  +"<td><input name='f_total_amount' type='text' placeholder='100,000,000.00' value='"+entityAgreementDetail.getTotal_amount_no_tax()+"' disabled></td>"
+						  +"<th colspan='2'><label class='imui-required'>Total Amount (Without Tax)</label></th>"
+						  +"<td>"+entityAgreementDetail.getTotal_amount_no_tax()+"</td>"
+						+"</tr>"
+						+"<tr>"
+						  +"<th colspan='2'><label class='imui-required'>Agreement Status</label></th>"
+						  +"<td>";
+
+						if(entityAgreementDetail.getAgreement_status().equals("1")) {
+							html+="One Time";
+						}else if(entityAgreementDetail.getAgreement_status().equals("2_a")) {
+							html+="Amendment/Extension/Renewal (More than 1 Year)";
+						}else if(entityAgreementDetail.getAgreement_status().equals("2_b")) {
+							html+="Amendment/Extension/Renewal (Up to 1 Year)";
+						}else if(entityAgreementDetail.getAgreement_status().equals("3")) {
+							html+="Umbrella Agreement";
+						}
+			
+						  html+="</td>"
 						+"</tr>"
 
 						+"<tr>"
-						  +"<th><label class='imui-required'>Agreement Status</label></th>"
-						  +"<td>"
-						  		+"<input type='radio' id='one_time' name='f_agreement_status' value='1'"
-						  			+"${FormClassRows.f_agreement_status == 1 ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='one_time'>One Time/New</label>"
-						  		+"<br>"
-						  		+"<input type='radio' id='extension' name='f_agreement_status' value='2' "
-									  +"${FormClassRows.f_agreement_status == '2_a' || FormClassRows.f_agreement_status == '2_b' ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='extension'>Amendment/Extension/Renewal</label>"
-						  		+"<br>"
-						  		+"<div id='extension-childs' style='padding-left: 2em'>"
-									  +"<p>Total Duration from first cooperation until now</p>"
-									  +"<input type='radio' id='gt_1' name='f_renewal' value='a'"
-									  +"${agreementStatusRenewal == 'a' ? 'checked' : '' }"
-						  			+"disabled"
-									  +"/>"
-									  +"<label for='gt_1'>More than 1 year</label>"
-									  +"<input type='radio' id='lte_1' name='f_renewal' value='b'"
-									  +"${agreementStatusRenewal == 'b' ? 'checked' : '' }"
-						  			+"disabled"
-									  +"/>"
-									  +"<label for='lte_1'>up to 1 year</label>"
-						  		+"</div>"
-						  		+"<input type='radio' id='umbrella' name='f_agreement_status' value='3'"
-						  			+"${FormClassRows.f_agreement_status == 3 ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='umbrella'>Umbrella Agreement</label>"
-						  +"</td>"
+							+"<th colspan='2'><label class='imui-required'>Include auto extension condition</label></th>"
+							+"<td>";
+							if(entityAgreementDetail.getIs_auto_extension().equals("1")) {
+								html+="Yes";
+							}else if(entityAgreementDetail.getIs_auto_extension().equals("0")) {
+								html+="No";
+							}
+						  
+							html+="</td>"
 						+"</tr>"
 
 						+"<tr>"
-							+"<th><label class='imui-required'>Include auto extension condition</label></th>"
-							+"<td>"
-						  		+"<input type='radio' id='auto_extension_y' name='f_auto_extension' value='1' "
-						  			+"${FormClassRows.f_is_auto_extension == 1 ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='auto_extension_y'>Yes</label>"
-						  		+"<br>"
-						  		+"<input type='radio' id='auto_extension_n' name='f_auto_extension' value='0'"
-						  			+"${FormClassRows.f_is_auto_extension == 0 ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='auto_extension_n'>No</label>"
-							+"</td>"
+							+"<th colspan='2'><label class='imui-required'>Purchase Order Required</label></th>"
+							+"<td>";
+							if(entityAgreementDetail.getPurchase_order_req().equals("1")) {
+								html+="Yes";
+							}else if(entityAgreementDetail.getPurchase_order_req().equals("0")) {
+								html+="No";
+							}
+							html+="</td>"
 						+"</tr>"
 
 						+"<tr>"
-							+"<th><label class='imui-required'>Purchase Order Required</label></th>"
-							+"<td>"
-						  		+"<input type='radio' id='purchase_order_req_y' name='f_purchase_order_req' value='1' "
-						  			+"${FormClassRows.f_purchase_order_req == 1 ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='purchase_order_req_y'>Yes</label>"
-						  		+"<br>"
-						  		+"<input type='radio' id='purchase_order_req_n' name='f_purchase_order_req' value='0'"
-						  			+"${FormClassRows.f_purchase_order_req == 0 ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='purchase_order_req_n'>No</label>"
-							+"</td>"
-						+"</tr>"
-
-						+"<tr>"
-						  +"<th><label class='imui-required'>Title described in Agreement</label></th>"
-						  +"<td><input name='f_title' type='text' placeholder='...' value='"+entityAgreementDetail.getTitle_in_agreement()+"' disabled></td>"
+						  +"<th colspan='2'><label class='imui-required'>Title described in Agreement</label></th>"
+						  +"<td>"+entityAgreementDetail.getTitle_in_agreement()+"</td>"
 						+"</tr>"
 
 						+"<tr class='doublerow'>"
 						  +"<th rowspan='2'><label class='imui-required'>Effective Date</label></th>"
 						  +"<th><label class='imui-required'>From</label></th>"
 						  +"<td>"
-						  +"<input id='f_effective_from' name='f_effective_from' type='text' value='"+entityAgreementDetail.getEffective_date_from()+"' disabled>"
+						  +entityAgreementDetail.getEffective_date_from()
 							+"<im:calendar floatable='true' altField='#f_effective_from' disabled/>"
 						  +"</td>"
 						+"</tr>"
 						+"<tr class='doublerow'>"
 						  +"<th><label class='imui-required'>To</label></th>"
 						  +"<td>"
-							  +"<input id='f_effective_to'  name='f_effective_to' type='text'  value='${FormClassRows.f_effective_date_to }' disabled>"
-							+"<im:calendar floatable='true' altField='#f_effective_to' disabled/>"
+						  +entityAgreementDetail.getEffective_date_to()
 						  +"</td>"
 						+"</tr>"
 
 						+"<tr>"
-							+"<th><label class='imui-required'>Related / Non Related Company</label></th>"
-							+"<td>"
-						  		+"<input type='radio' id='related_parties_y' name='f_related_company' value='1'"
-						  			+"${FormClassRows.f_is_related_comp == 1 ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='related_parties_y'>Related Parties [Shareholders (KY, MFTBC, MC, MCAH, Daimler), Subsidiary (i.e. KRM, MKM, BAS, BBD, BMC, etc.), Affiliates (i.e. DSF, BSI, MMKSI, MMKI, etc.)]</label>"
-						  		+"<br>"
-						  		+"<input type='radio' id='related_parties_n' name='f_related_company' value='0'"
-						  			+"${FormClassRows.f_is_related_comp == 0 ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='related_parties_n'>Non Related Parties</label>"
-						  		+"<br>"
-						  		+"<p class='bg-warning'><i>Consult with Legal. SHR may be required</i></p>"
-							+"</td>"
+							+"<th colspan='2'><label class='imui-required'>Related / Non Related Company</label></th>"
+							+"<td>";
+							if(entityAgreementDetail.getPurchase_order_req().equals("1")) {
+								html+="<label for='related_parties_y'>Related Parties [Shareholders (KY, MFTBC, MC, MCAH, Daimler), Subsidiary (i.e. KRM, MKM, BAS, BBD, BMC, etc.), Affiliates (i.e. DSF, BSI, MMKSI, MMKI, etc.)]</label>";
+							}else if(entityAgreementDetail.getPurchase_order_req().equals("0")) {
+								html+="<label for='related_parties_n'>Non Related Parties</label>";
+							}
+							html+="</td>"
 						+"</tr>"
 
 						+"<tr class='doublerow'>"
 						  +"<th rowspan='2'><label class='imui-required'>Estimated Delivery Schedule</label></th>"
 						  +"<th><label class='imui-required'>From</label></th>"
 						  +"<td>"
-						  +"<input id='f_estimated_delivery_from'  name='f_estimated_delivery_from' type='text' value='${FormClassRows.f_delivery_date_from}' disabled>"
-							+"<im:calendar floatable='true' altField='#f_estimated_delivery_from' disabled/>"
+						  +entityAgreementDetail.getDelivery_date_from()
 						  +"</td>"
 						+"</tr>"
 						+"<tr class='doublerow'>"
 						  +"<th><label class='imui-required'>To</label></th>"
 						  +"<td>"
-								  +"<input id='f_estimated_delivery_to'  name='f_estimated_delivery_to' type='text' value='${FormClassRows.f_delivery_date_to}' disabled>"
-								+"<im:calendar floatable='true' altField='#f_estimated_delivery_to'  disabled/> "
+						  +entityAgreementDetail.getDelivery_date_to()
 						  +"</td>"
 						+"</tr>"
 						
 						+"<tr>"
-						  +"<th><label>Agreement Summary (main points only) (In case of contract in foreign currency need to describe exchange rate)</label></th>"
-						  +"<td><textarea id='agreement_summary' name='f_agreement_summary' disabled>${FormClassRows.f_agreement_summary }</textarea></td>"
+						  +"<th colspan='2'><label>Agreement Summary (main points only) (In case of contract in foreign currency need to describe exchange rate)</label></th>"
+						  +"<td>"
+						  +entityAgreementDetail.getAgreement_summary()
+						  +"</td>"
 						+"</tr>"
 							
 					+"</tbody>"
@@ -276,40 +245,35 @@ public class GeneratePDFService {
 					+"<tbody>"
 						+"<tr>"
 						  +"<th><label class='imui-required'>Purchase Category</label></th>"
-						  +"<td>"
-						  		+"<input type='radio' id='tangible_asset' name='f_purchase_category' value='1'"
-						  			+"${FormClassRows.f_purchase_category == 1 ? 'checked' : '' }"
-						  			+"disabled"
-						  		 +"/>"
-						  		+"<label for='tangible_asset'>Tangible Asset</label>"
+						  +"<td>";
+							if(entityAgreementDetail.getPurchase_category().equals("1")) {
+						  		html+="<label for='tangible_asset'>Tangible Asset</label>";
+							}else if(entityAgreementDetail.getPurchase_category().equals("0")) {
+						  		html+="<label for='intangible_asset'>Intangible Asset</label>";
+							}else if(entityAgreementDetail.getPurchase_category().equals("9")) {
+						  		html+="<label for='non_asset'>Non-Asset</label>";
+							}
+						  html+="</td>";
+						  
+						  if(!entityAgreementDetail.getPurchase_category().equals("9")) {
+								html+="</tr>"
+								+"<tr class='depreciation_required_asset'>"
+								  +"<th><label class='imui-required'>Starting Usage Date (Required if Asset)</label></th>"
+								  +"<td>"
+								  +entityAgreementDetail.getStarting_usage_date()
+								  +"</td>"
+								+"</tr>"
+								+"<tr class='depreciation_required_asset'>"
+								  +"<th><label class='imui-required'>Deprec Amount/Month (Required if Asset)</label></th>"
+								  +"<td>"
+								  +entityAgreementDetail.getDeprec_amount_per_month()
+								  +"</td>"
+								+"</tr>";
+						  }
+					html+="</tbody>"
+					+"</table>";
 
-						  		+"<input type='radio' id='intangible_asset' name='f_purchase_category' value='0'"
-						  			+"${FormClassRows.f_purchase_category == 0 ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='intangible_asset'>Intangible Asset</label>"
-
-						  		+"<input type='radio' id='non_asset' name='f_purchase_category' value='9'"
-						  			+"${FormClassRows.f_purchase_category == 9 ? 'checked' : '' }"
-						  			+"disabled"
-						  		+"/>"
-						  		+"<label for='non_asset'>Non-Asset</label>"
-						  +"</td>"
-						+"</tr>"
-						+"<tr class='depreciation_required_asset'>"
-						  +"<th><label class='imui-required'>Starting Usage Date (Required if Asset)</label></th>"
-						  +"<td>"
-								  +"<input id='f_start_usage_date'  name='f_start_usage_date' type='text' value='${FormClassRows.f_starting_usage_date }'>"
-								+"<im:calendar floatable='true' altField='#f_start_usage_date'  disabled/>"
-						  +"</td>"
-						+"</tr>"
-						+"<tr class='depreciation_required_asset'>"
-						  +"<th><label class='imui-required'>Deprec Amount/Month (Required if Asset)</label></th>"
-						  +"<td><input name='f_deprec_amount_per_month' type='text' placeholder='...' value='${FormClassRows.f_deprec_amount_per_month }' disabled></td>"
-						+"</tr>"
-					+"</tbody>"
-					+"</table>"
-
+					/*
 					  +"<header class='imui-chapter-title'>"
 						+"<h2>PL Impact</h2>"
 					+"</header>"
@@ -348,10 +312,11 @@ public class GeneratePDFService {
 									+"<td><input type='text' name='f_book_value'/></td>"
 							+"</tr>"
 						+"</tbody>"
-					+"</table>"
+					+"</table>";
+					 */
 					
 					
-					  +"<header class='imui-chapter-title'>"
+					  html+="<header class='imui-chapter-title'>"
 						+"<h2>Estimated Schedule (Payment Conditions)</h2>"
 					+"</header>"
 
@@ -363,21 +328,26 @@ public class GeneratePDFService {
 							+"<tr>"
 									+"<th><label class='imui-required'>Amount</label></th>"
 									+"<th><label class='imui-required'>Date</label></th>"
-							+"</tr>"
-							+"<c:forEach items='${FormClassRows. d_estimated_schedule_payment}' var='row'>"
-								+"<tr>"
-										+"<td><input type='text' name='f_es_amount_${row.id }' value='${row.payment_amount }' disabled/></td>"
+							+"</tr>";
+							Integer totalAmount = 0;
+							for(EstSchedulePaymentModel row : entityEstSchedulePay){
+								totalAmount += Integer.parseInt(row.getPayment_amount().replaceAll(",", ""));
+								html+="<tr>"
 										+"<td>"
-											+"<input type='text' name='f_es_date_${row.id}'  id='f_es_date_${row.id}' value='${fn:replace(row.payment_date, '-', '/')}'  disabled/>"
-										+"<im:calendar floatable='true' altField='#f_es_date_${row.id}' disabled/>"
+										+row.getPayment_amount()
 										+"</td>"
-								+"</tr>"
-							+"</c:forEach>"
-							+"<tr>"
+										+"<td>"
+										+row.getPayment_date()
+										+"</td>"
+								+"</tr>";
+							}
+							html+="<tr>"
 									+"<th><label class='imui-required'>Total Amount</label></th>"
 							+"</tr>"
 							+"<tr>"
-									+"<td><input type='text'  name='f_es_total_amount' value='${esTotalAmount }' disabled/></td>"
+									+"<td>"
+									+String.format("%,d",totalAmount)
+									+"</td>"
 							+"</tr>"
 						+"</tbody>"
 					+"</table>"
