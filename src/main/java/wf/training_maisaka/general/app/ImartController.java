@@ -190,11 +190,12 @@ public class ImartController {
 		}
 	}
 
-	@RequestMapping(value = "detail")
+	@RequestMapping({"detail", "confirm"})
 	public final String detail(final Model model, final ImartForm ApplyForm) throws Exception {
 		
 		try {
 			WorkflowService Service = new WorkflowService();
+			Service.debug("ApplyForm detail / confirm controller", ApplyForm);
 			ImartForm FormClassRows = new ImartForm();
 			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId());
 			

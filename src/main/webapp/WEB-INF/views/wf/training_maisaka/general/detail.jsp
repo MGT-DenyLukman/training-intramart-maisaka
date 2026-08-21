@@ -614,15 +614,10 @@
 
 <!-- アクションボタン（Apply/Re-ApplyはpageTypeで分岐） -->
 <div class="imui-operation-parts">
-	<imart:decision case="0" value="${f:h(ApplyForm.imwPageType)}">	
-		<input type="button" value='Apply' id="openPage" name="openPage" class="imui-large-button"
+	<imart:decision case="5" value="${f:h(ApplyForm.imwPageType)}">	
+		<input type="button" value='Confirm' id="openPage" name="openPage" class="imui-large-button"
 			escapeXml="true" escapeJs="false" />
 	</imart:decision>
-	<imart:decision case="3" value="${f:h(ApplyForm.imwPageType)}">
-		<input type="button" value='Re-Apply' id="openPage" name="openPage" class="imui-large-button"
-			escapeXml="true" escapeJs="false" />
-	</imart:decision>
-
 </div>
 
 <!-- 戻る用フォーム -->
@@ -656,6 +651,12 @@
     	$(document).ready(function(){
 			const val = "${esTotalAmount}";
     		formatOutputNumber($('input[name="f_es_total_amount"]'), val,   2)
+    	})
+    	
+    	$(function(){
+    		$('#openPage').click(function(){
+    			workflowOpenPage('${f:h(ApplyForm.imwPageType)}');
+    		})
     	})
 	</script>
 

@@ -120,6 +120,7 @@
 			f_effective_to: {required: true},
 			f_estimated_delivery_from: {required: true},
 			f_estimated_delivery_to: {required: true},
+			f_agreement_summary: {id:false},
 			f_start_usage_date: {required: {
 				depends: function() {return $('input[name="f_purchase_category"]').val() !=9}
 			}},
@@ -919,7 +920,10 @@
 						
 						<tr>
 						  <th><label>Agreement Summary (main points only) (In case of contract in foreign currency need to describe exchange rate)</label></th>
-						  <td><textarea id="agreement_summary" name="f_agreement_summary">${FormClassRows.f_agreement_summary}</textarea></td>
+						  <td>
+						  		<textarea id="agreement_summary" name="f_agreement_summary">${FormClassRows.f_agreement_summary}</textarea>
+								<div class="error_message"></div>
+						  </td>
 						</tr>
 							
 					</tbody>
