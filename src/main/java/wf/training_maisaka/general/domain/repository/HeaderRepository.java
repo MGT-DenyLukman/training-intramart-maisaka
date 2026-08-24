@@ -16,6 +16,7 @@ public class HeaderRepository {
 	private String table_name = "wf_header";
 	private String select_data_all = "select * from wf_header";
 	private String select_data_by_matter_id = "select * from wf_header where system_matter_id = ?";
+	private String select_data_by_mail_status = "select * from wf_header where mail_status = ? and created_at >= '2026-08-21'";
 
 	public void insertData(HeaderModel varHeaderData) throws Exception {
 		SQLManager sqlManager = new SQLManager();
@@ -42,6 +43,9 @@ public class HeaderRepository {
 		String sql_query = this.select_data_all;
 		if("system_matter_id".equals(column)) {
 			sql_query = this.select_data_by_matter_id;
+			parameters.add(value);
+		}else if("mail_status".equals(column)) {
+			sql_query = this.select_data_by_mail_status;
 			parameters.add(value);
 		}
 		
