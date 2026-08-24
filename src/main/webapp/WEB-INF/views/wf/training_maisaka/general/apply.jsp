@@ -1116,8 +1116,6 @@
 					</table>
 				</div>
 					
-					<!-- START COMMENTED -->
-					<!-- 
 					<div>
 					  <header class="imui-chapter-title">
 						<h2>Agreement Classification</h2>
@@ -1286,6 +1284,8 @@
 					
 					
 
+					<!-- START COMMENTED -->
+					<!-- 
 					-->
 					<!-- END COMMENTED -->
 					

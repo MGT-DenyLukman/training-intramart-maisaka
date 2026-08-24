@@ -54,6 +54,11 @@ public class ImartForm extends ImartWorkflowForm {
 	private Collection<AttachFileModel> d_file_attachment;
 	
 	
+	//multiple branch
+	private String f_agreement_classification;
+	private String f_ec_approval_is_req;
+	
+	
 	
 	
 	
@@ -263,6 +268,18 @@ public class ImartForm extends ImartWorkflowForm {
 	}
 	public void setD_file_attachment(Collection<AttachFileModel> d_file_attachment) {
 		this.d_file_attachment = d_file_attachment;
+	}
+	public String getF_agreement_classification() {
+		return f_agreement_classification;
+	}
+	public void setF_agreement_classification(String f_agreement_classification) {
+		this.f_agreement_classification = f_agreement_classification;
+	}
+	public String getF_ec_approval_is_req() {
+		return f_ec_approval_is_req;
+	}
+	public void setF_ec_approval_is_req(String f_ec_approval_is_req) {
+		this.f_ec_approval_is_req = f_ec_approval_is_req;
 	}
 
 

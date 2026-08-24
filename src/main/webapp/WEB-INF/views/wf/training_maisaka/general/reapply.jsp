@@ -1118,8 +1118,6 @@
 					</table>
 				</div>
 					
-					<!-- START COMMENTED -->
-					<!-- 
 					<div>
 					  <header class="imui-chapter-title">
 						<h2>Agreement Classification</h2>
@@ -1130,28 +1128,40 @@
 							<tr>
 									<th><label class="imui-required">Agreement Classification</label></th>
 									<td>
-											<input type="radio" id="pd_approval" name="f_agreement_classification" value="1" checked/>
+											<input type="radio" id="pd_approval" name="f_agreement_classification" value="1" 
+											${agreementClassification == 1 ? "checked" : ""}
+											/>
 											<label for="pd_approval">PD Approval (either one of condition below)</label>
 												<div class="pd_approval_childrens" style="padding-left: 2em">
-														<input type="radio" id="gte_1_billion" name="f_agreement_classification_1" value="1" checked/>
+														<input type="radio" id="gte_1_billion" name="f_agreement_classification_1" value="1"
+														${agreementClassificationChildren == 1 ? "checked" : ""}
+														/>
 														<label for="gte_1_billion">Agreement with amount is equal or more than 1 billion</label>
 														<br>
-														<input type="radio" id="gte_12_months" name="f_agreement_classification_1" value="2"/>
+														<input type="radio" id="gte_12_months" name="f_agreement_classification_1" value="2"
+														${agreementClassificationChildren == 2 ? "checked" : ""}
+														/>
 														<label for="gte_12_months">Period is equal or more than 12 months</label>
 														<br>
 														<div>
-															<input type="radio" id="related_parties" name="f_agreement_classification_1" value="3"/>
+															<input type="radio" id="related_parties" name="f_agreement_classification_1" value="3"
+															${agreementClassificationChildren == 3 ? "checked" : ""}
+															/>
 															<label for="related_parties">Agreement related to spesific party</label>
 															<br>
 															<p style="padding-left: 2em"><i>- Bank, Related Parties, Dealer, Consulatant/Lawyer/Appraiser (Vendor head-hunter, ISO Certification, HR system development, etc), Government, Production(Component and Parts), Customer, Etc</i></p>
 														</div>
 
-														<input type="radio" id="special_issue" name="f_agreement_classification_1" value="4"/>
+														<input type="radio" id="special_issue" name="f_agreement_classification_1" value="4"
+															${agreementClassificationChildren == 4 ? "checked" : ""}
+														/>
 														<label for="special_issue">Special issue</label>
 														<br>
 														<p style="padding-left: 2em"><i>New project/Issue (more than 50 M), Not included in Budget Plan</i></p>
 
-														<input type="radio" id="direct_procurement" name="f_agreement_classification_1" value="5"/>
+														<input type="radio" id="direct_procurement" name="f_agreement_classification_1" value="5"
+															${agreementClassificationChildren == 5 ? "checked" : ""}
+														/>
 														<label for="direct_procurement">Direct Procurement due to either of the 2 cases below</label>
 														<br>
 														<div style="padding-left: 2em">
@@ -1162,7 +1172,9 @@
 														</div> 
 												</div>
 											<div>
-												<input type="radio" id="dic_approval" name="f_agreement_classification" value="2"/>
+												<input type="radio" id="dic_approval" name="f_agreement_classification" value="2"
+												${agreementClassification == 2 ? "checked" : ""}
+												/>
 												<label for="dic_approval">DIC Director Approval</label>
 											</div>
 									</td>
@@ -1170,20 +1182,30 @@
 							<tr>
 									<th><label class="imui-required">EC Approval is Required or Not</label></th>
 									<td>
-											<input type="radio" id="ec_approval_yes" name="f_ec_approval_is_required" value="1" checked/>	
+											<input type="radio" id="ec_approval_yes" name="f_ec_approval_is_required" value="1"
+												${ecApprovalIsReq == 1 ? "checked" : ""}
+											/>	
 											<label for="ec_approval_yes">Yes</label>
 												<div class="ec_approval_yes_childrens" style="padding-left: 2em">
-														<input type="radio" id="amount_gte_1_billion" name="f_ec_approval_yes" value="1" checked/>	
+														<input type="radio" id="amount_gte_1_billion" name="f_ec_approval_yes" value="1" 
+															${ecApprovalIsReqYesChildren == 1 ? "checked" : ""}
+														/>	
 														<label for="amount_gte_1_billion">Amount is equal or more than 1 billion</label>
 														<br>	
-														<input type="radio" id="period_gt_12_month" name="f_ec_approval_yes" value="2"/>	
+														<input type="radio" id="period_gt_12_month" name="f_ec_approval_yes" value="2"
+															${ecApprovalIsReqYesChildren == 2 ? "checked" : ""}
+														/>	
 														<label for="period_gt_12_month">Period is equal or more than 12 months</label>
 														<br>	
-														<input type="radio" id="escalate_issue" name="f_ec_approval_yes" value="3"/>	
+														<input type="radio" id="escalate_issue" name="f_ec_approval_yes" value="3"
+															${ecApprovalIsReqYesChildren == 3 ? "checked" : ""}
+														/>	
 														<label for="escalate_issue">Director believes it is necessary to escalate the issue to EC</label>
 												</div>
 												<div>
-														<input type="radio" id="ec_approval_no" name="f_ec_approval_is_required" value="0"/>	
+														<input type="radio" id="ec_approval_no" name="f_ec_approval_is_required" value="0"
+															${ecApprovalIsReq == 0 ? "checked" : ""}
+														/>	
 														<label for="ec_approval_no">No</label>
 												</div>
 									</td>
@@ -1192,6 +1214,8 @@
 					</table>
 				</div>
 
+					<!-- START COMMENTED -->
+					<!-- 
 					
 					<div>
 					  <header class="imui-chapter-title">

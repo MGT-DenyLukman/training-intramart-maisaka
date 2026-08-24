@@ -70,6 +70,11 @@ public class AgreementDetailRepository {
 					result.add("starting_usage_date", startingUsageDate);
 				 }
 				result.add("deprec_amount_per_month", varAgreementDetailData.getDeprec_amount_per_month());
+				
+				
+				//multiple branch
+				result.add("agreement_classification", varAgreementDetailData.getAgreement_classification());
+				result.add("ec_approval_is_req", varAgreementDetailData.getEc_approval_is_req());
 
 				if("create".equals(condition)){
 					result.add("created_at", timestamp);

@@ -87,6 +87,11 @@ public class WorkflowService {
 			Collection<AttachFileModel> attachFileData = attachFileDB.selectData(column, value);
 			
 			result.setD_file_attachment(attachFileData);
+			
+			
+			//multiple branch
+			result.setF_agreement_classification(entityData.getAgreement_classification());
+			result.setF_ec_approval_is_req(entityData.getEc_approval_is_req());
 
 			
 		}catch(Exception e) {

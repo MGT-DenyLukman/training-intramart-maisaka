@@ -194,6 +194,22 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			result.setStarting_usage_date(getEntity_TryCatch_UserParameter(userParameter, "f_start_usage_date"));
 			result.setDeprec_amount_per_month(getEntity_TryCatch_UserParameter(userParameter, "f_deprec_amount_per_month"));
 			
+			//multiple branch
+			String agreementClassification = getEntity_TryCatch_UserParameter(userParameter, "f_agreement_classification");
+			if("1".equals(agreementClassification)) {
+					String childrenVal = getEntity_TryCatch_UserParameter(userParameter, "f_agreement_classification_1");
+					result.setAgreement_classification(agreementClassification + "_" + childrenVal);
+			}else {
+					result.setAgreement_classification(agreementClassification);
+			}
+
+			String ecApprovalIsReq = getEntity_TryCatch_UserParameter(userParameter, "f_ec_approval_is_required");
+			if("1".equals(ecApprovalIsReq)) {
+					String childrenVal = getEntity_TryCatch_UserParameter(userParameter, "f_ec_approval_yes");
+					result.setEc_approval_is_req(ecApprovalIsReq + "_" + childrenVal); ;
+			}else {
+					result.setEc_approval_is_req(ecApprovalIsReq);
+			}
 			
 		 }catch(Exception e) {
 			 e.printStackTrace();

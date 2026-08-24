@@ -125,7 +125,7 @@ public class ImartController {
 			
 		} else if (PageType.pageTyp_UnApp.toString().equals(ApplyForm.getImwPageType())) {
 			return "wf/training_maisaka/general/apply.jsp";
-		
+
 		} else {
 			// REAPPLY
 			WorkflowService Service = new WorkflowService();
@@ -181,10 +181,29 @@ public class ImartController {
 				esTotalAmount += amount;
 			}
 
+			//check if agreement_classification or ec_approval_is_req contain "_"
+			String agreementClassification = FormClassRows.getF_agreement_classification();
+			String agreementClassificationChildren = "";
+			if(agreementClassification.contains("_")) {
+				agreementClassificationChildren = agreementClassification.split("_")[1];
+				agreementClassification = agreementClassification.split("_")[0];
+			}
+
+			String ecApprovalIsReq = FormClassRows.getF_ec_approval_is_req();
+			String ecApprovalIsReqYesChildren = "";
+			if(ecApprovalIsReq.contains("_")) {
+				ecApprovalIsReqYesChildren = ecApprovalIsReq.split("_")[1];
+				ecApprovalIsReq = ecApprovalIsReq.split("_")[0];
+			}
+
 			model.addAttribute("esTotalAmount", esTotalAmount);
 			model.addAttribute("FormClassRows", FormClassRows);
 			model.addAttribute("agreementStatus", agreementStatus);
 			model.addAttribute("agreementStatusRenewal", agreementStatusRenewal);
+			model.addAttribute("agreementClassification", agreementClassification);
+			model.addAttribute("agreementClassificationChildren", agreementClassificationChildren);
+			model.addAttribute("ecApprovalIsReq", ecApprovalIsReq);
+			model.addAttribute("ecApprovalIsReqYesChildren", ecApprovalIsReqYesChildren);
 			model.addAttribute("ApplyForm", ApplyForm);
 			Service.debug("APPLY FORM", ApplyForm);
 			return "wf/training_maisaka/general/reapply.jsp";
@@ -216,12 +235,29 @@ public class ImartController {
 				esTotalAmount += amount;
 			}
 			
-			// get uploaded files 
+			//check if agreement_classification or ec_approval_is_req contain "_"
+			String agreementClassification = FormClassRows.getF_agreement_classification();
+			String agreementClassificationChildren = "";
+			if(agreementClassification.contains("_")) {
+				agreementClassificationChildren = agreementClassification.split("_")[1];
+				agreementClassification = agreementClassification.split("_")[0];
+			}
+
+			String ecApprovalIsReq = FormClassRows.getF_ec_approval_is_req();
+			String ecApprovalIsReqYesChildren = "";
+			if(ecApprovalIsReq.contains("_")) {
+				ecApprovalIsReqYesChildren = ecApprovalIsReq.split("_")[1];
+				ecApprovalIsReq = ecApprovalIsReq.split("_")[0];
+			}
 
 			Service.debug("FormClassRows detail controller", FormClassRows);
 			model.addAttribute("FormClassRows", FormClassRows);
 			model.addAttribute("agreementStatus", agreementStatus);
 			model.addAttribute("agreementStatusRenewal", agreementStatusRenewal);
+			model.addAttribute("agreementClassification", agreementClassification);
+			model.addAttribute("agreementClassificationChildren", agreementClassificationChildren);
+			model.addAttribute("ecApprovalIsReq", ecApprovalIsReq);
+			model.addAttribute("ecApprovalIsReqYesChildren", ecApprovalIsReqYesChildren);
 			model.addAttribute("esTotalAmount", esTotalAmount);
 			model.addAttribute("ApplyForm", ApplyForm);
 		} catch(Exception e) {
@@ -255,10 +291,29 @@ public class ImartController {
 				esTotalAmount += amount;
 			}
 
+			//check if agreement_classification or ec_approval_is_req contain "_"
+			String agreementClassification = FormClassRows.getF_agreement_classification();
+			String agreementClassificationChildren = "";
+			if(agreementClassification.contains("_")) {
+				agreementClassificationChildren = agreementClassification.split("_")[1];
+				agreementClassification = agreementClassification.split("_")[0];
+			}
+
+			String ecApprovalIsReq = FormClassRows.getF_ec_approval_is_req();
+			String ecApprovalIsReqYesChildren = "";
+			if(ecApprovalIsReq.contains("_")) {
+				ecApprovalIsReqYesChildren = ecApprovalIsReq.split("_")[1];
+				ecApprovalIsReq = ecApprovalIsReq.split("_")[0];
+			}
+
 			Service.debug("FormClassRows detail controller", FormClassRows);
 			model.addAttribute("FormClassRows", FormClassRows);
 			model.addAttribute("agreementStatus", agreementStatus);
 			model.addAttribute("agreementStatusRenewal", agreementStatusRenewal);
+			model.addAttribute("agreementClassification", agreementClassification);
+			model.addAttribute("agreementClassificationChildren", agreementClassificationChildren);
+			model.addAttribute("ecApprovalIsReq", ecApprovalIsReq);
+			model.addAttribute("ecApprovalIsReqYesChildren", ecApprovalIsReqYesChildren);
 			model.addAttribute("esTotalAmount", esTotalAmount);
 			model.addAttribute("ApplyForm", ApplyForm);
 		} catch(Exception e) {

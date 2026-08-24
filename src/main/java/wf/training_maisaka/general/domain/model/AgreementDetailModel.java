@@ -23,6 +23,9 @@ public class AgreementDetailModel {
 	private String starting_usage_date ;
 	private String deprec_amount_per_month ;
 	
+	private String agreement_classification;
+	private String ec_approval_is_req;
+	
 	
 	private String created_at;
 	private String updated_at;
@@ -140,6 +143,18 @@ public class AgreementDetailModel {
 	}
 	public void setDeprec_amount_per_month(String deprec_amount_per_month) {
 		this.deprec_amount_per_month = deprec_amount_per_month;
+	}
+	public String getAgreement_classification() {
+		return agreement_classification;
+	}
+	public void setAgreement_classification(String agreement_classification) {
+		this.agreement_classification = agreement_classification;
+	}
+	public String getEc_approval_is_req() {
+		return ec_approval_is_req;
+	}
+	public void setEc_approval_is_req(String ec_approval_is_req) {
+		this.ec_approval_is_req = ec_approval_is_req;
 	}
 	public String getCreated_at() {
 		return created_at;
