@@ -99,6 +99,7 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			HeaderInfoRepository headerInfoDB = new HeaderInfoRepository();
 			AgreementDetailTempRepository agreementDetailTempDB = new AgreementDetailTempRepository();
 			EstSchedulePaymentRepository estSchedulePayDB = new EstSchedulePaymentRepository();
+			AttachFileRepository attachFileDB = new AttachFileRepository();
 			
 			HeaderModel entity_Header = getEntity_Header(parameter, userParameter);
 			HeaderInfoModel entity_HeaderInfo = getEntity_HeaderInfo(parameter, userParameter);
@@ -114,6 +115,16 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			for(EstSchedulePaymentModel row : entity_EstSchPayment) {
 				estSchedulePayDB.insertData(row);
 			}
+			
+			//handling attachment
+			WorkflowService service = new WorkflowService();
+			List<AttachFileModel> entity_attachFile = getEntity_Files(parameter, userParameter);
+			attachFileDB.deleteData("system_matter_id", parameter.getSystemMatterId());
+			for(AttachFileModel row : entity_attachFile) {
+				attachFileDB.insertData(row);
+				service.AttachmentFileTransfer(row.getSystem_matter_id(), row.getFile_real_name());
+			}
+			
 			
 
         } catch (final WorkflowException e) {

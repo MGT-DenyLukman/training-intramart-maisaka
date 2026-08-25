@@ -1289,35 +1289,6 @@
 					<!-- END COMMENTED -->
 					
 						<div class="file_attachment">
-							<input type="text" id="upload_file" name="upload_file" value="">
-							<c:forEach items="${FormClassRows.d_list_attachment}" var="attachment">
-								<div class="${attachment.file_real_name}">
-									<input
-											type='hidden'
-											value='${attachment.id}'
-											id='f_upload_file_id'
-											name='f_upload_file_id'
-									>
-									<input
-											type='hidden'
-											value="${attachment.file_name}"
-											id='f_upload_file_name'
-											name='f_upload_file_name'
-									>
-									<input
-											type='hidden'
-											value="${attachment.file_real_name}"
-											id='f_upload_file_real_name'
-											name='f_upload_file_real_name'
-									>
-									<input
-											type='hidden'
-											value="${attachment.file_type}" 
-											id="f_upload_file_type"
-											name="f_upload_file_type"
-									>
-								</div>
-							</c:forEach>
 						</div>	
 						
 					

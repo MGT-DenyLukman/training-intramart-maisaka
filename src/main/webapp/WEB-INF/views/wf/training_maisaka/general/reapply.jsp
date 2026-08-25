@@ -99,6 +99,11 @@
 		label.error:empty {
 		    display: none !important;
 		}
+
+		#upload_file {
+			position: absolute;
+			z-index: -1;
+		}
     	
     </style>
     
@@ -207,6 +212,20 @@
 
 	<script type="text/javascript">
 		//function for attachment
+		function triggerRequiredCheck() {
+			var countUploadedFiles = $('.f_upload_file_id').length
+
+			console.log("COUNT UPLOADED FILES", countUploadedFiles);
+			if(countUploadedFiles > 0){
+				$('#upload_file').val(countUploadedFiles);
+			}else{
+				$('#upload_file').val("");
+			}
+			
+			//workflowValidate();
+			
+		}
+
 		function callbackSuccess(e, data) {
 			var file = data.files[0];
 			var fileName = file.name;
@@ -222,16 +241,21 @@
 			var fileExtension = receiveFileName.split('.').pop().toLowerCase();
 			
 			$(".file_attachment").prepend("<div class='" + receivePhysicalFileName + "'>"
-				+ "<input type='hidden' id='f_upload_file_id' name='f_upload_file_id'>"
+				+ "<input type='hidden' value='0' id='f_upload_file_id' name='f_upload_file_id' class='f_upload_file_id'>"
 				+ "<input type='hidden' value='" + receiveFileName + "' id='f_upload_file_name' name='f_upload_file_name'>"
 				+ "<input type='hidden' value='" + receivePhysicalFileName + "' id='f_upload_file_real_name' name='f_upload_file_real_name'>"
+				+ "<input type='hidden' value='" + fileSize + "' id='f_upload_file_size' name='f_upload_file_size'>"
 				+ "<input type='hidden' value='" + fileExtension + "' id='f_upload_file_type' name='f_upload_file_type'>"
 				+ "</div>");
+
+			triggerRequiredCheck();
 		}
 		function callbackRemove(e, data) {
 			var file = data.response[0];
 			var fileName = file.name;
 			$("." + fileName).remove();
+
+			triggerRequiredCheck();
 		}
 		function callbackError(e, data) {
 			var file = data.files[0];
@@ -239,6 +263,8 @@
 			var fileSize = file.size;
 			var fileType = file.type;
 			
+
+			triggerRequiredCheck();
 		}
 	</script>
 
@@ -531,11 +557,21 @@
 	
 	<!-- 入力バリデーション設定 -->
 	<script type="text/javascript">
-			//var valid = imuiValidate("#workflowOpenPageForm", rules, messages);
-
+		function removeFile(event, fileRealName) {
+			$(event.target).parents("tr").remove();
+			$("." +fileRealName).remove();
+		}
 		
 		function workflowValidate() {
-			console.log("RULES IN VALIDATE", rules, messages);
+
+				//check attachment
+				triggerRequiredCheck();
+
+				rules.upload_file = {
+						required: true,
+				}
+				messages.upload_file = {required:"upload file required"};
+
 				rules.f_checkbox_toggle = {id:false}
 
 				rules.f_effective_from = {
@@ -578,7 +614,9 @@
 					errorPlacement: function(error, element) {
 						var $element = $(element);
 						var error_message = error.get(0);
-						if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
+						if($element.attr('id') == 'upload_file'){
+							$('#section-upload').find('.error_message').html(error_message);
+						} else if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
 							$element.parent().find(".error_message").html(error_message);
 						}else{
 							$element.parents('td').find('.error_message').html(error_message);
@@ -1192,7 +1230,7 @@
 																	<li><i>Spesific Goods / Items (refere to PSD Guideline)</i></li>
 															</ul>
 														</div> 
-														<div class="error_message">SINI YAK</div>
+														<div class="error_message"></div>
 												</div>
 											<div>
 												<input type="radio" id="dic_approval" name="f_agreement_classification" value="2"
@@ -1340,6 +1378,44 @@
 					-->
 					<!-- END COMMENTED -->
 					
+						<div class="file_attachment">
+							<input type="text" id="upload_file" name="upload_file" value="">
+							<c:forEach items="${FormClassRows.d_file_attachment}" var="attachment">
+								<div class="${attachment.file_real_name}">
+									<input
+											type='hidden'
+											value='${attachment.id}'
+											id='f_upload_file_id'
+											name='f_upload_file_id'
+											class="f_upload_file_id"
+									>
+									<input
+											type='hidden'
+											value="${attachment.file_name}"
+											id='f_upload_file_name'
+											name='f_upload_file_name'
+									>
+									<input
+											type='hidden'
+											value="${attachment.file_real_name}"
+											id='f_upload_file_real_name'
+											name='f_upload_file_real_name'
+									>
+									<input
+											type='hidden'
+											value="${attachment.file_size}" 
+											id="f_upload_file_size"
+											name="f_upload_file_size"
+									>
+									<input
+											type='hidden'
+											value="${attachment.file_type}" 
+											id="f_upload_file_type"
+											name="f_upload_file_type"
+									>
+								</div>
+							</c:forEach>
+						</div>	
 
 
 			
@@ -1363,6 +1439,7 @@
 													onError="callbackError"
 													onRemove="callbackRemove"
 											/>
+											<div class="error_message"></div>
 										</td>
 									</tr>
 							</tbody>
@@ -1374,7 +1451,10 @@
 						<table id="uploaded_document" class="imui-form tab_header">
 							<tbody>
 									<c:forEach items="${FormClassRows.d_file_attachment}" var="row">
-										<tr><td><a href="training_maisaka/download/${row.file_real_name}">${row.file_name}</a></td></tr>
+										<tr>
+											<td><button type="button" onclick="removeFile(event, '${row.file_real_name}')">Delete</button></td>
+											<td><a href="training_maisaka/download/${row.file_real_name}">${row.file_name}</a></td>
+										</tr>
 									</c:forEach>
 							</tbody>
 						</table>
