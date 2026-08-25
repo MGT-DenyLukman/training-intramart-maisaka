@@ -605,7 +605,6 @@
 						var $element = $(element);
 						var error_message = error.get(0);
 						if($element.attr('id') == 'upload_file'){
-							console.log('LKDJFLKSjdfl');
 							$('#section-upload').find('.error_message').html(error_message);
 						}else{
 							$element.parents('td').find('.error_message').html(error_message);

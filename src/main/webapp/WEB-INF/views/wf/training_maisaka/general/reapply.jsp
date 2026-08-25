@@ -110,9 +110,6 @@
 			f_currency : {required : true}, 
 			f_total_amount : {required : true}, 
 			f_agreement_status : {required : true}, 
-			f_renewal : {required: {
-				depends: function() {return $('#extension').prop('checked')}
-			}},
 			f_auto_extension: {required: true},
 			f_purchased_order_req: {required: true},
 			f_title: {required: true},
@@ -138,7 +135,6 @@
 			f_currency: {required: "Currencyを入力してください！" },
 			f_total_amount: {required: "Total Amountを入力してください！" },
 			f_agreement_status: {required: "Agreement Statusを入力してください！" },
-			f_renewal: {required: "Total Duration を選択してください！" },
 			f_auto_extension: {required: "Auto extensionを選択してください！" },
 			f_purchased_order_req: {required: "Purchased Orderを選択してください！" },
 			f_title: {required: "Titleを入力してください！" },
@@ -251,8 +247,12 @@
 			$('input[name="f_agreement_status"]').change(function(){
 				if($(this).val() == 2){
 					$("#extension-childs").show();
+					rules.f_renewal = {required: true, id:false};
+					messages.f_renewal = {required: "チェックしてください！"};
 				}else{
 					$("#extension-childs").hide();
+					//delete rules.f_renewal;
+					//delete messages.f_renewal;
 				}
 			})
 			
@@ -272,16 +272,24 @@
 			$('input[name="f_agreement_classification"]').change(function(){
 				if($(this).val() != 2){
 					$(".pd_approval_childrens").show();
+					rules.f_agreement_classification_1 = {required: true, id:false};
+					messages.f_agreement_classification_1 = {required: "チェックしてください！"};
 				}else{
 					$(".pd_approval_childrens").hide();
+					//delete rules.f_agreement_classification_1;
+					//delete messages.f_agreement_classfication_1;
 				}
 			})
 
 			$('input[name="f_ec_approval_is_required"]').change(function(){
 				if($(this).val() != 0){
 					$(".ec_approval_yes_childrens").show();
+					rules.f_ec_approval_yes = {required: true, id:false};
+					messages.f_ec_approval_yes = {required: "チェックしてください！"};
 				}else{
 					$(".ec_approval_yes_childrens").hide();
+					//delete rules.f_ec_approval_yes;
+					//delete messages.f_ec_approval_yes;
 				}
 			})
 
@@ -523,12 +531,13 @@
 	
 	<!-- 入力バリデーション設定 -->
 	<script type="text/javascript">
-				//var valid = imuiValidate("#workflowOpenPageForm", rules, messages);
+			//var valid = imuiValidate("#workflowOpenPageForm", rules, messages);
 
 		
 		function workflowValidate() {
+			console.log("RULES IN VALIDATE", rules, messages);
+				rules.f_checkbox_toggle = {id:false}
 
-				
 				rules.f_effective_from = {
 						...rules.f_effective_from,
 						id: false,
@@ -569,18 +578,30 @@
 					errorPlacement: function(error, element) {
 						var $element = $(element);
 						var error_message = error.get(0);
-						$element.parents('td').find('.error_message').html(error_message);
+						if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
+							$element.parent().find(".error_message").html(error_message);
+						}else{
+							$element.parents('td').find('.error_message').html(error_message);
+						}
 					},
 					highlight: function(element, errorClass, validClass) {
 						var $element = $(element);
 						
-						$element.addClass('imui-validation-error');
+						if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
+							$('input[name="'+$element.attr("name")+'"]').addClass("imui-validation-error");
+						}else{
+							$element.addClass('imui-validation-error');
+						}
 					},
 					unhighlight: function(element, errorClass, validClass) {
 						var $element = $(element);
 						
-						$element.removeClass('imui-validation-error');
-						$element.parents('td').find('.error_message').empty();
+						if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
+							$('input[name="'+$element.attr("name")+'"]').removeClass("imui-validation-error");
+						}else{
+							$element.removeClass('imui-validation-error');
+							
+						}
 					}
 				})
 
@@ -817,6 +838,7 @@
 										  ${agreementStatusRenewal == "b" ? "checked" : "" }
 									  />
 									  <label for="lte_1">up to 1 year</label>
+									  <div class="error_message"></div>
 						  		</div>
 						  		<input type="radio" id="umbrella" name="f_agreement_status" value="3"
 						  			${FormClassRows.f_agreement_status == 3 ? "checked" : "" }
@@ -1170,6 +1192,7 @@
 																	<li><i>Spesific Goods / Items (refere to PSD Guideline)</i></li>
 															</ul>
 														</div> 
+														<div class="error_message">SINI YAK</div>
 												</div>
 											<div>
 												<input type="radio" id="dic_approval" name="f_agreement_classification" value="2"
@@ -1201,6 +1224,7 @@
 															${ecApprovalIsReqYesChildren == 3 ? "checked" : ""}
 														/>	
 														<label for="escalate_issue">Director believes it is necessary to escalate the issue to EC</label>
+														<div class="error_message"></div>
 												</div>
 												<div>
 														<input type="radio" id="ec_approval_no" name="f_ec_approval_is_required" value="0"
