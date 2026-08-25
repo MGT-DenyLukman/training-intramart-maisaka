@@ -11,6 +11,8 @@ import jp.co.intra_mart.foundation.workflow.plugin.process.action.ActionProcessP
 import jp.co.intra_mart.foundation.workflow.util.WorkflowNumberingManager;
 import jp.co.intra_mart.foundation.workflow.exception.WorkflowException;
 import jp.co.intra_mart.foundation.workflow.exception.WorkflowExternalException;
+import jp.co.intra_mart.foundation.workflow.application.model.UserMatterPropertyModel;
+import jp.co.intra_mart.foundation.workflow.application.general.UserActvMatterPropertyValue;
 
 import java.util.Map;
 import java.util.Collection;
@@ -80,6 +82,17 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 				service.AttachmentFileTransfer(row.getSystem_matter_id(), row.getFile_real_name());
 			}
 
+			String matterPropertyValuePreOrder = entity_AgreementDetail.getPurchase_order_req();
+			
+			String temp = "";
+			temp = entity_AgreementDetail.getAgreement_classification();
+			String matterPropertyValueAgreementClassification = (temp.length() > 1 ? temp.split("_")[0] : temp);
+
+			temp = entity_AgreementDetail.getEc_approval_is_req();
+			String matterPropertyValueEcApproval = (temp.length() > 1 ? temp.split("_")[0] : temp);
+			this.setMatterProperty("create", parameter.getUserDataId(), "maisaka_po_branch", matterPropertyValuePreOrder);
+			this.setMatterProperty("create", parameter.getUserDataId(), "maisaka_pd_approval", matterPropertyValueAgreementClassification);
+			this.setMatterProperty("create", parameter.getUserDataId(), "maisaka_ec_approval", matterPropertyValueEcApproval);
 			
 			number = WorkflowNumberingManager.getNumber();
 
@@ -125,6 +138,17 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 				service.AttachmentFileTransfer(row.getSystem_matter_id(), row.getFile_real_name());
 			}
 			
+			String matterPropertyValuePreOrder = entity_AgreementDetail.getPurchase_order_req();
+
+			String temp = "";
+			temp = entity_AgreementDetail.getAgreement_classification();
+			String matterPropertyValueAgreementClassification = (temp.length() > 1 ? temp.split("_")[0] : temp);
+
+			temp = entity_AgreementDetail.getEc_approval_is_req();
+			String matterPropertyValueEcApproval = (temp.length() > 1 ? temp.split("_")[0] : temp);
+			this.setMatterProperty("update", parameter.getUserDataId(), "maisaka_po_branch", matterPropertyValuePreOrder);
+			this.setMatterProperty("update", parameter.getUserDataId(), "maisaka_pd_approval", matterPropertyValueAgreementClassification);
+			this.setMatterProperty("update", parameter.getUserDataId(), "maisaka_ec_approval", matterPropertyValueEcApproval);
 			
 
         } catch (final WorkflowException e) {
@@ -340,6 +364,25 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 
 		 
 		 return result;
+	 }
+	 
+	 // condition: "create" or "update"
+	 private final void setMatterProperty(final String condition, final String userDataId, final String matterPropertyKey, final String matterPropertyValue) throws Exception {
+		 final UserMatterPropertyModel matterPropertyModel = new UserMatterPropertyModel();
+		 
+		 matterPropertyModel.setUserDataId(userDataId);
+		 matterPropertyModel.setMatterPropertyKey(matterPropertyKey);
+		 matterPropertyModel.setMatterPropertyValue(matterPropertyValue);
+		 
+		 UserActvMatterPropertyValue property = new UserActvMatterPropertyValue();
+		 final UserMatterPropertyModel[] matterProperty = new UserMatterPropertyModel[1];
+		 matterProperty[0] = matterPropertyModel;
+		 
+		 if("create".equals(condition)) {
+			 property.createMatterProperty(matterProperty);
+		 }else if("update".equals(condition)) {
+			 property.updateMatterProperty(matterProperty);
+		 }
 	 }
 	 
  }

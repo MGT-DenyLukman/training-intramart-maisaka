@@ -1289,6 +1289,7 @@
 					<!-- END COMMENTED -->
 					
 						<div class="file_attachment">
+							<input type="text" id="upload_file" name="upload_file" value="">
 						</div>	
 						
 					
