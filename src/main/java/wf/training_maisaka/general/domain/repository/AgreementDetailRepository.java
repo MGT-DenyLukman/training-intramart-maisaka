@@ -66,7 +66,7 @@ public class AgreementDetailRepository {
 				result.add("agreement_summary", varAgreementDetailData.getAgreement_summary());
 				result.add("purchase_category", varAgreementDetailData.getPurchase_category());
 				 if(varAgreementDetailData.getStarting_usage_date() != null) {
-					 Date startingUsageDate = SDF.parse(varAgreementDetailData.getStarting_usage_date().replaceAll("-", "/"));
+					 Date startingUsageDate = SDF.parse(varAgreementDetailData.getStarting_usage_date());
 					result.add("starting_usage_date", startingUsageDate);
 				 }
 				result.add("deprec_amount_per_month", varAgreementDetailData.getDeprec_amount_per_month());
@@ -75,6 +75,19 @@ public class AgreementDetailRepository {
 				//multiple branch
 				result.add("agreement_classification", varAgreementDetailData.getAgreement_classification());
 				result.add("ec_approval_is_req", varAgreementDetailData.getEc_approval_is_req());
+
+				//multiple user input
+				result.add("is_psd_area", varAgreementDetailData.getIs_psd_area());
+				result.add("psd_or_dic", varAgreementDetailData.getPsd_or_dic());
+				result.add("dic_reason", varAgreementDetailData.getDic_reason());
+				result.add("is_dd_req", varAgreementDetailData.getIs_dd_req());
+				result.add("is_anti_bribery", varAgreementDetailData.getIs_anti_bribery());
+				result.add("is_audit_right", varAgreementDetailData.getIs_audit_right());
+
+				Date agreementDate = SDF.parse(varAgreementDetailData.getAgreement_date().replaceAll("-", "/"));
+
+				result.add("agreement_number", varAgreementDetailData.getAgreement_number());
+				result.add("agreement_date", agreementDate);
 
 				if("create".equals(condition)){
 					result.add("created_at", timestamp);

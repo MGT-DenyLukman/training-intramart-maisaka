@@ -545,6 +545,7 @@
 						</tbody>
 					</table>
 					
+					<c:if test="${FormClassRows.f_purchase_order_req == 1}">
 					<div id="section-psd-check">
 					  <header class="imui-chapter-title">
 						<h2>PSD Check (by UH or DH, PSD)</h2>
@@ -584,6 +585,7 @@
 						</tbody>
 					</table>
 				</div>
+				</c:if>
 
 				<div id="section-cco">
 					  <header class="imui-chapter-title">

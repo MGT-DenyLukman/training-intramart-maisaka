@@ -22,21 +22,22 @@ import wf.training_maisaka.general.domain.service.WorkflowService;
 public class MatterEndProcessServiceImpl implements MatterEndProcessService {
 	
 	public boolean execute(final MatterEndProcessParameter parameter) throws Exception {
+		System.out.println("MATTER END PROCESS EXECUTE");
 		WorkflowService service = new WorkflowService();
-		
 		
 		HeaderRepository headerDB = new HeaderRepository();
 		AgreementDetailRepository agreementDetailDB = new AgreementDetailRepository();
 		
 		HeaderModel entity_Header = getEntity_Header(parameter.getSystemMatterId());
 		AgreementDetailModel entity_Agreement = getEntity_AgreementDetail(parameter.getSystemMatterId());
-		
+		service.debug("ENTITY AGREEMENT MATTER END PROCESS", entity_Agreement);
 		
 		service.debug("parameter matter end", parameter);
 
 		if("mattercomplete".equals(parameter.getLastResultStatus())) {
 			entity_Header.setStatus("2");
 			entity_Header.setMail_status("1");
+			
 			
 			agreementDetailDB.insertData(entity_Agreement);
 			headerDB.updateData(entity_Header);
