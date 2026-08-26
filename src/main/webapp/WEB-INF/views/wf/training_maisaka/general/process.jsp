@@ -44,6 +44,13 @@
     		height: 80px;
     	}
     	
+    	#agreement_classification th,
+    	#section-psd-check table th,
+    	#section-cco table th,
+    	#section-legal table th{
+    		width: 250px;
+    	}
+    	
     	
     	
     	.bg-warning {
@@ -65,6 +72,14 @@
     
     <script type="text/javascript">
     	$(function(){
+    		$('input[name="f_psd_area_bog"]').change(function(){
+				if($(this).val() == 1){
+					$('#f_psd_area_second').show();
+				}else{
+					$('#f_psd_area_second').hide();
+				}
+    		});   		
+    		
 			$('#openPage').click(function(){
 				console.log("clicked process")
 				workflowOpenPage('${f:h(ApplyForm.imwPageType)}');
@@ -531,8 +546,7 @@
 						</tbody>
 					</table>
 					
-					<!-- START COMMENTED -->
-					<!-- 
+					<div id="section-psd-check">
 					  <header class="imui-chapter-title">
 						<h2>PSD Check (by UH or DH, PSD)</h2>
 					</header>
@@ -542,27 +556,29 @@
 								<tr>
 										<th><label class="imui-required">PSD Area or Non-PSD Area (Based on Guideline)</label></th>
 										<td>
-												<input type="radio" id="psd" name="f_psd_area_bog" value="1" checked/>	
+												<input type="radio" id="psd" name="f_psd_area_bog" value="1" checked ${isUHDHDisabled}/>	
 												<label for="psd">PSD (go to #2)</label>
 												<br>
-												<input type="radio" id="psd_end" name="f_psd_area_bog" value="0"/>	
+												<input type="radio" id="psd_end" name="f_psd_area_bog" value="0" ${isUHDHDisabled}/>	
 												<label for="psd_end">Non-PSD (End)</label>
 										</td>
 								</tr>
-								<tr>
+								<tr id="f_psd_area_second">
 										<th><label class="imui-required">In PSD Area, PSD Process or DIC Process</label></th>
 										<td>
-												<input type="radio" id="psd_2" name="f_psd_process" value="PSD" checked/>	
+												<input type="radio" id="psd_2" name="f_psd_process" value="PSD" checked  ${isUHDHDisabled}/>	
 												<label for="psd_2">PSD (Pitching result attached)</label>
 												<br>
-												<input type="radio" id="psd_dic" name="f_psd_process" value="DIC"/>	
+												<input type="radio" id="psd_dic" name="f_psd_process" value="DIC" ${isUHDHDisabled}/>	
 												<label for="psd_dic">DIC (Please describe the reason in the below)</label>
-												<textarea id="psd_dic_reason" name="f_dic_reason"></textarea>
+												<textarea id="psd_dic_reason" name="f_dic_reason"  ${isUHDHDisabled}></textarea>
 										</td>
 								</tr>
 						</tbody>
 					</table>
+				</div>
 
+				<div id="section-cco">
 					  <header class="imui-chapter-title">
 						<h2>Compliance Check By CCO</h2>
 					</header>
@@ -572,35 +588,36 @@
 								<tr>
 										<th><label class="imui-required">D / D Process Required</label></th>
 										<td>
-												<input type="radio" id="dd_process_yes" name="f_dd_process" value="1" checked/>	
+												<input type="radio" id="dd_process_yes" name="f_dd_process" value="1" checked ${isCCODisabled}/>	
 												<label for="dd_process_yes">Yes</label>
-												<input type="radio" id="dd_process_no" name="f_dd_process" value="0" />	
+												<input type="radio" id="dd_process_no" name="f_dd_process" value="0" ${isCCODisabled} />	
 												<label for="dd_process_no">No</label>
 										</td>
 								</tr>
 								<tr>
 										<th><label class="imui-required">Anti Bribery Clause Include</label></th>
 										<td>
-												<input type="radio" id="anti_bribery_yes" name="f_anti_bribery" value="1" />	
+												<input type="radio" id="anti_bribery_yes" name="f_anti_bribery" value="1" ${isCCODisabled} />	
 												<label for="anti_bribery_yes">Yes</label>
-												<input type="radio" id="anti_bribery_no" name="f_anti_bribery" value="0"  checked/>	
+												<input type="radio" id="anti_bribery_no" name="f_anti_bribery" value="0"  checked ${isCCODisabled}/>	
 												<label for="anti_bribery_no">No</label>
 										</td>
 								</tr>
 								<tr>
 										<th><label class="imui-required">Audit Right Included</label></th>
 										<td>
-												<input type="radio" id="audit_right_yes" name="f_audit_right" value="1"/>	
+												<input type="radio" id="audit_right_yes" name="f_audit_right" value="1" ${isCCODisabled}/>	
 												<label for="audit_right_yes">Yes</label>
-												<input type="radio" id="audit_right_no" name="f_audit_right" value="0" checked />	
+												<input type="radio" id="audit_right_no" name="f_audit_right" value="0" checked ${isCCODisabled} />	
 												<label for="audit_right_no">No</label>
 										</td>
 								</tr>
 						</tbody>
 					</table>
+				</div>
 					
 					
-					 <div class="imui-form-container-full">
+				<div id="section-legal">
 					  <header class="imui-chapter-title">
 						<h2>Filled By Legal</h2>
 					</header>
@@ -609,23 +626,27 @@
 						<tbody>
 								<tr>
 										<th><label class="imui-required">Agreement Number</label></th>
-										<td><input type="text" name="f_agreement_number"/></td>
+										<td><input type="text" name="f_agreement_number" ${isLegalDisabled}/></td>
 								</tr>
 								<tr>
 										<th><label class="imui-required">Agreement Date</label></th>
 										<td>
-												<input type="text" id="agreement_date"  name="f_agreement_date"/>
-												<im:calendar floatable="true" altField="#agreement_date" />
+												<input type="text" id="agreement_date"  name="f_agreement_date" ${isLegalDisabled}/>
+												<c:if test="${isLegalDisabled != 'disabled'}">
+													<im:calendar floatable="true" altField="#agreement_date" />
+												</c:if>
 										</td>
 								</tr>
 						</tbody>
 					</table>
-					</div>
+				</div>
 					
 					
 
 					
 						
+					<!-- START COMMENTED -->
+					<!-- 
 					-->
 					<!-- END COMMENTED -->
 					

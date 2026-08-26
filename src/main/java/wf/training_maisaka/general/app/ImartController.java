@@ -7,6 +7,10 @@ import jp.co.intra_mart.foundation.user_context.model.UserCategory;
 import jp.co.intra_mart.foundation.user_context.model.Department;
 import jp.co.intra_mart.foundation.user_context.model.DepartmentPost;
 
+import jp.co.intra_mart.foundation.workflow.application.general.ActvMatter;
+import jp.co.intra_mart.foundation.workflow.application.general.ActvMatterNode;
+import jp.co.intra_mart.foundation.workflow.application.model.MatterNodeModel;
+
 import jp.co.intra_mart.foundation.service.client.file.PublicStorage;
 
 import java.io.FileNotFoundException;
@@ -305,8 +309,32 @@ public class ImartController {
 				ecApprovalIsReqYesChildren = ecApprovalIsReq.split("_")[1];
 				ecApprovalIsReq = ecApprovalIsReq.split("_")[0];
 			}
+			
+			
+			//check which node
+			Service.debug("ApplyForm process controller", ApplyForm);
+			ActvMatterNode actvMatterNode = new ActvMatterNode( ApplyForm.getImwSystemMatterId());
 
-			Service.debug("FormClassRows detail controller", FormClassRows);
+			MatterNodeModel matterNodeModel =  actvMatterNode.getMatterNode(ApplyForm.getImwNodeId());
+			String nodeName = matterNodeModel.getNodeName();
+			
+			String isUHDHDisabled = "disabled";
+			String isCCODisabled = "disabled";
+			String isLegalDisabled = "disabled";
+			
+			
+			if("UH/DH".equals(nodeName)) {
+				isUHDHDisabled = "";
+			}
+			else if("CCO".equals(nodeName)) {
+				isCCODisabled = "";
+			}else if("Legal".equals(nodeName)) {
+				isLegalDisabled = "";
+			}
+
+			System.out.println("NodeName, " + isUHDHDisabled + "," + isCCODisabled+ "," + isLegalDisabled);
+			System.out.println(nodeName);
+			Service.debug("FormClassRows process controller", FormClassRows);
 			model.addAttribute("FormClassRows", FormClassRows);
 			model.addAttribute("agreementStatus", agreementStatus);
 			model.addAttribute("agreementStatusRenewal", agreementStatusRenewal);
@@ -316,6 +344,11 @@ public class ImartController {
 			model.addAttribute("ecApprovalIsReqYesChildren", ecApprovalIsReqYesChildren);
 			model.addAttribute("esTotalAmount", esTotalAmount);
 			model.addAttribute("ApplyForm", ApplyForm);
+			
+			model.addAttribute("isUHDHDisabled", isUHDHDisabled);
+			model.addAttribute("isCCODisabled", isCCODisabled);
+			model.addAttribute("isLegalDisabled", isLegalDisabled);
+			model.addAttribute("nodeName", nodeName);
 		} catch(Exception e) {
 			System.out.println("Error page process : " + e);
 			e.printStackTrace();
