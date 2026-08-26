@@ -10,12 +10,13 @@ public interface ActionProcessService {
 
     String reapply(final ActionProcessParameter parameter, final Map<String, Object> userParameter) throws Exception;
 
+    void approve(final ActionProcessParameter parameter, final Map<String, Object> userParameter) throws Exception;
+
 	/*
     String applyFromTempSave(final ActionProcessParameter parameter, final Map<String, Object> userParameter) throws Exception;
 
     String applyFromUnapply(final ActionProcessParameter parameter, final Map<String, Object> userParameter) throws Exception;
 
-    void approve(final ActionProcessParameter parameter, final Map<String, Object> userParameter) throws Exception;
 
     void approveEnd(final ActionProcessParameter parameter, final Map<String, Object> userParameter) throws Exception;
 

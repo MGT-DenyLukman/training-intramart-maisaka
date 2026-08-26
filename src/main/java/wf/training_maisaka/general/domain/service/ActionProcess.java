@@ -28,6 +28,15 @@ public class ActionProcess extends ActionProcessEventListener   {
         return service.reapply(parameter, userParameter);
     }
 
+    // 承認
+    @Override
+    public void approve(final ActionProcessParameter parameter, final Map<String, Object> userParameter) throws Exception {
+        // アクション処理用のサービスを取得します。
+        final ActionProcessService service = ApplicationContextProvider.getApplicationContext().getBean(ActionProcessService.class);
+        
+        service.approve(parameter, userParameter);
+    }
+
     /*
     // 申請（一時保存）
     @Override
@@ -45,14 +54,6 @@ public class ActionProcess extends ActionProcessEventListener   {
         return service.applyFromUnapply(parameter, userParameter);
     }
 
-    // 承認
-    @Override
-    public void approve(final ActionProcessParameter parameter, final Map<String, Object> userParameter) throws Exception {
-        // アクション処理用のサービスを取得します。
-        final ActionProcessService service = ApplicationContextProvider.getApplicationContext().getBean(ActionProcessService.class);
-        
-        service.approve(parameter, userParameter);
-    }
 
     // 承認終了
     @Override

@@ -37,6 +37,45 @@ public class AgreementDetailTempRepository {
 		
 		sqlManager.update(table_name, columnVal, searchCondition);
 	}
+	
+	public void updateDataByNodeName(AgreementDetailModel varAgreementDetailData, String nodeName) throws Exception {
+		SQLManager sqlManager = new SQLManager();
+		ColumnValues columnVal = this.setDataByNode(varAgreementDetailData, nodeName);
+		SearchCondition searchCondition = new SearchCondition();
+		
+		searchCondition.addCondition("system_matter_id", varAgreementDetailData.getSystem_matter_id());
+		
+		sqlManager.update(table_name, columnVal, searchCondition);
+	}
+	
+	private ColumnValues setDataByNode(AgreementDetailModel varAgreementDetailData, String nodeName) {
+		ColumnValues result = new ColumnValues();
+		try {
+			LocalDateTime now = LocalDateTime.now();
+			Timestamp timestamp = Timestamp.valueOf(now.toString("yyyy-MM-dd HH:mm:ss"));
+
+			if("UH/DH".equals(nodeName)) {
+				result.add("is_psd_area", varAgreementDetailData.getIs_psd_area());
+				result.add("psd_or_dic", varAgreementDetailData.getPsd_or_dic());
+				result.add("dic_reason", varAgreementDetailData.getDic_reason());
+			}else if("CCO".equals(nodeName)) {
+				result.add("is_dd_req", varAgreementDetailData.getIs_dd_req());
+				result.add("is_anti_bribery", varAgreementDetailData.getIs_anti_bribery());
+				result.add("is_audit_right", varAgreementDetailData.getIs_audit_right());
+			}else if("Legal".equals(nodeName)) {
+				SimpleDateFormat SDF = new SimpleDateFormat("yyyy/MM/dd");
+				Date agreementDate = SDF.parse(varAgreementDetailData.getAgreement_date());
+
+				result.add("agreement_number", varAgreementDetailData.getAgreement_number());
+				result.add("agreement_date", agreementDate);
+			}
+
+			result.add("updated_at", timestamp);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 
 	private	ColumnValues setData(AgreementDetailModel varAgreementDetailData, String condition) {
 		WorkflowService service = new WorkflowService();

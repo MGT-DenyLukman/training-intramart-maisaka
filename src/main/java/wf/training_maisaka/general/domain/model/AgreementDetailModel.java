@@ -26,6 +26,17 @@ public class AgreementDetailModel {
 	private String agreement_classification;
 	private String ec_approval_is_req;
 	
+	private String is_psd_area;
+	private String psd_or_dic;
+	private String dic_reason;
+	
+	private String is_dd_req;
+	private String is_anti_bribery;
+	private String is_audit_right;
+	
+	private String agreement_number;
+	private String agreement_date;
+	
 	
 	private String created_at;
 	private String updated_at;
@@ -155,6 +166,54 @@ public class AgreementDetailModel {
 	}
 	public void setEc_approval_is_req(String ec_approval_is_req) {
 		this.ec_approval_is_req = ec_approval_is_req;
+	}
+	public String getIs_psd_area() {
+		return is_psd_area;
+	}
+	public void setIs_psd_area(String is_psd_area) {
+		this.is_psd_area = is_psd_area;
+	}
+	public String getPsd_or_dic() {
+		return psd_or_dic;
+	}
+	public void setPsd_or_dic(String psd_or_dic) {
+		this.psd_or_dic = psd_or_dic;
+	}
+	public String getDic_reason() {
+		return dic_reason;
+	}
+	public void setDic_reason(String dic_reason) {
+		this.dic_reason = dic_reason;
+	}
+	public String getIs_dd_req() {
+		return is_dd_req;
+	}
+	public void setIs_dd_req(String is_dd_req) {
+		this.is_dd_req = is_dd_req;
+	}
+	public String getIs_anti_bribery() {
+		return is_anti_bribery;
+	}
+	public void setIs_anti_bribery(String is_anti_bribery) {
+		this.is_anti_bribery = is_anti_bribery;
+	}
+	public String getIs_audit_right() {
+		return is_audit_right;
+	}
+	public void setIs_audit_right(String is_audit_right) {
+		this.is_audit_right = is_audit_right;
+	}
+	public String getAgreement_number() {
+		return agreement_number;
+	}
+	public void setAgreement_number(String agreement_number) {
+		this.agreement_number = agreement_number;
+	}
+	public String getAgreement_date() {
+		return agreement_date;
+	}
+	public void setAgreement_date(String agreement_date) {
+		this.agreement_date = agreement_date;
 	}
 	public String getCreated_at() {
 		return created_at;

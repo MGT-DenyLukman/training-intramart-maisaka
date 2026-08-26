@@ -39,7 +39,6 @@
     	}
     	
     	#psd_dic_reason {
-    		display: none;
     		width: 80%;
     		height: 80px;
     	}
@@ -556,22 +555,30 @@
 								<tr>
 										<th><label class="imui-required">PSD Area or Non-PSD Area (Based on Guideline)</label></th>
 										<td>
-												<input type="radio" id="psd" name="f_psd_area_bog" value="1" checked ${isUHDHDisabled}/>	
+												<input type="radio" id="psd" name="f_psd_area_bog" value="1"
+												${FormClassRows.f_psd_area_bog == 1 ? "checked" : "" }
+												 ${isUHDHDisabled}/>	
 												<label for="psd">PSD (go to #2)</label>
 												<br>
-												<input type="radio" id="psd_end" name="f_psd_area_bog" value="0" ${isUHDHDisabled}/>	
+												<input type="radio" id="psd_end" name="f_psd_area_bog" value="0"
+												${FormClassRows.f_psd_area_bog == 0 ? "checked" : "" }
+												 ${isUHDHDisabled}/>	
 												<label for="psd_end">Non-PSD (End)</label>
 										</td>
 								</tr>
 								<tr id="f_psd_area_second">
 										<th><label class="imui-required">In PSD Area, PSD Process or DIC Process</label></th>
 										<td>
-												<input type="radio" id="psd_2" name="f_psd_process" value="PSD" checked  ${isUHDHDisabled}/>	
+												<input type="radio" id="psd_2" name="f_psd_process" value="PSD"
+												${FormClassRows.f_psd_process == "PSD" ? "checked" : "" }
+												${isUHDHDisabled}/>	
 												<label for="psd_2">PSD (Pitching result attached)</label>
 												<br>
-												<input type="radio" id="psd_dic" name="f_psd_process" value="DIC" ${isUHDHDisabled}/>	
+												<input type="radio" id="psd_dic" name="f_psd_process" value="DIC" 
+												${FormClassRows.f_psd_process == "DIC" ? "checked" : "" }
+												${isUHDHDisabled}/>	
 												<label for="psd_dic">DIC (Please describe the reason in the below)</label>
-												<textarea id="psd_dic_reason" name="f_dic_reason"  ${isUHDHDisabled}></textarea>
+												<textarea id="psd_dic_reason" name="f_dic_reason"  ${isUHDHDisabled}>${FormClassRows.f_dic_reason}</textarea>
 										</td>
 								</tr>
 						</tbody>
@@ -588,27 +595,39 @@
 								<tr>
 										<th><label class="imui-required">D / D Process Required</label></th>
 										<td>
-												<input type="radio" id="dd_process_yes" name="f_dd_process" value="1" checked ${isCCODisabled}/>	
+												<input type="radio" id="dd_process_yes" name="f_dd_process" value="1"
+												${FormClassRows.f_dd_process == 1 ? "checked" : "" }
+												 ${isCCODisabled}/>	
 												<label for="dd_process_yes">Yes</label>
-												<input type="radio" id="dd_process_no" name="f_dd_process" value="0" ${isCCODisabled} />	
+												<input type="radio" id="dd_process_no" name="f_dd_process" value="0" 
+												${FormClassRows.f_dd_process == 0 ? "checked" : "" }
+												${isCCODisabled} />	
 												<label for="dd_process_no">No</label>
 										</td>
 								</tr>
 								<tr>
 										<th><label class="imui-required">Anti Bribery Clause Include</label></th>
 										<td>
-												<input type="radio" id="anti_bribery_yes" name="f_anti_bribery" value="1" ${isCCODisabled} />	
+												<input type="radio" id="anti_bribery_yes" name="f_anti_bribery" value="1" 
+												${FormClassRows.f_anti_bribery == 1 ? "checked" : "" }
+												${isCCODisabled} />	
 												<label for="anti_bribery_yes">Yes</label>
-												<input type="radio" id="anti_bribery_no" name="f_anti_bribery" value="0"  checked ${isCCODisabled}/>	
+												<input type="radio" id="anti_bribery_no" name="f_anti_bribery" value="0"  
+												${FormClassRows.f_anti_bribery == 0 ? "checked" : "" }
+												${isCCODisabled}/>	
 												<label for="anti_bribery_no">No</label>
 										</td>
 								</tr>
 								<tr>
 										<th><label class="imui-required">Audit Right Included</label></th>
 										<td>
-												<input type="radio" id="audit_right_yes" name="f_audit_right" value="1" ${isCCODisabled}/>	
+												<input type="radio" id="audit_right_yes" name="f_audit_right" value="1" 
+												${FormClassRows.f_audit_right == 1 ? "checked" : "" }
+												${isCCODisabled}/>	
 												<label for="audit_right_yes">Yes</label>
-												<input type="radio" id="audit_right_no" name="f_audit_right" value="0" checked ${isCCODisabled} />	
+												<input type="radio" id="audit_right_no" name="f_audit_right" value="0"
+												${FormClassRows.f_audit_right == 0 ? "checked" : "" }
+												 ${isCCODisabled} />	
 												<label for="audit_right_no">No</label>
 										</td>
 								</tr>
@@ -626,12 +645,12 @@
 						<tbody>
 								<tr>
 										<th><label class="imui-required">Agreement Number</label></th>
-										<td><input type="text" name="f_agreement_number" ${isLegalDisabled}/></td>
+										<td><input type="text" name="f_agreement_number" ${isLegalDisabled} value="${FormClassRows.f_agreement_number }"/></td>
 								</tr>
 								<tr>
 										<th><label class="imui-required">Agreement Date</label></th>
 										<td>
-												<input type="text" id="agreement_date"  name="f_agreement_date" ${isLegalDisabled}/>
+												<input type="text" id="agreement_date"  name="f_agreement_date" ${isLegalDisabled} value="${FormClassRows.f_agreement_date }"/>
 												<c:if test="${isLegalDisabled != 'disabled'}">
 													<im:calendar floatable="true" altField="#agreement_date" />
 												</c:if>

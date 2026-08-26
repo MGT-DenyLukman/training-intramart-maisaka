@@ -92,6 +92,21 @@ public class WorkflowService {
 			//multiple branch
 			result.setF_agreement_classification(entityData.getAgreement_classification());
 			result.setF_ec_approval_is_req(entityData.getEc_approval_is_req());
+			
+			//multiple user input
+			result.setF_psd_area_bog(entityData.getIs_psd_area());
+			result.setF_psd_process(entityData.getPsd_or_dic());
+			result.setF_dic_reason(entityData.getDic_reason());
+			
+			result.setF_dd_process(entityData.getIs_dd_req());
+			result.setF_anti_bribery(entityData.getIs_anti_bribery());
+			result.setF_audit_right(entityData.getIs_audit_right());
+			
+			result.setF_agreement_number(entityData.getAgreement_number());
+			if(entityData.getAgreement_date() != null) {
+				String agreementDate = entityData.getAgreement_date().replaceAll("-", "/");
+				result.setF_agreement_date(agreementDate);
+			}
 
 			
 		}catch(Exception e) {

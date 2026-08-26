@@ -26,6 +26,18 @@
 				$(".ec_approval_yes_childrens").hide();
 			}
 
+    		if(($('input[name="f_psd_area_bog"]')[0]).checked == true){
+				$('#f_psd_area_second').show();
+			}else{
+				$('#f_psd_area_second').hide();
+    		}   		
+
+    		if(($('input[name="f_psd_process"]')[1]).checked == true){
+				$('#psd_dic_reason').show();
+			}else{
+				$('#psd_dic_reason').hide();
+    		}   		
+
 		})
 
 // ============================ END when on load detail or process =============================

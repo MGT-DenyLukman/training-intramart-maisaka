@@ -59,6 +59,17 @@ public class ImartForm extends ImartWorkflowForm {
 	private String f_ec_approval_is_req;
 	
 	
+	//multiple user
+	private String f_psd_area_bog;
+	private String f_psd_process;
+	private String f_dic_reason;
+	
+	private String f_dd_process;
+	private String f_anti_bribery;
+	private String f_audit_right;
+	
+	private String f_agreement_number;
+	private String f_agreement_date;
 	
 	
 	
@@ -280,6 +291,54 @@ public class ImartForm extends ImartWorkflowForm {
 	}
 	public void setF_ec_approval_is_req(String f_ec_approval_is_req) {
 		this.f_ec_approval_is_req = f_ec_approval_is_req;
+	}
+	public String getF_psd_area_bog() {
+		return f_psd_area_bog;
+	}
+	public void setF_psd_area_bog(String f_psd_area_bog) {
+		this.f_psd_area_bog = f_psd_area_bog;
+	}
+	public String getF_psd_process() {
+		return f_psd_process;
+	}
+	public void setF_psd_process(String f_psd_process) {
+		this.f_psd_process = f_psd_process;
+	}
+	public String getF_dic_reason() {
+		return f_dic_reason;
+	}
+	public void setF_dic_reason(String f_dic_reason) {
+		this.f_dic_reason = f_dic_reason;
+	}
+	public String getF_dd_process() {
+		return f_dd_process;
+	}
+	public void setF_dd_process(String f_dd_process) {
+		this.f_dd_process = f_dd_process;
+	}
+	public String getF_anti_bribery() {
+		return f_anti_bribery;
+	}
+	public void setF_anti_bribery(String f_anti_bribery) {
+		this.f_anti_bribery = f_anti_bribery;
+	}
+	public String getF_audit_right() {
+		return f_audit_right;
+	}
+	public void setF_audit_right(String f_audit_right) {
+		this.f_audit_right = f_audit_right;
+	}
+	public String getF_agreement_number() {
+		return f_agreement_number;
+	}
+	public void setF_agreement_number(String f_agreement_number) {
+		this.f_agreement_number = f_agreement_number;
+	}
+	public String getF_agreement_date() {
+		return f_agreement_date;
+	}
+	public void setF_agreement_date(String f_agreement_date) {
+		this.f_agreement_date = f_agreement_date;
 	}
 
 
