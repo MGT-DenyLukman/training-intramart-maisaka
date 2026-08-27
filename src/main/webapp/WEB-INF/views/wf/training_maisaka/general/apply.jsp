@@ -707,6 +707,44 @@
 
 	</script>
 	
+	<script>
+			function searchAPI() {
+				var value = $('input[name="f_vendor"]').val();
+				
+				$.ajax({
+					url: "training_maisaka/getRegionData",
+					type: "GET",
+					data: {
+						keyword: value,
+					},
+					success: function(response){
+						console.log("Success", typeof response,  response);
+						const typeOfResponse = typeof response;
+						
+						var data = response;
+						
+						console.log(data);
+						if(typeOfResponse === 'string'){
+							data = (JSON.parse(response)).data;
+						}						
+						
+						console.log(data);
+						
+						if(data.length > 0){
+							console.log("DLKJFLSJ");
+							const type = data[0].type;
+							console.log(data[0].item[type])
+							$("input[name='f_vendor']").val("VENDOR " + data[0].item[type]);
+						}else{
+							$("input[name='f_vendor']").val("not found");
+						}
+					},
+					error: function(err) {
+						console.log("Error", err);
+					}
+				})
+			}
+	</script>
 
 	
 	<!-- CSS Scripts -->
@@ -804,6 +842,7 @@
 						  <th><label class="imui-required">Counter Party (vendor name, etc)</label></th>
 						  <td>
 						  <input name="f_vendor" type="text" placeholder="...">
+						  <button id="call-api" onclick="searchAPI()">search</button>
 							<div class="error_message"></div>
 						  </td>
 						</tr>

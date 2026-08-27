@@ -10,11 +10,14 @@ import jp.co.intra_mart.foundation.user_context.model.DepartmentPost;
 import jp.co.intra_mart.foundation.workflow.application.general.ActvMatter;
 import jp.co.intra_mart.foundation.workflow.application.general.ActvMatterNode;
 import jp.co.intra_mart.foundation.workflow.application.model.MatterNodeModel;
+import jp.co.intra_mart.foundation.workflow.application.model.ProcessTargetModel;
 
 import jp.co.intra_mart.foundation.service.client.file.PublicStorage;
 
 import java.io.FileNotFoundException;
 import java.net.URLDecoder;
+import java.net.URL;
+import java.net.HttpURLConnection;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -24,6 +27,9 @@ import java.util.HashMap;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.HandlerMapping;
@@ -49,6 +55,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
 //import org.springframework.web.servlet.HandlerMapping;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
@@ -318,6 +325,14 @@ public class ImartController {
 			MatterNodeModel matterNodeModel =  actvMatterNode.getMatterNode(ApplyForm.getImwNodeId());
 			String nodeName = matterNodeModel.getNodeName();
 			
+			ProcessTargetModel processTargetModel[] = actvMatterNode.getExecProcessTargetList(ApplyForm.getImwNodeId());
+			
+			Integer count = 0;
+			for(ProcessTargetModel item : processTargetModel) {
+				Service.debug(count.toString(), item);
+				count += 1;
+			}
+			
 			String isUHDHDisabled = "disabled";
 			String isCCODisabled = "disabled";
 			String isLegalDisabled = "disabled";
@@ -439,6 +454,43 @@ public class ImartController {
 		
 		return "success";
 		
+	}
+	
+
+	@GetMapping("getRegionData")
+	@ResponseBody
+	public String getRegionData(final HttpServletRequest request) throws Exception {
+		String keyword = request.getParameter("keyword");
+		
+		try {
+			String apiUrl = "https://konoland-api.vercel.app/search?q=" + keyword;
+			
+			URL url = new URL(apiUrl);
+			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+			
+			conn.setRequestMethod("GET");
+			conn.setConnectTimeout(5000);
+			conn.setReadTimeout(5000);
+			
+			int responseCode = conn.getResponseCode();
+
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(responseCode == HttpURLConnection.HTTP_OK ? conn.getInputStream() : conn.getErrorStream()));
+			
+			String inputLine;
+			StringBuilder response = new StringBuilder();
+			
+			while((inputLine = bufferedReader.readLine()) != null) {
+				response.append(inputLine);
+			}
+			bufferedReader.close();
+			conn.disconnect();
+			
+			return response.toString();
+
+		}catch(Exception e){
+			e.printStackTrace();
+			return "error : " + e.getMessage();
+		}
 	}
 
 	/*
