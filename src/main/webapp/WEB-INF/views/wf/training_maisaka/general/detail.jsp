@@ -33,6 +33,11 @@
     	table tbody tr td:last-child input[type="date"] {
     		width: 60%;
     	}
+    	
+    	#section-pl-impact {
+    		overflow-x: auto;
+    	}
+
     	#agreement_summary {
     		width: 60%;
     		height: 100px;
@@ -347,10 +352,12 @@
 					</tbody>
 					</table>
 
+				<div id="section-pl-impact">
 					  <header class="imui-chapter-title">
 						<h2>PL Impact</h2>
 					</header>
 
+				
 					<table id="pl_impact" class="imui-form tab_header">
 						<tbody>
 							<tr>
@@ -367,6 +374,7 @@
 							</tr>
 						</tbody>
 					</table>
+				</div>
 					
 					
 					
