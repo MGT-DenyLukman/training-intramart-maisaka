@@ -322,6 +322,7 @@ public class ImartController {
 			
 			//check which node
 			Service.debug("ApplyForm process controller", ApplyForm);
+			/*
 			ActvMatterNode actvMatterNode = new ActvMatterNode( ApplyForm.getImwSystemMatterId());
 
 			MatterNodeModel matterNodeModel =  actvMatterNode.getMatterNode(ApplyForm.getImwNodeId());
@@ -334,23 +335,23 @@ public class ImartController {
 				Service.debug(count.toString(), item);
 				count += 1;
 			}
+			*/
 			
-			String isUHDHDisabled = "disabled";
-			String isCCODisabled = "disabled";
-			String isLegalDisabled = "disabled";
+			String isUHDHDisabled = "unclickable";
+			String isCCODisabled = "unclickable";
+			String isLegalDisabled = "unclickable";
+
 			
 			
-			if("UH/DH".equals(nodeName)) {
+			if("approver_uhdh".equals(ApplyForm.getImwNodeId())) {
 				isUHDHDisabled = "";
 			}
-			else if("CCO".equals(nodeName)) {
+			else if("approver_coo".equals(ApplyForm.getImwNodeId())) {
 				isCCODisabled = "";
-			}else if("Legal".equals(nodeName)) {
+			}else if("approver_legal".equals(ApplyForm.getImwNodeId())) {
 				isLegalDisabled = "";
 			}
 
-			System.out.println("NodeName, " + isUHDHDisabled + "," + isCCODisabled+ "," + isLegalDisabled);
-			System.out.println(nodeName);
 			Service.debug("FormClassRows process controller", FormClassRows);
 			model.addAttribute("FormClassRows", FormClassRows);
 			model.addAttribute("agreementStatus", agreementStatus);
@@ -365,7 +366,6 @@ public class ImartController {
 			model.addAttribute("isUHDHDisabled", isUHDHDisabled);
 			model.addAttribute("isCCODisabled", isCCODisabled);
 			model.addAttribute("isLegalDisabled", isLegalDisabled);
-			model.addAttribute("nodeName", nodeName);
 		} catch(Exception e) {
 			System.out.println("Error page process : " + e);
 			e.printStackTrace();
