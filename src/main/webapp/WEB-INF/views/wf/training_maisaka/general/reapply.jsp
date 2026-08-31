@@ -497,6 +497,7 @@
     			const esAmountNameOrId = "f_es_amount_" + counter;
     			const esDateNameOrId = "f_es_date_" + counter;
 				var htmlStr = '<tr class="row-payment">'
+				htmlStr += '<td><button class="remove-button" onclick="deleteRowPayment(event)"><i class="fa-regular fa-trash-can" style="color: rgb(255, 24, 9);"></i> Remove</button></td>'
 				htmlStr += '<td><div class="row-payment__amount"><input oninput="calculateTotalAmount()" type="text" name=' +esAmountNameOrId+' >'
 				htmlStr += '<select name="f_amount_curreny_' + counter + '" class="select-currency">'
 				htmlStr += 	'<option value="IDR">IDR</option>'
@@ -510,7 +511,6 @@
 				  + "id='" +esDateNameOrId + "'>"
 				  + "<input type='hidden' id='"+esDateNameOrId+"_hidden' name='"+esDateNameOrId+"_hidden'><div class='error_message'></div>"
 				htmlStr += '</td>'
-				htmlStr += '<td><button onclick="deleteRowPayment(event)">Remove</button></td>'
 				htmlStr += "</tr>"
 				
 				$('table#estimated_schedule tbody tr.row-payment:last').after(htmlStr);
@@ -627,8 +627,26 @@
 						if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
 							$('input[name="'+$element.attr("name")+'"]').addClass("imui-validation-error");
 						}else{
+							if($element.attr("id") == 'f_estimated_delivery_from'){
+								$secondElement = $('#f_estimated_delivery_to');
+								$element.addClass('imui-validation-error');
+								$secondElement.addClass('imui-validation-error');
+							}else if($element.attr("id") == 'f_estimated_delivery_to'){
+								$secondElement = $('#f_estimated_delivery_from');
+								$secondElement.addClass('imui-validation-error');
+							}							
+
+							if($element.attr("id") == 'f_effective_from'){
+								$secondElement = $('#f_effective_to');
+								$secondElement.addClass('imui-validation-error');
+							}else if($element.attr("id") == 'f_effective_to'){
+								$secondElement = $('#f_effective_from');
+								$secondElement.addClass('imui-validation-error');
+							}							
+
 							$element.addClass('imui-validation-error');
 						}
+
 					},
 					unhighlight: function(element, errorClass, validClass) {
 						var $element = $(element);
@@ -636,6 +654,25 @@
 						if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
 							$('input[name="'+$element.attr("name")+'"]').removeClass("imui-validation-error");
 						}else{
+							if($element.attr("id") == 'f_estimated_delivery_from'){
+								$secondElement = $('#f_estimated_delivery_to');
+								$secondElement.removeClass('imui-validation-error');
+								$secondElement.parents('td').find('.error_message').empty();
+							}else if($element.attr("id") == 'f_estimated_delivery_to'){
+								$secondElement = $('#f_estimated_delivery_from');
+								$secondElement.removeClass('imui-validation-error');
+								$secondElement.parents('td').find('.error_message').empty();
+							}							
+
+							if($element.attr("id") == 'f_effective_from'){
+								$secondElement = $('#f_effective_to');
+								$secondElement.removeClass('imui-validation-error');
+								$secondElement.parents('td').find('.error_message').empty();
+							}else if($element.attr("id") == 'f_effective_to'){
+								$secondElement = $('#f_effective_from');
+								$secondElement.removeClass('imui-validation-error');
+								$secondElement.parents('td').find('.error_message').empty();
+							}							
 							$element.removeClass('imui-validation-error');
 							
 						}
@@ -785,7 +822,7 @@
 		imwNextScriptPath="${f:h(ApplyForm.imwCallOriginalPagePath)}"
 		>	
 
-			<div>
+			<div style="overflow-x: auto">
 				  <header class="imui-chapter-title">
 					<h2>Applicant Information</h2>
 				</header>
@@ -1138,12 +1175,15 @@
 								<th colspan="3"><label class="imui-required" id="payment-schedule-label">Payment (Total Cash flow Impact)</label></th>
 							</tr>
 							<tr class="row-header">
+									<th><label class=""><button id="payment-schedule-button">+ Add Row</button></label></th>
 									<th><label class="imui-required">Amount</label></th>
 									<th><label class="imui-required">Date</label></th>
-									<th><label class=""><button id="payment-schedule-button">+ Add Row</button></label></th>
 							</tr>
 							<c:forEach items="${FormClassRows. d_estimated_schedule_payment}" var="row">
 							<tr class="row-payment">
+									<td>
+										<button class="remove-button" onclick="deleteRowPayment(event)"><i class="fa-regular fa-trash-can" style="color: rgb(255, 24, 9);"></i> Remove</button>
+									</td>
 									<td>
 										<div class="row-payment__amount">
 										<input oninput="calculateTotalAmount()" type="text" name="f_es_amount_${row.id }" value="${row.payment_amount }"/>
@@ -1159,15 +1199,14 @@
 									<im:calendar floatable="true" altField="#f_es_date_${row.id }" />
 										<div class="error_message"></div>
 									</td>
-									<td>
-										<button onclick="deleteRowPayment(event)">Remove</button>
-									</td>
 							</tr>
 							</c:forEach>
 							<tr>
-									<th><label class="imui-required">Total Amount</label></th>
+									<td></td>
+									<th colspan="2"><label class="imui-required">Total Amount</label></th>
 							</tr>
 							<tr>
+									<td></td>
 									<td>
 									<input type="text"  name="f_es_total_amount" value="${esTotalAmount}" readonly/>
 										<div class="error_message"></div>

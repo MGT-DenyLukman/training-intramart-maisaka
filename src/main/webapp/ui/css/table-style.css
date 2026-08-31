@@ -21,14 +21,17 @@
     		text-align: center;
     	}
     	
-    	@media screen and (max-width: 426px){
+    	@media screen and (max-width: 1024px){
+    		table.imui-form#applicant_information {
+    			width: 1000px;
+    		}
+
 			table.imui-form:not(#agreement_detail) th {
-				width: 150px;
-				background: blue;
+				width: 200px;
 			}
 
 			table.imui-form#agreement_detail th:first-child,
 			table.imui-form#agreement_detail th:nth-child(2) {
-				width: 75px;
+				width: 100px;
 			}
     	}
