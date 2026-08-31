@@ -22,6 +22,8 @@
 	<workflow:workflowOpenPageCsjs />
 	
 	<link href="ui/css/select2.min.css" rel="stylesheet" />
+	<link href="ui/css/table-style.css" rel="stylesheet" />
+
     <script src="ui/js/select2.min.js" type="text/javascript"></script>
     <script src="ui/js/jquery.validate.js" type="text/javascript"></script>
     

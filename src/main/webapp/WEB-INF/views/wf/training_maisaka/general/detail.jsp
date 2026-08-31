@@ -22,6 +22,7 @@
 	<workflow:workflowOpenPageCsjs />
 	
 	<link href="ui/css/select2.min.css" rel="stylesheet" />
+	<link href="ui/css/table-style.css" rel="stylesheet" />
     <script src="ui/js/select2.min.js" type="text/javascript"></script>
     <script src="ui/js/jquery.validate.js" type="text/javascript"></script>
     
@@ -691,7 +692,7 @@
 						<table id="uploaded_document" class="imui-form tab_header">
 							<tbody>
 									<c:forEach items="${FormClassRows.d_file_attachment}" var="row">
-										<tr><td><a href="training_maisaka/download/${row.file_real_name}">${row.file_name}</a></td></tr>
+										<tr><td><a href="training_maisaka/download/${row.file_real_name}?token=${FormClassRows.f_download_token_request}">${row.file_name}</a></td></tr>
 									</c:forEach>
 							</tbody>
 						</table>
@@ -764,10 +765,11 @@
     				url: "training_maisaka/generatepdf",
     				data: {
     					system_matter_id: '${f:h(ApplyForm.imwSystemMatterId)}',
+    					token: '${f:h(FormClassRows.f_download_token_request)}',
     				},
     				success: function(response) {
     					console.log("success response: ", response);
-    					window.location.href = "/imart/training_maisaka/downloadpdf/${f:h(ApplyForm.imwSystemMatterId)}";
+    					window.location.href = "/imart/training_maisaka/downloadpdf/${f:h(ApplyForm.imwSystemMatterId)}?token=${f:h(FormClassRows.f_download_token_request)}";
     				},
     				error: function(xhr, status, e) {
     					console.log("AJAX ERROR : ", e);

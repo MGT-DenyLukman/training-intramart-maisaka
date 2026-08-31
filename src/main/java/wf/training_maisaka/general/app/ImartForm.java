@@ -71,6 +71,9 @@ public class ImartForm extends ImartWorkflowForm {
 	private String f_agreement_number;
 	private String f_agreement_date;
 	
+	//donwload token
+	private String f_download_token_request;
+	
 	
 	
 	public String getF_application_number() {
@@ -339,6 +342,12 @@ public class ImartForm extends ImartWorkflowForm {
 	}
 	public void setF_agreement_date(String f_agreement_date) {
 		this.f_agreement_date = f_agreement_date;
+	}
+	public String getF_download_token_request() {
+		return f_download_token_request;
+	}
+	public void setF_download_token_request(String f_download_token_request) {
+		this.f_download_token_request = f_download_token_request;
 	}
 
 

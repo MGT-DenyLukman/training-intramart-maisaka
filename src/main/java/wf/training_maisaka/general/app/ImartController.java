@@ -75,7 +75,7 @@ import wf.training_maisaka.general.domain.service.GeneratePDFService;
 public class ImartController {
 
 	@RequestMapping(value = "apply")
-	public final String apply(final Model model, final ImartForm ApplyForm) throws Exception {
+	public final String apply(final Model model, final ImartForm ApplyForm, final HttpServletRequest request) throws Exception {
 		WorkflowService service = new WorkflowService();
 		
 		if (PageType.pageTyp_App.toString().equals(ApplyForm.getImwPageType())) {
@@ -141,7 +141,7 @@ public class ImartController {
 			// REAPPLY
 			WorkflowService Service = new WorkflowService();
 			ImartForm FormClassRows = new ImartForm();
-			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId());
+			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId(), request);
 			
 			//check if agreement_status has "_"
 			String agreementStatus = FormClassRows.getF_agreement_status();
@@ -223,13 +223,13 @@ public class ImartController {
 	}
 
 	@RequestMapping({"detail", "confirm"})
-	public final String detail(final Model model, final ImartForm ApplyForm) throws Exception {
+	public final String detail(final Model model, final ImartForm ApplyForm, final HttpServletRequest request) throws Exception {
 		
 		try {
 			WorkflowService Service = new WorkflowService();
 			Service.debug("ApplyForm detail / confirm controller", ApplyForm);
 			ImartForm FormClassRows = new ImartForm();
-			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId());
+			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId(), request);
 			
 			//check if agreement_status has "_"
 			String agreementStatus = FormClassRows.getF_agreement_status();
@@ -260,6 +260,8 @@ public class ImartController {
 				ecApprovalIsReqYesChildren = ecApprovalIsReq.split("_")[1];
 				ecApprovalIsReq = ecApprovalIsReq.split("_")[0];
 			}
+			
+			//download token
 
 			Service.debug("FormClassRows detail controller", FormClassRows);
 			model.addAttribute("FormClassRows", FormClassRows);
@@ -280,12 +282,12 @@ public class ImartController {
 	}
 
 	@RequestMapping(value = "process")
-	public final String process(final Model model, final ImartForm ApplyForm) throws Exception {
+	public final String process(final Model model, final ImartForm ApplyForm, final HttpServletRequest request) throws Exception {
 		
 		try {
 			WorkflowService Service = new WorkflowService();
 			ImartForm FormClassRows = new ImartForm();
-			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId());
+			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId(), request);
 			
 			//check if agreement_status has "_"
 			String agreementStatus = FormClassRows.getF_agreement_status();
@@ -378,6 +380,15 @@ public class ImartController {
 		try {
 			WorkflowService service = new WorkflowService();
 
+		String clientToken = request.getParameter("token");
+		String sessionToken = request.getSession(false).getAttribute("download_token_request").toString();
+
+		Boolean checkToken = service.compareClientTokenAndSession(clientToken, sessionToken);
+		
+		if(!checkToken) {
+			return "Token is invalid";
+		}
+
 		String urlStr = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 		
 		String fileRealName = urlStr.substring(urlStr.lastIndexOf('/') + 1);
@@ -410,6 +421,19 @@ public class ImartController {
 	@RequestMapping(value = "downloadpdf/**")
 	public String downloadPDF(final Model  model, HttpServletRequest request) throws Exception {
 		try {
+
+		WorkflowService Service = new WorkflowService();
+
+		String clientToken = request.getParameter("token");
+		String sessionToken = request.getSession(false).getAttribute("download_token_request").toString();
+
+		Boolean checkToken = Service.compareClientTokenAndSession(clientToken, sessionToken);
+		
+		if(!checkToken) {
+			return "Token is invalid";
+		}
+		
+		
 		String urlStr = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 		String systemMatterId = urlStr.substring(urlStr.lastIndexOf('/') + 1);
 		
@@ -440,11 +464,23 @@ public class ImartController {
 	@ResponseBody
 	public String generatePDF(final Model model, final HttpServletRequest request) throws Exception {
 		try {
+			WorkflowService Service = new WorkflowService();
+
+			String clientToken = request.getParameter("token");
+			String sessionToken = request.getSession(false).getAttribute("download_token_request").toString();
+
+			Boolean checkToken = Service.compareClientTokenAndSession(clientToken, sessionToken);
+			
+			if(!checkToken) {
+				return "Token is invalid";
+			}
+
 			String matterId =request.getParameter("system_matter_id");
 			
 			GeneratePDFService generatePDFService = new GeneratePDFService();
 			
 			generatePDFService.createPDF(matterId);
+			return "success";
 			
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -452,7 +488,6 @@ public class ImartController {
 			return "error: " + e.getMessage();
 		}
 		
-		return "success";
 		
 	}
 	

@@ -21,13 +21,12 @@
 	<workflow:workflowOpenPageCsjs />
 	
 	<link href="ui/css/select2.min.css" rel="stylesheet" />
+	<link href="ui/css/table-style.css" rel="stylesheet" />
+
     <script src="ui/js/select2.min.js" type="text/javascript"></script>
     <script src="ui/js/jquery.validate.js" type="text/javascript"></script>
     
     <style>
-    	table.imui-form:not(#agreement_detail) th {
-    		width: 250px;
-    	}
 
     	table tbody tr td:last-child input[type="text"], 
     	table tbody tr td:last-child select,
@@ -597,7 +596,6 @@
 				
 				messages.upload_file = {required:"upload file required"};
 				
-
 				var validator = $('#workflowOpenPageForm').validate({
 					rules: rules,
 					messages: messages,
@@ -612,14 +610,51 @@
 					},
 					highlight: function(element, errorClass, validClass) {
 						var $element = $(element);
+
+						if($element.attr("id") == 'f_estimated_delivery_from'){
+							$secondElement = $('#f_estimated_delivery_to');
+							$secondElement.addClass('imui-validation-error');
+						}else if($element.attr("id") == 'f_estimated_delivery_to'){
+							$secondElement = $('#f_estimated_delivery_from');
+							$secondElement.addClass('imui-validation-error');
+						}							
+
+						if($element.attr("id") == 'f_effective_from'){
+							$secondElement = $('#f_effective_to');
+							$secondElement.addClass('imui-validation-error');
+						}else if($element.attr("id") == 'f_effective_to'){
+							$secondElement = $('#f_effective_from');
+							$secondElement.addClass('imui-validation-error');
+						}							
 						
 						$element.addClass('imui-validation-error');
 					},
 					unhighlight: function(element, errorClass, validClass) {
 						var $element = $(element);
+
+						if($element.attr("id") == 'f_estimated_delivery_from'){
+							$secondElement = $('#f_estimated_delivery_to');
+							$secondElement.removeClass('imui-validation-error');
+							$secondElement.parents('td').find('.error_message').empty();
+						}else if($element.attr("id") == 'f_estimated_delivery_to'){
+							$secondElement = $('#f_estimated_delivery_from');
+							$secondElement.removeClass('imui-validation-error');
+							$secondElement.parents('td').find('.error_message').empty();
+						}							
+
+						if($element.attr("id") == 'f_effective_from'){
+							$secondElement = $('#f_effective_to');
+							$secondElement.removeClass('imui-validation-error');
+							$secondElement.parents('td').find('.error_message').empty();
+						}else if($element.attr("id") == 'f_effective_to'){
+							$secondElement = $('#f_effective_from');
+							$secondElement.removeClass('imui-validation-error');
+							$secondElement.parents('td').find('.error_message').empty();
+						}							
 						
 						$element.removeClass('imui-validation-error');
 						$element.parents('td').find('.error_message').empty();
+						
 					}
 				})
 

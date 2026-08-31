@@ -1,0 +1,21 @@
+
+    	table.imui-form:not(#agreement_detail) th {
+    		width: 250px;
+    	}
+
+    	table.imui-form#agreement_detail th:first-child,
+    	table.imui-form#agreement_detail th:nth-child(2) {
+    		width: 125px;
+    	}
+    	
+    	@media screen and (max-width: 426px){
+			table.imui-form:not(#agreement_detail) th {
+				width: 150px;
+				background: blue;
+			}
+
+			table.imui-form#agreement_detail th:first-child,
+			table.imui-form#agreement_detail th:nth-child(2) {
+				width: 75px;
+			}
+    	}

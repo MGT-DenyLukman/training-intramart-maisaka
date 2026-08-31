@@ -1,7 +1,10 @@
 package wf.training_maisaka.general.domain.service;
 
+import javax.servlet.http.HttpServletRequest;
+
 import java.util.Collection;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import jp.co.intra_mart.foundation.service.client.file.PublicStorage;
 import jp.co.intra_mart.foundation.service.client.file.SessionScopeStorage;
@@ -22,7 +25,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class WorkflowService {
 	
-	public ImartForm getDataForForm(String column, String value) {
+	public ImartForm getDataForForm(String column, String value, HttpServletRequest request) {
 		ImartForm result = new ImartForm();
 		try {
 		
@@ -107,6 +110,9 @@ public class WorkflowService {
 				String agreementDate = entityData.getAgreement_date().replaceAll("-", "/");
 				result.setF_agreement_date(agreementDate);
 			}
+			
+			//download token
+			result.setF_download_token_request(this.generateDownloadToken(request));
 
 			
 		}catch(Exception e) {
@@ -138,6 +144,37 @@ public class WorkflowService {
 		}
 
 		return true;
+	}
+	
+	public String generateDownloadToken(HttpServletRequest request) throws Exception {
+		try {
+			String result = UUID.randomUUID().toString();
+			request.getSession().setAttribute("download_token_request", result);
+			return result;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return "e : " + e.getMessage();
+		}
+	}
+	
+	public Boolean compareClientTokenAndSession(String clientToken, String sessionToken) throws Exception {
+		this.debug("CLIENT TOKEN", clientToken);
+		this.debug("SESSION TOKEN", sessionToken);
+		try {
+			if(clientToken == null || sessionToken == null) {
+				return false;
+			}
+			
+			if(!clientToken.equals(sessionToken)) {
+				return false;
+			}
+			
+			return true;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return  false;
+		}
+		
 	}
 	
 	public void debug(String title, Object obj) {
