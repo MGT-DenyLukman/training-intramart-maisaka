@@ -127,25 +127,33 @@
 					<tbody>
 						<tr>
 							<th><label>Application Number</label></th>
-							<td><input name="f_application_number" value="${FormClassRows.f_application_number }" class="imui-text-readonly input_text_100"></td>
+							<td>
+								<label>${f:h(FormClassRows.f_application_number) }</label>
+							</td>
 							<th><label>Application Date</label></th>
-							<td><input name="f_application_date" value="${FormClassRows.f_application_date }" class="imui-text-readonly input_text_100"></td>
+							<td>
+								<label>${f:h(FormClassRows.f_application_date) }</label>
+							</td>
 						</tr>
 						<tr>
 							<th><label>Applicant Number</label></th>
-							<td><input name="f_applicant_number" value="${FormClassRows.f_applicant_number }" class="imui-text-readonly input_text_100"></td>
+							<td>
+								<label>${f:h(FormClassRows.f_application_number) }</label>
+							</td>
 							<th><label>Department Name</label></th>
 							<td>
-								<input name="f_applicant_dept_name" value="${FormClassRows.f_applicant_dept_name }" class="imui-text-readonly input_text_100">
+								<label>${f:h(FormClassRows.f_applicant_dept_name) }</label>
 								<div class="error_message"><label class="error">${dept_name_err_message }</label></div>
 							</td>
 						</tr>
 						<tr>
 							<th><label>Applicant Name</label></th>
-							<td><input name="f_applicant_name" value="${FormClassRows.f_applicant_name }" class="imui-text-readonly input_text_100"></td>
+							<td>
+								<label>${f:h(FormClassRows.f_applicant_name) }</label>
+							</td>
 							<th><label>Position Name</label></th>
 							<td>
-								<input name="f_applicant_pos_name" value="${FormClassRows.f_applicant_pos_name }" class="imui-text-readonly input_text_100">
+								<label>${f:h(FormClassRows.f_applicant_pos_name) }</label>
 								<div class="error_message"><label class="error">${pos_name_err_message }</label></div>
 							</td>
 						</tr>
@@ -160,13 +168,15 @@
 					<tbody>
 						<tr>
 						  <th><label class="imui-required">Counter Party (vendor name, etc)</label></th>
-						  <td><input name="f_vendor" type="text" placeholder="..." value="${FormClassRows.f_counter_party }" disabled></td>
+						  <td>
+								<label>${f:h(FormClassRows.f_counter_party) }</label>
+						  </td>
 						</tr>
 
 						<tr>
 						  <th><label class="imui-required">Currency</label></th>
 						  <td>
-						  	<select name="f_currency" disabled>
+						  	<select name="f_currency" >
 						  		<option value="IDR">IDR</option>
 						  	</select>
 						  </td>
@@ -174,7 +184,9 @@
 
 						<tr>
 						  <th><label class="imui-required">Total Amount (Without Tax)</label></th>
-						  <td><input name="f_total_amount" type="text" placeholder="100,000,000.00" value="${FormClassRows.f_total_amount_no_tax }" disabled></td>
+						  <td>
+								<label>${f:h(FormClassRows.f_total_amount_no_tax) }</label>
+						  </td>
 						</tr>
 
 						<tr>
@@ -182,13 +194,13 @@
 						  <td>
 						  		<input type="radio" id="one_time" name="f_agreement_status" value="1"
 						  			${FormClassRows.f_agreement_status == 1 ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="one_time">One Time/New</label>
 						  		<br>
 						  		<input type="radio" id="extension" name="f_agreement_status" value="2" 
 									  ${FormClassRows.f_agreement_status == "2_a" || FormClassRows.f_agreement_status == "2_b" ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="extension">Amendment/Extension/Renewal</label>
 						  		<br>
@@ -196,18 +208,18 @@
 									  <p>Total Duration from first cooperation until now</p>
 									  <input type="radio" id="gt_1" name="f_renewal" value="a"
 									  ${agreementStatusRenewal == "a" ? "checked" : "" }
-						  			disabled
+						  			
 									  />
 									  <label for="gt_1">More than 1 year</label>
 									  <input type="radio" id="lte_1" name="f_renewal" value="b"
 									  ${agreementStatusRenewal == "b" ? "checked" : "" }
-						  			disabled
+						  			
 									  />
 									  <label for="lte_1">up to 1 year</label>
 						  		</div>
 						  		<input type="radio" id="umbrella" name="f_agreement_status" value="3"
 						  			${FormClassRows.f_agreement_status == 3 ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="umbrella">Umbrella Agreement</label>
 						  </td>
@@ -218,13 +230,13 @@
 							<td>
 						  		<input type="radio" id="auto_extension_y" name="f_auto_extension" value="1" 
 						  			${FormClassRows.f_is_auto_extension == 1 ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="auto_extension_y">Yes</label>
 						  		<br>
 						  		<input type="radio" id="auto_extension_n" name="f_auto_extension" value="0"
 						  			${FormClassRows.f_is_auto_extension == 0 ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="auto_extension_n">No</label>
 							</td>
@@ -235,13 +247,13 @@
 							<td>
 						  		<input type="radio" id="purchase_order_req_y" name="f_purchase_order_req" value="1" 
 						  			${FormClassRows.f_purchase_order_req == 1 ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="purchase_order_req_y">Yes</label>
 						  		<br>
 						  		<input type="radio" id="purchase_order_req_n" name="f_purchase_order_req" value="0"
 						  			${FormClassRows.f_purchase_order_req == 0 ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="purchase_order_req_n">No</label>
 							</td>
@@ -249,22 +261,22 @@
 
 						<tr>
 						  <th><label class="imui-required">Title described in Agreement</label></th>
-						  <td><input name="f_title" type="text" placeholder="..." value="${FormClassRows.f_title_in_agreement }" disabled></td>
+						  <td>
+								<label>${f:h(FormClassRows.f_title_in_agreement) }</label>
+						  </td>
 						</tr>
 
 						<tr class="doublerow">
 						  <th rowspan="2"><label class="imui-required">Effective Date</label></th>
 						  <th><label class="imui-required">From</label></th>
 						  <td>
-						  <input id="f_effective_from" name="f_effective_from" type="text" value="${FormClassRows.f_effective_date_from }" disabled>
-							<im:calendar floatable="true" altField="#f_effective_from" disabled/>
+								<label>${f:h(FormClassRows.f_effective_date_from) }</label>
 						  </td>
 						</tr>
 						<tr class="doublerow">
 						  <th><label class="imui-required">To</label></th>
 						  <td>
-							  <input id="f_effective_to"  name="f_effective_to" type="text"  value="${FormClassRows.f_effective_date_to }" disabled>
-							<im:calendar floatable="true" altField="#f_effective_to" disabled/>
+								<label>${f:h(FormClassRows.f_effective_date_to) }</label>
 						  </td>
 						</tr>
 
@@ -273,13 +285,13 @@
 							<td>
 						  		<input type="radio" id="related_parties_y" name="f_related_company" value="1"
 						  			${FormClassRows.f_is_related_comp == 1 ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="related_parties_y">Related Parties [Shareholders (KY, MFTBC, MC, MCAH, Daimler), Subsidiary (i.e. KRM, MKM, BAS, BBD, BMC, etc.), Affiliates (i.e. DSF, BSI, MMKSI, MMKI, etc.)]</label>
 						  		<br>
 						  		<input type="radio" id="related_parties_n" name="f_related_company" value="0"
 						  			${FormClassRows.f_is_related_comp == 0 ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="related_parties_n">Non Related Parties</label>
 						  		<br>
@@ -291,21 +303,21 @@
 						  <th rowspan="2"><label class="imui-required">Estimated Delivery Schedule</label></th>
 						  <th><label class="imui-required">From</label></th>
 						  <td>
-						  <input id="f_estimated_delivery_from"  name="f_estimated_delivery_from" type="text" value="${FormClassRows.f_delivery_date_from}" disabled>
-							<im:calendar floatable="true" altField="#f_estimated_delivery_from" disabled/>
+								<label>${f:h(FormClassRows.f_delivery_date_from) }</label>
 						  </td>
 						</tr>
 						<tr class="doublerow">
 						  <th><label class="imui-required">To</label></th>
 						  <td>
-								  <input id="f_estimated_delivery_to"  name="f_estimated_delivery_to" type="text" value="${FormClassRows.f_delivery_date_to}" disabled>
-								<im:calendar floatable="true" altField="#f_estimated_delivery_to"  disabled/> 
+								<label>${f:h(FormClassRows.f_delivery_date_to) }</label>
 						  </td>
 						</tr>
 						
 						<tr>
 						  <th><label>Agreement Summary (main points only) (In case of contract in foreign currency need to describe exchange rate)</label></th>
-						  <td><textarea id="agreement_summary" name="f_agreement_summary" disabled>${FormClassRows.f_agreement_summary }</textarea></td>
+						  <td>
+								<label>${f:h(FormClassRows.f_agreement_summary) }</label>
+						  </td>
 						</tr>
 							
 					</tbody>
@@ -322,19 +334,19 @@
 						  <td>
 						  		<input type="radio" id="tangible_asset" name="f_purchase_category" value="1"
 						  			${FormClassRows.f_purchase_category == 1 ? "checked" : "" }
-						  			disabled
+						  			
 						  		 />
 						  		<label for="tangible_asset">Tangible Asset</label>
 
 						  		<input type="radio" id="intangible_asset" name="f_purchase_category" value="0"
 						  			${FormClassRows.f_purchase_category == 0 ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="intangible_asset">Intangible Asset</label>
 
 						  		<input type="radio" id="non_asset" name="f_purchase_category" value="9"
 						  			${FormClassRows.f_purchase_category == 9 ? "checked" : "" }
-						  			disabled
+						  			
 						  		/>
 						  		<label for="non_asset">Non-Asset</label>
 						  </td>
@@ -342,17 +354,20 @@
 						<tr class="depreciation_required_asset">
 						  <th><label class="imui-required">Starting Usage Date (Required if Asset)</label></th>
 						  <td>
-								  <input id="f_start_usage_date"  name="f_start_usage_date" type="text" value="${FormClassRows.f_starting_usage_date }">
-								<im:calendar floatable="true" altField="#f_start_usage_date"  disabled/>
+								<label>${f:h(FormClassRows.f_starting_usage_date) }</label>
 						  </td>
 						</tr>
 						<tr class="depreciation_required_asset">
 						  <th><label class="imui-required">Deprec Amount/Month (Required if Asset)</label></th>
-						  <td><input name="f_deprec_amount_per_month" type="text" placeholder="..." value="${FormClassRows.f_deprec_amount_per_month }" disabled></td>
+						  <td>
+								<label>${f:h(FormClassRows.f_deprec_amount_per_month) }</label>
+						  </td>
 						</tr>
 					</tbody>
 					</table>
 
+					<!-- START COMMENTED -->
+					<!-- 
 				<div id="section-pl-impact">
 					  <header class="imui-chapter-title">
 						<h2>PL Impact</h2>
@@ -395,6 +410,8 @@
 							</tr>
 						</tbody>
 					</table>
+					-->
+					<!-- END COMMENTED -->
 					
 					
 					  <header class="imui-chapter-title">
@@ -412,10 +429,11 @@
 							</tr>
 							<c:forEach items="${FormClassRows. d_estimated_schedule_payment}" var="row">
 								<tr>
-										<td><input type="text" name="f_es_amount_${row.id }" value="${row.payment_amount }" disabled/></td>
 										<td>
-											<input type="text" name="f_es_date_${row.id}"  id="f_es_date_${row.id}" value="${fn:replace(row.payment_date, '-', '/')}"  disabled/>
-										<im:calendar floatable="true" altField="#f_es_date_${row.id}" disabled/>
+												<label>${f:h(row.payment_amount) }</label>
+										</td>
+										<td>
+												<label>${f:h(row.payment_date.replaceAll("-", "/")) }</label>
 										</td>
 								</tr>
 							</c:forEach>
@@ -423,7 +441,9 @@
 									<th><label class="imui-required">Total Amount</label></th>
 							</tr>
 							<tr>
-									<td><input type="text"  name="f_es_total_amount" value="${esTotalAmount }" disabled/></td>
+									<td>
+											<label>${f:h(esTotalAmount) }</label>
+									</td>
 							</tr>
 						</tbody>
 					</table>
@@ -439,26 +459,26 @@
 									<td>
 											<input type="radio" id="pd_approval" name="f_agreement_classification" value="1" 
 											${agreementClassification == 1 ? "checked" : ""}
-											disabled
+											
 											/>
 											<label for="pd_approval">PD Approval (either one of condition below)</label>
 												<div class="pd_approval_childrens" style="padding-left: 2em">
 														<input type="radio" id="gte_1_billion" name="f_agreement_classification_1" value="1"
 														${agreementClassificationChildren == 1 ? "checked" : ""}
-														disabled
+														
 														/>
 														<label for="gte_1_billion">Agreement with amount is equal or more than 1 billion</label>
 														<br>
 														<input type="radio" id="gte_12_months" name="f_agreement_classification_1" value="2"
 														${agreementClassificationChildren == 2 ? "checked" : ""}
-														disabled
+														
 														/>
 														<label for="gte_12_months">Period is equal or more than 12 months</label>
 														<br>
 														<div>
 															<input type="radio" id="related_parties" name="f_agreement_classification_1" value="3"
 															${agreementClassificationChildren == 3 ? "checked" : ""}
-															disabled
+															
 															/>
 															<label for="related_parties">Agreement related to spesific party</label>
 															<br>
@@ -467,7 +487,7 @@
 
 														<input type="radio" id="special_issue" name="f_agreement_classification_1" value="4"
 															${agreementClassificationChildren == 4 ? "checked" : ""}
-															disabled
+															
 														/>
 														<label for="special_issue">Special issue</label>
 														<br>
@@ -475,7 +495,7 @@
 
 														<input type="radio" id="direct_procurement" name="f_agreement_classification_1" value="5"
 															${agreementClassificationChildren == 5 ? "checked" : ""}
-															disabled
+															
 														/>
 														<label for="direct_procurement">Direct Procurement due to either of the 2 cases below</label>
 														<br>
@@ -489,7 +509,7 @@
 											<div>
 												<input type="radio" id="dic_approval" name="f_agreement_classification" value="2"
 												${agreementClassification == 2 ? "checked" : ""}
-												disabled
+												
 												/>
 												<label for="dic_approval">DIC Director Approval</label>
 											</div>
@@ -500,32 +520,32 @@
 									<td>
 											<input type="radio" id="ec_approval_yes" name="f_ec_approval_is_required" value="1"
 												${ecApprovalIsReq == 1 ? "checked" : ""}
-												disabled
+												
 											/>	
 											<label for="ec_approval_yes">Yes</label>
 												<div class="ec_approval_yes_childrens" style="padding-left: 2em">
 														<input type="radio" id="amount_gte_1_billion" name="f_ec_approval_yes" value="1" 
 															${ecApprovalIsReqYesChildren == 1 ? "checked" : ""}
-															disabled
+															
 														/>	
 														<label for="amount_gte_1_billion">Amount is equal or more than 1 billion</label>
 														<br>	
 														<input type="radio" id="period_gt_12_month" name="f_ec_approval_yes" value="2"
 															${ecApprovalIsReqYesChildren == 2 ? "checked" : ""}
-															disabled
+															
 														/>	
 														<label for="period_gt_12_month">Period is equal or more than 12 months</label>
 														<br>	
 														<input type="radio" id="escalate_issue" name="f_ec_approval_yes" value="3"
 															${ecApprovalIsReqYesChildren == 3 ? "checked" : ""}
-															disabled
+															
 														/>	
 														<label for="escalate_issue">Director believes it is necessary to escalate the issue to EC</label>
 												</div>
 												<div>
 														<input type="radio" id="ec_approval_no" name="f_ec_approval_is_required" value="0"
 															${ecApprovalIsReq == 0 ? "checked" : ""}
-															disabled
+															
 														/>	
 														<label for="ec_approval_no">No</label>
 												</div>
@@ -546,13 +566,13 @@
 										<th><label class="imui-required">PSD Area or Non-PSD Area (Based on Guideline)</label></th>
 										<td>
 												<input type="radio" id="psd" name="f_psd_area_bog" value="1"
-												disabled
+												
 												${FormClassRows.f_psd_area_bog == 1 ? "checked" : "" }
 												 ${isUHDHDisabled}/>	
 												<label for="psd">PSD (go to #2)</label>
 												<br>
 												<input type="radio" id="psd_end" name="f_psd_area_bog" value="0"
-												disabled
+												
 												${FormClassRows.f_psd_area_bog == 0 ? "checked" : "" }
 												 ${isUHDHDisabled}/>	
 												<label for="psd_end">Non-PSD (End)</label>
@@ -563,17 +583,17 @@
 										<th><label class="imui-required">In PSD Area, PSD Process or DIC Process</label></th>
 										<td>
 												<input type="radio" id="psd_2" name="f_psd_process" value="PSD"
-												disabled
+												
 												${FormClassRows.f_psd_process == "PSD" ? "checked" : "" }
 												${isUHDHDisabled}/>	
 												<label for="psd_2">PSD (Pitching result attached)</label>
 												<br>
 												<input type="radio" id="psd_dic" name="f_psd_process" value="DIC" 
-												disabled
+												
 												${FormClassRows.f_psd_process == "DIC" ? "checked" : "" }
 												${isUHDHDisabled}/>	
 												<label for="psd_dic">DIC (Please describe the reason in the below)</label>
-												<textarea id="psd_dic_reason" name="f_dic_reason"  ${isUHDHDisabled} disabled>${FormClassRows.f_dic_reason}</textarea>
+												<textarea id="psd_dic_reason" name="f_dic_reason"  ${isUHDHDisabled} >${FormClassRows.f_dic_reason}</textarea>
 												<div class="error_message"></div>
 										</td>
 								</tr>
@@ -593,12 +613,12 @@
 										<th><label class="imui-required">D / D Process Required</label></th>
 										<td>
 												<input type="radio" id="dd_process_yes" name="f_dd_process" value="1" class="section_cco"
-												disabled
+												
 												${FormClassRows.f_dd_process == 1 ? "checked" : "" }
 												 ${isCCODisabled}/>	
 												<label for="dd_process_yes">Yes</label>
 												<input type="radio" id="dd_process_no" name="f_dd_process" value="0"  class="section_cco"
-												disabled
+												
 												${FormClassRows.f_dd_process == 0 ? "checked" : "" }
 												${isCCODisabled} />	
 												<label for="dd_process_no">No</label>
@@ -608,12 +628,12 @@
 										<th><label class="imui-required">Anti Bribery Clause Include</label></th>
 										<td>
 												<input type="radio" id="anti_bribery_yes" name="f_anti_bribery" value="1"  class="section_cco"
-												disabled
+												
 												${FormClassRows.f_anti_bribery == 1 ? "checked" : "" }
 												${isCCODisabled} />	
 												<label for="anti_bribery_yes">Yes</label>
 												<input type="radio" id="anti_bribery_no" name="f_anti_bribery" value="0"   class="section_cco"
-												disabled
+												
 												${FormClassRows.f_anti_bribery == 0 ? "checked" : "" }
 												${isCCODisabled}/>	
 												<label for="anti_bribery_no">No</label>
@@ -623,12 +643,12 @@
 										<th><label class="imui-required">Audit Right Included</label></th>
 										<td>
 												<input type="radio" id="audit_right_yes" name="f_audit_right" value="1"  class="section_cco"
-												disabled
+												
 												${FormClassRows.f_audit_right == 1 ? "checked" : "" }
 												${isCCODisabled}/>	
 												<label for="audit_right_yes">Yes</label>
 												<input type="radio" id="audit_right_no" name="f_audit_right" value="0" class="section_cco"
-												disabled
+												
 												${FormClassRows.f_audit_right == 0 ? "checked" : "" }
 												 ${isCCODisabled} />	
 												<label for="audit_right_no">No</label>
@@ -655,18 +675,14 @@
 								<tr>
 										<th><label class="imui-required">Agreement Number</label></th>
 										<td>
-											<input type="text" name="f_agreement_number" ${isLegalDisabled} value="${FormClassRows.f_agreement_number }"
-												disabled
-											/>
+											<label>${f:h(FormClassRows.f_agreement_number) }</label>
 											<div class="error_message"></div>
 										</td>
 								</tr>
 								<tr>
 										<th><label class="imui-required">Agreement Date</label></th>
 										<td>
-												<input type="text" id="agreement_date"  name="f_agreement_date" ${isLegalDisabled} value="${FormClassRows.f_agreement_date }"
-													disabled
-												/>
+											<label>${f:h(FormClassRows.f_agreement_date) }</label>
 												<div class="error_message"></div>
 										</td>
 								</tr>
@@ -674,10 +690,6 @@
 					</table>
 				</div>
 					
-					<!-- START COMMENTED -->
-					<!-- 
-					-->
-					<!-- END COMMENTED -->
 					
 
 
@@ -779,4 +791,4 @@
     	})
 	</script>
 
-    <script src="ui/js/script-detail-reapply-after-load.js" type="text/javascript"></script>
+    <script src="ui/js/script-prevent-default-radio.js" type="text/javascript"></script>

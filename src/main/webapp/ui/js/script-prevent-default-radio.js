@@ -1,0 +1,1 @@
+$('input[type="radio"]').click((event) => event.preventDefault());
