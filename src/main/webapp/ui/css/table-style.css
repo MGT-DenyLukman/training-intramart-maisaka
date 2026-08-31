@@ -8,6 +8,19 @@
     		width: 125px;
     	}
     	
+    	button {
+    		border-radius:5px;
+    		border: none;
+    		padding: 4px 8px;
+    	}
+    	
+    	
+    	table.imui-form#estimated_schedule th:first-child,
+    	table.imui-form#estimated_schedule td:first-child{
+    		width: 100px;
+    		text-align: center;
+    	}
+    	
     	@media screen and (max-width: 426px){
 			table.imui-form:not(#agreement_detail) th {
 				width: 150px;
