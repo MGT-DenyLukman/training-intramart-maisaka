@@ -96,6 +96,9 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			this.setMatterProperty("create", parameter.getUserDataId(), "maisaka_pd_approval", matterPropertyValueAgreementClassification);
 			this.setMatterProperty("create", parameter.getUserDataId(), "maisaka_ec_approval", matterPropertyValueEcApproval);
 			
+			//add new matter application_number to display on 案件一覧
+			this.setMatterProperty("create", parameter.getUserDataId(), "application_number", entity_HeaderInfo.getApplication_number());
+			
 			number = WorkflowNumberingManager.getNumber();
 
         } catch (final WorkflowException e) {
@@ -152,6 +155,8 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			this.setMatterProperty("update", parameter.getUserDataId(), "maisaka_pd_approval", matterPropertyValueAgreementClassification);
 			this.setMatterProperty("update", parameter.getUserDataId(), "maisaka_ec_approval", matterPropertyValueEcApproval);
 			
+			//update matter application_number to display on 案件一覧
+			this.setMatterProperty("update", parameter.getUserDataId(), "application_number", entity_HeaderInfo.getApplication_number());
 
         } catch (final WorkflowException e) {
         	e.printStackTrace();
