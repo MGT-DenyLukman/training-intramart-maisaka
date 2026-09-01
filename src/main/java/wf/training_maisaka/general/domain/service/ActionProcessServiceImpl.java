@@ -171,16 +171,18 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 		System.out.println("MASUK APPROVE");
 		
 		try {
+			/*
 			ActvMatterNode actvMatterNode = new ActvMatterNode(parameter.getSystemMatterId());
 			MatterNodeModel matterNodeModel =  actvMatterNode.getMatterNode(parameter.getNodeId());
 			String nodeName = matterNodeModel.getNodeName();
+			*/
 			
 			AgreementDetailTempRepository agreementDetailTempDB = new AgreementDetailTempRepository();
-			AgreementDetailModel entity = this.getEntity_ByNode(parameter, userParameter, nodeName);
+			AgreementDetailModel entity = this.getEntity_ByNode(parameter, userParameter, parameter.getNodeId());
 
-			agreementDetailTempDB.updateDataByNodeName(entity, nodeName);
+			agreementDetailTempDB.updateDataByNodeId(entity, parameter.getNodeId());
 
-			System.out.println("APPROVE " + nodeName +" SUCCESS");
+			System.out.println("APPROVE " + parameter.getNodeId() +" SUCCESS");
 		}catch(Exception e) {
 			
 		}
@@ -413,20 +415,20 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 	 }
 	 
 	 //get entity by node for multi user input
-	 private AgreementDetailModel getEntity_ByNode(final ActionProcessParameter parameter, final Map<String, Object> userParameter, final String nodeName) {
+	 private AgreementDetailModel getEntity_ByNode(final ActionProcessParameter parameter, final Map<String, Object> userParameter, final String nodeId) {
 		 	AgreementDetailModel result = new AgreementDetailModel();
 		 	
 		 	result.setSystem_matter_id(parameter.getSystemMatterId());
 		 	
-		 	if("UH/DH".equals(nodeName)) {
+		 	if("approver_uhdh".equals(nodeId)) {
 				 result.setIs_psd_area(getEntity_TryCatch_UserParameter(userParameter, "f_psd_area_bog"));
 				 result.setPsd_or_dic(getEntity_TryCatch_UserParameter(userParameter, "f_psd_process"));
 				 result.setDic_reason(getEntity_TryCatch_UserParameter(userParameter, "f_dic_reason"));
-		 	}else if("CCO".equals(nodeName)) {
+		 	}else if("approver_cco".equals(nodeId)) {
 				 result.setIs_dd_req(getEntity_TryCatch_UserParameter(userParameter, "f_dd_process"));
 				 result.setIs_anti_bribery(getEntity_TryCatch_UserParameter(userParameter, "f_anti_bribery"));
 				 result.setIs_audit_right(getEntity_TryCatch_UserParameter(userParameter, "f_audit_right"));
-		 	}else if("Legal".equals(nodeName)) {
+		 	}else if("approver_legal".equals(nodeId)) {
 				 result.setAgreement_number(getEntity_TryCatch_UserParameter(userParameter, "f_agreement_number"));
 				 result.setAgreement_date(getEntity_TryCatch_UserParameter(userParameter, "f_agreement_date"));
 		 	}

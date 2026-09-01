@@ -593,7 +593,7 @@
 												${FormClassRows.f_psd_process == "DIC" ? "checked" : "" }
 												${isUHDHDisabled}/>	
 												<label for="psd_dic">DIC (Please describe the reason in the below)</label>
-												<textarea id="psd_dic_reason" name="f_dic_reason"  ${isUHDHDisabled} >${FormClassRows.f_dic_reason}</textarea>
+												<br><label>${f:h(FormClassRows.f_dic_reason) }</label>
 												<div class="error_message"></div>
 										</td>
 								</tr>
@@ -653,12 +653,6 @@
 												 ${isCCODisabled} />	
 												<label for="audit_right_no">No</label>
 										</td>
-								</tr>
-								<tr>
-									<th><label>&nbsp;</label></th>
-									<td>
-										<div class="error_message"></div>
-									</td>
 								</tr>
 						</tbody>
 					</table>

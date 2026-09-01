@@ -341,16 +341,16 @@ public class ImartController {
 			String isCCODisabled = "unclickable";
 			String isLegalDisabled = "unclickable";
 
-			
-			
 			if("approver_uhdh".equals(ApplyForm.getImwNodeId())) {
 				isUHDHDisabled = "";
 			}
-			else if("approver_coo".equals(ApplyForm.getImwNodeId())) {
+			else if("approver_cco".equals(ApplyForm.getImwNodeId())) {
 				isCCODisabled = "";
 			}else if("approver_legal".equals(ApplyForm.getImwNodeId())) {
 				isLegalDisabled = "";
 			}
+			
+			
 
 			Service.debug("FormClassRows process controller", FormClassRows);
 			model.addAttribute("FormClassRows", FormClassRows);
@@ -366,6 +366,18 @@ public class ImartController {
 			model.addAttribute("isUHDHDisabled", isUHDHDisabled);
 			model.addAttribute("isCCODisabled", isCCODisabled);
 			model.addAttribute("isLegalDisabled", isLegalDisabled);
+
+			if("approver_uhdh".equals(ApplyForm.getImwNodeId())) {
+				return "wf/training_maisaka/general/process-uhdh.jsp";
+			}
+			else if("approver_cco".equals(ApplyForm.getImwNodeId())) {
+				return "wf/training_maisaka/general/process-cco.jsp";
+			}else if("approver_legal".equals(ApplyForm.getImwNodeId())) {
+				return "wf/training_maisaka/general/process-legal.jsp";
+			}else {
+				return "wf/training_maisaka/general/process-final.jsp";
+			}
+
 		} catch(Exception e) {
 			System.out.println("Error page process : " + e);
 			e.printStackTrace();

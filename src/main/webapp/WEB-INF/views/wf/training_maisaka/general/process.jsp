@@ -1,6 +1,6 @@
 
 <!-- 申請画面：PC購入申請の入力フォーム -->
-<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
+<%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8" isELIgnored="false"%>
 <%@ taglib prefix="imui" uri="http://www.intra-mart.co.jp/taglib/imui"%>
 <%@ taglib prefix="imart" uri="http://www.intra-mart.co.jp/taglib/core/standard"%>
 <%@ taglib prefix="workflow" uri="http://www.intra-mart.co.jp/taglib/imw/workflow"%>
@@ -105,6 +105,7 @@
     
     <script type="text/javascript">
     	$(function(){
+    		/*
     		$('input[name="f_psd_area_bog"]').change(function(){
 				if($(this).val() == 1){
 					$('#f_psd_area_second').show();
@@ -113,7 +114,6 @@
 				}
     		});   		
     		
-    		/*
 			$('#openPage').click(function(){
 				console.log("clicked process")
 				workflowOpenPage('${f:h(ApplyForm.imwPageType)}');
@@ -123,184 +123,6 @@
     	})
     </script>
 
-	<script type="text/javascript">
-				//var valid = imuiValidate("#workflowOpenPageForm", rules, messages);
-
-		
-		function workflowValidate() {
-				$('.error_message').empty();
-				
-				rules = {}
-				messages = {}
-				groups = {}
-			
-				const isUHDHDisabled = '${isUHDHDisabled}';
-				const isCCODisabled = '${isCCODisabled}';
-				const isLegalDisabled = '${isLegalDisabled}';
-				
-				if(isUHDHDisabled != 'unclickable'){
-					rules.f_psd_area_bog = {required: true, id: false};
-					messages.f_psd_area_bog = {required: "チェックしてください"}
-					
-					if($('input[name="f_psd_area_bog"]')[0].checked == true){
-						rules.f_psd_process = {required: true, id: false};
-						messages.f_psd_process = {required: "チェックしてください"}
-					}
-
-					if($('input[name="f_psd_process"]')[1].checked == true){
-						rules.f_dic_reason = {required: true, id: false}
-						messages.f_dic_reason = {required: "チェックしてください"}
-					}
-				}else if(isCCODisabled != 'unclickable'){
-					rules.f_dd_process = {required: true, id: false};
-					messages.f_dd_process = {required: "チェックしてください"}
-
-					rules.f_anti_bribery = {required: true, id: false};
-					messages.f_anti_bribery = {required: "チェックしてください"}
-
-					rules.f_audit_right = {required: true, id: false};
-					messages.f_audit_right = {required: "チェックしてください"}
-					
-					
-					//groups.group_cco = "f_dd_process f_anti_bribery f_audit_right";
-				}else if(isLegalDisabled != 'unclickable') {
-					rules.f_agreement_number = {
-							required: true,
-							id: false,
-					}
-					rules.f_agreement_date = {
-							required: true,
-							validDate: true,
-							id: false,
-					}
-					messages.f_agreement_number = {required: "Agreement Numberを入力してください"}
-					messages.f_agreement_date = {required: "Agreement Dateを入力してください"}
-					
-				}
-				
-				
-
-				var validator = $('#workflowOpenPageForm').validate({
-					rules: rules,
-					messages: messages,
-					//groups: groups,
-					errorPlacement: function(error, element) {
-						var $element = $(element);
-						var error_message = error.get(0);
-						if($element.attr('id') == 'upload_file'){
-							$('#section-upload').find('.error_message').html(error_message);
-						} else if($element.hasClass("section_cco")){
-							$element.parents("table").find(".error_message").html(error_message);
-						} else if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
-							$element.parent().find(".error_message").html(error_message);
-						}else{
-							$element.parents('td').find('.error_message').html(error_message);
-						}
-					},
-					highlight: function(element, errorClass, validClass) {
-						var $element = $(element);
-						
-						if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
-							$('input[name="'+$element.attr("name")+'"]').addClass("imui-validation-error");
-						}else{
-							$element.addClass('imui-validation-error');
-						}
-					},
-					unhighlight: function(element, errorClass, validClass) {
-						var $element = $(element);
-						
-						if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
-							$('input[name="'+$element.attr("name")+'"]').removeClass("imui-validation-error");
-						}else{
-							$element.removeClass('imui-validation-error');
-							
-						}
-					}
-				})
-
-				var message_startDateLessThan = "開始日は終了日より後に設定できません。 ";
-				var message_endDateGreaterThan = "終了日は開始日より前に設定できません。 ";
-				var message_validDate = "有効な日付を入力してください。(yyyy/MM/dd)";
-				var message_ensureUploadedFileExist = "file is required!";
-				
-				
-				$.validator.messages.startDateLessThan = message_startDateLessThan;
-				$.validator.messages.endDateGreaterThan = message_endDateGreaterThan;
-				$.validator.messages.validDate = message_validDate;
-				$.validator.messages.ensureUploadedFileExist = message_ensureUploadedFileExist;
-				
-				$.validator.addMethod("startDateLessThan", function(value, element, params) {
-					if(this.optional(element)) {
-						return true;
-					}
-					
-					console.log("PARAMS", params)
-					
-					var endDateValue = $(params).val();
-					if(!endDateValue) return true;
-					
-					var startDate = new Date(value.replace(/\//g, '-'));
-					var endDate = new Date(endDateValue.replace(/\//g, '-'));
-					
-					return startDate <= endDate;
-				});
-				
-
-				$.validator.addMethod("endDateGreaterThan", function(value, element, params) {
-					if(this.optional(element)) {
-						return true;
-					}
-					var startDateValue = $(params).val();
-					if(!startDateValue) return true;
-					
-					var startDate = new Date(startDateValue.replace(/\//g, '-'));
-					var endDate = new Date(value.replace(/\//g, '-'));
-
-					
-					return  endDate >= startDate;
-				});
-				
-				$.validator.addMethod("validDate", function(value, element) {
-					if(this.optional(element)){
-						return true;
-					}
-					
-					var splitted = value.split("/");
-					var year = parseInt(splitted[0], 10);
-					var month = parseInt(splitted[1], 10) - 1;
-					var day = parseInt(splitted[2], 10);
-					
-					var date = new Date(year, month, day);
-
-					return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day
-				});
-
-				console.log(validator)
-				
-				return validator.form();
-			
-		}
-		
-		
-		
-		$(function(){
-
-			$('#openPage').click(function(){
-				imuiResetForm("#workflowOpenPageForm");
-				
-
-				if(workflowValidate()){
-                    workflowOpenPage('${f:h(ApplyForm.imwPageType)}');
-                } else {
-                    //imuiShowErrorMessage('インプットのエラーが発生しまいした。.', [], true, 2500, false);
-                    
-                    
-				}
-			})
-		})
-
-
-	</script>
     
 </imui:head>
 
@@ -772,136 +594,12 @@
 						</tbody>
 					</table>
 					
-					<c:if test="${FormClassRows.f_purchase_order_req == 1}">
-					<div id="section-psd-check">
-					  <header class="imui-chapter-title">
-						<h2>PSD Check (by UH or DH, PSD)</h2>
-					</header>
+					<div id="container-multi-user-input">
+					  ${param.content}
+					</div>
 
-					<table id="psd_check" class="imui-form tab_header">
-						<tbody>
-								<tr>
-										<th><label class="imui-required">PSD Area or Non-PSD Area (Based on Guideline)</label></th>
-										<td>
-												<input type="radio" id="psd" name="f_psd_area_bog" value="1"
-												${FormClassRows.f_psd_area_bog == 1 ? "checked" : "" }
-												 class="${isUHDHDisabled}"/>	
-												<label for="psd">PSD (go to #2)</label>
-												<br>
-												<input type="radio" id="psd_end" name="f_psd_area_bog" value="0"
-												${FormClassRows.f_psd_area_bog == 0 ? "checked" : "" }
-												 class="${isUHDHDisabled}"/>	
-												<label for="psd_end">Non-PSD (End)</label>
-												<div class="error_message"></div>
-										</td>
-								</tr>
-								<tr id="f_psd_area_second">
-										<th><label class="imui-required">In PSD Area, PSD Process or DIC Process</label></th>
-										<td>
-												<input type="radio" id="psd_2" name="f_psd_process" value="PSD"
-												${FormClassRows.f_psd_process == "PSD" ? "checked" : "" }
-												class="${isUHDHDisabled}"/>	
-												<label for="psd_2">PSD (Pitching result attached)</label>
-												<br>
-												<input type="radio" id="psd_dic" name="f_psd_process" value="DIC" 
-												${FormClassRows.f_psd_process == "DIC" ? "checked" : "" }
-												class="${isUHDHDisabled}"/>	
-												<label for="psd_dic">DIC (Please describe the reason in the below)</label>
-												<textarea id="psd_dic_reason" name="f_dic_reason"  
-												class="${isUHDHDisabled}">
-												${FormClassRows.f_dic_reason}</textarea>
-												<div class="error_message"></div>
-										</td>
-								</tr>
-						</tbody>
-					</table>
-				</div>
-				</c:if>
-
-				<div id="section-cco">
-					  <header class="imui-chapter-title">
-						<h2>Compliance Check By CCO</h2>
-					</header>
-
-					<table id="compliance_check" class="imui-form tab_header">
-						<tbody>
-								<tr>
-										<th><label class="imui-required">D / D Process Required</label></th>
-										<td>
-												<input type="radio" id="dd_process_yes" name="f_dd_process" value="1" class="section_cco ${isCCODisabled }"
-												${FormClassRows.f_dd_process == 1 ? "checked" : "" }
-												 />	
-												<label for="dd_process_yes">Yes</label>
-												<input type="radio" id="dd_process_no" name="f_dd_process" value="0"  class="section_cco ${isCCODisabled }"
-												${FormClassRows.f_dd_process == 0 ? "checked" : "" }
-												/>	
-												<label for="dd_process_no">No</label>
-										</td>
-								</tr>
-								<tr>
-										<th><label class="imui-required">Anti Bribery Clause Include</label></th>
-										<td>
-												<input type="radio" id="anti_bribery_yes" name="f_anti_bribery" value="1"  class="section_cco ${isCCODisabled }"
-												${FormClassRows.f_anti_bribery == 1 ? "checked" : "" }
-												/>	
-												<label for="anti_bribery_yes">Yes</label>
-												<input type="radio" id="anti_bribery_no" name="f_anti_bribery" value="0"   class="section_cco ${isCCODisabled }"
-												${FormClassRows.f_anti_bribery == 0 ? "checked" : "" }
-												/>	
-												<label for="anti_bribery_no">No</label>
-										</td>
-								</tr>
-								<tr>
-										<th><label class="imui-required">Audit Right Included</label></th>
-										<td>
-												<input type="radio" id="audit_right_yes" name="f_audit_right" value="1"  class="section_cco ${isCCODisabled }"
-												${FormClassRows.f_audit_right == 1 ? "checked" : "" }
-												/>	
-												<label for="audit_right_yes">Yes</label>
-												<input type="radio" id="audit_right_no" name="f_audit_right" value="0" class="section_cco ${isCCODisabled }"
-												${FormClassRows.f_audit_right == 0 ? "checked" : "" }
-												 />	
-												<label for="audit_right_no">No</label>
-										</td>
-								</tr>
-								<tr>
-									<th><label>&nbsp;</label></th>
-									<td>
-										<div class="error_message"></div>
-									</td>
-								</tr>
-						</tbody>
-					</table>
-				</div>
 					
 					
-				<div id="section-legal">
-					  <header class="imui-chapter-title">
-						<h2>Filled By Legal</h2>
-					</header>
-
-					<table id="filled_by_legal" class="imui-form tab_header">
-						<tbody>
-								<tr>
-										<th><label class="imui-required">Agreement Number</label></th>
-										<td>
-											<input type="text" name="f_agreement_number" class="${isLegalDisabled}" value="${FormClassRows.f_agreement_number }"/>
-											<div class="error_message"></div>
-										</td>
-								</tr>
-								<tr>
-										<th><label class="imui-required">Agreement Date</label></th>
-										<td>
-												<input type="text" id="agreement_date"  name="f_agreement_date" class="${isLegalDisabled}" value="${FormClassRows.f_agreement_date }"/>
-												<c:if test="${isLegalDisabled != 'unclickable'}">
-													<im:calendar floatable="true" altField="#agreement_date" />
-												</c:if>
-												<div class="error_message"></div>
-										</td>
-								</tr>
-						</tbody>
-					</table>
-				</div>
 					
 					
 
@@ -978,5 +676,191 @@
     		
     		$("input[type='radio'].unclickable").click((event) => event.preventDefault());
     		$("input[type='text'].unclickable").css({display: "none"})
+    		$("textarea.unclickable").css({display: "none"})
     	})
+	</script>
+
+	<script type="text/javascript">
+				//var valid = imuiValidate("#workflowOpenPageForm", rules, messages);
+
+		
+		function workflowValidate(rules, messages) {
+				$('.error_message').empty();
+				
+				$('.unclickable').each((idx, element) => {
+					rules[$(element).attr('name')] = {id: false}
+				})
+				
+				/*
+				rules = {}
+				messages = {}
+				groups = {}
+			
+				const isUHDHDisabled = '${isUHDHDisabled}';
+				const isCCODisabled = '${isCCODisabled}';
+				const isLegalDisabled = '${isLegalDisabled}';
+				
+				if(isUHDHDisabled != 'unclickable'){
+					rules.f_psd_area_bog = {required: true, id: false};
+					messages.f_psd_area_bog = {required: "チェックしてください"}
+					
+					if($('input[name="f_psd_area_bog"]')[0].checked == true){
+						rules.f_psd_process = {required: true, id: false};
+						messages.f_psd_process = {required: "チェックしてください"}
+					}
+
+					if($('input[name="f_psd_process"]')[1].checked == true){
+						rules.f_dic_reason = {required: true, id: false}
+						messages.f_dic_reason = {required: "チェックしてください"}
+					}
+				}else if(isCCODisabled != 'unclickable'){
+					rules.f_dd_process = {required: true, id: false};
+					messages.f_dd_process = {required: "チェックしてください"}
+
+					rules.f_anti_bribery = {required: true, id: false};
+					messages.f_anti_bribery = {required: "チェックしてください"}
+
+					rules.f_audit_right = {required: true, id: false};
+					messages.f_audit_right = {required: "チェックしてください"}
+					
+					
+					//groups.group_cco = "f_dd_process f_anti_bribery f_audit_right";
+				}else if(isLegalDisabled != 'unclickable') {
+					rules.f_agreement_number = {
+							required: true,
+							id: false,
+					}
+					rules.f_agreement_date = {
+							required: true,
+							validDate: true,
+							id: false,
+					}
+					messages.f_agreement_number = {required: "Agreement Numberを入力してください"}
+					messages.f_agreement_date = {required: "Agreement Dateを入力してください"}
+					
+				}
+				
+				*/
+				
+
+				var validator = $('#workflowOpenPageForm').validate({
+					rules: rules,
+					messages: messages,
+					//groups: groups,
+					errorPlacement: function(error, element) {
+						var $element = $(element);
+						var error_message = error.get(0);
+						if($element.attr('id') == 'upload_file'){
+							$('#section-upload').find('.error_message').html(error_message);
+						} else if($element.hasClass("section_cco")){
+							$element.parents("table").find(".error_message").html(error_message);
+						} else if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
+							$element.parent().find(".error_message").html(error_message);
+						}else{
+							$element.parents('td').find('.error_message').html(error_message);
+						}
+					},
+					highlight: function(element, errorClass, validClass) {
+						var $element = $(element);
+						
+						if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
+							$('input[name="'+$element.attr("name")+'"]').addClass("imui-validation-error");
+						}else{
+							$element.addClass('imui-validation-error');
+						}
+					},
+					unhighlight: function(element, errorClass, validClass) {
+						var $element = $(element);
+						
+						if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
+							$('input[name="'+$element.attr("name")+'"]').removeClass("imui-validation-error");
+						}else{
+							$element.removeClass('imui-validation-error');
+							
+						}
+					}
+				})
+
+				var message_validDate = "有効な日付を入力してください。(yyyy/MM/dd)";
+				var message_ensureUploadedFileExist = "file is required!";
+				
+				
+				$.validator.messages.validDate = message_validDate;
+				$.validator.messages.ensureUploadedFileExist = message_ensureUploadedFileExist;
+				
+				/*
+				var message_startDateLessThan = "開始日は終了日より後に設定できません。 ";
+				var message_endDateGreaterThan = "終了日は開始日より前に設定できません。 ";
+				$.validator.messages.startDateLessThan = message_startDateLessThan;
+				$.validator.messages.endDateGreaterThan = message_endDateGreaterThan;
+				$.validator.addMethod("startDateLessThan", function(value, element, params) {
+					if(this.optional(element)) {
+						return true;
+					}
+					
+					console.log("PARAMS", params)
+					
+					var endDateValue = $(params).val();
+					if(!endDateValue) return true;
+					
+					var startDate = new Date(value.replace(/\//g, '-'));
+					var endDate = new Date(endDateValue.replace(/\//g, '-'));
+					
+					return startDate <= endDate;
+				});
+				
+
+				$.validator.addMethod("endDateGreaterThan", function(value, element, params) {
+					if(this.optional(element)) {
+						return true;
+					}
+					var startDateValue = $(params).val();
+					if(!startDateValue) return true;
+					
+					var startDate = new Date(startDateValue.replace(/\//g, '-'));
+					var endDate = new Date(value.replace(/\//g, '-'));
+
+					
+					return  endDate >= startDate;
+				});
+				*/
+				
+				$.validator.addMethod("validDate", function(value, element) {
+					if(this.optional(element)){
+						return true;
+					}
+					
+					var splitted = value.split("/");
+					var year = parseInt(splitted[0], 10);
+					var month = parseInt(splitted[1], 10) - 1;
+					var day = parseInt(splitted[2], 10);
+					
+					var date = new Date(year, month, day);
+
+					return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day
+				});
+
+				console.log(validator)
+				
+				return validator.form();
+			
+		}
+
+		$(function(){
+
+			$('#openPage').click(function(){
+				imuiResetForm("#workflowOpenPageForm");
+				
+
+				if(workflowValidate(rules, messages)){
+                    workflowOpenPage('${f:h(ApplyForm.imwPageType)}');
+                } else {
+                    //imuiShowErrorMessage('インプットのエラーが発生しまいした。.', [], true, 2500, false);
+                    
+                    
+				}
+			})
+		})
+
+
 	</script>

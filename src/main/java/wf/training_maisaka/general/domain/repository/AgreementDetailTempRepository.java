@@ -38,9 +38,9 @@ public class AgreementDetailTempRepository {
 		sqlManager.update(table_name, columnVal, searchCondition);
 	}
 	
-	public void updateDataByNodeName(AgreementDetailModel varAgreementDetailData, String nodeName) throws Exception {
+	public void updateDataByNodeId(AgreementDetailModel varAgreementDetailData, String nodeId) throws Exception {
 		SQLManager sqlManager = new SQLManager();
-		ColumnValues columnVal = this.setDataByNode(varAgreementDetailData, nodeName);
+		ColumnValues columnVal = this.setDataByNode(varAgreementDetailData, nodeId);
 		SearchCondition searchCondition = new SearchCondition();
 		
 		searchCondition.addCondition("system_matter_id", varAgreementDetailData.getSystem_matter_id());
@@ -48,21 +48,21 @@ public class AgreementDetailTempRepository {
 		sqlManager.update(table_name, columnVal, searchCondition);
 	}
 	
-	private ColumnValues setDataByNode(AgreementDetailModel varAgreementDetailData, String nodeName) {
+	private ColumnValues setDataByNode(AgreementDetailModel varAgreementDetailData, String nodeId) {
 		ColumnValues result = new ColumnValues();
 		try {
 			LocalDateTime now = LocalDateTime.now();
 			Timestamp timestamp = Timestamp.valueOf(now.toString("yyyy-MM-dd HH:mm:ss"));
 
-			if("UH/DH".equals(nodeName)) {
+			if("approver_uhdh".equals(nodeId)) {
 				result.add("is_psd_area", varAgreementDetailData.getIs_psd_area());
 				result.add("psd_or_dic", varAgreementDetailData.getPsd_or_dic());
 				result.add("dic_reason", varAgreementDetailData.getDic_reason());
-			}else if("CCO".equals(nodeName)) {
+			}else if("approver_cco".equals(nodeId)) {
 				result.add("is_dd_req", varAgreementDetailData.getIs_dd_req());
 				result.add("is_anti_bribery", varAgreementDetailData.getIs_anti_bribery());
 				result.add("is_audit_right", varAgreementDetailData.getIs_audit_right());
-			}else if("Legal".equals(nodeName)) {
+			}else if("approver_legal".equals(nodeId)) {
 				SimpleDateFormat SDF = new SimpleDateFormat("yyyy/MM/dd");
 				Date agreementDate = SDF.parse(varAgreementDetailData.getAgreement_date());
 
