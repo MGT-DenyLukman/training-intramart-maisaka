@@ -6,6 +6,7 @@ import jp.co.intra_mart.foundation.user_context.model.UserProfile;
 import jp.co.intra_mart.foundation.user_context.model.UserCategory;
 import jp.co.intra_mart.foundation.user_context.model.Department;
 import jp.co.intra_mart.foundation.user_context.model.DepartmentPost;
+import jp.co.intra_mart.foundation.context.model.ClientContext;
 
 import jp.co.intra_mart.foundation.workflow.application.general.ActvMatter;
 import jp.co.intra_mart.foundation.workflow.application.general.ActvMatterNode;
@@ -273,11 +274,19 @@ public class ImartController {
 			model.addAttribute("ecApprovalIsReqYesChildren", ecApprovalIsReqYesChildren);
 			model.addAttribute("esTotalAmount", esTotalAmount);
 			model.addAttribute("ApplyForm", ApplyForm);
+
+			ClientContext clientContext = Contexts.get(ClientContext.class);
+			String clientType = clientContext.getClientTypeId();
+			
+			if("sp".equals(clientType)) {
+				return "wf/training_maisaka/general/sp/detail.jsp";
+			}else if("pc".equals(clientType)) {
+				return "wf/training_maisaka/general/detail.jsp";
+			}
 		} catch(Exception e) {
 			System.out.println("Error page detail : " + e);
 			e.printStackTrace();
 		}
-		
 		return "wf/training_maisaka/general/detail.jsp";
 	}
 

@@ -38,11 +38,11 @@ public class GeneratePDFService {
 					+ "<html>"
 					+ "<head>"
 					+"		<meta charset='UTF-8'>"
-					+"<link href='ui/css/select2.min.css' rel='stylesheet' />"
-				    +"<script src='ui/js/select2.min.js' type='text/javascript'></script>"
-				    +"<script src='ui/js/jquery.validate.js' type='text/javascript'></script>"
+					+"		<link href='ui/css/select2.min.css' rel='stylesheet' />"
+				    +"		<script src='ui/js/select2.min.js' type='text/javascript'></script>"
+				    +"		<script src='ui/js/jquery.validate.js' type='text/javascript'></script>"
 				    
-				    +"<script src='ui/js/script-detail-reapply.js' type='text/javascript'></script>"
+				    +"		<script src='ui/js/script-detail-reapply.js' type='text/javascript'></script>"
 				    
 				    +"<style>"
 				    	+"table tbody tr td:last-child input[type='text'], "
@@ -88,6 +88,12 @@ public class GeneratePDFService {
 					+ ""
 					+ "				table#agreement_detail td {"
 					+ "						width: 600px;"
+					+ "				}"
+					+ ""
+					+ ""
+					 +"@page { size: A4; margin: 2cm; @bottom-center { content: 'Page ' counter(page) ' of ' counter(pages); } }"
+					+ "				.page-break-before {"
+					+ "						page-break-before: always;"
 					+ "				}"
 					+ "		</style>"
 					+ "</head>"
@@ -237,7 +243,7 @@ public class GeneratePDFService {
 					+"</tbody>"
 				+"</table>"
 
-				  +"<header class='imui-chapter-title'>"
+				  +"<header class='imui-chapter-title page-break-before'>"
 					+"<h2>Depreciation Check</h2>"
 				+"</header>"
 
