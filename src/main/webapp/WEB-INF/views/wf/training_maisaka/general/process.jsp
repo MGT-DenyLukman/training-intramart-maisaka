@@ -105,20 +105,10 @@
     
     <script type="text/javascript">
     	$(function(){
-    		/*
-    		$('input[name="f_psd_area_bog"]').change(function(){
-				if($(this).val() == 1){
-					$('#f_psd_area_second').show();
-				}else{
-					$('#f_psd_area_second').hide();
-				}
-    		});   		
-    		
-			$('#openPage').click(function(){
-				console.log("clicked process")
-				workflowOpenPage('${f:h(ApplyForm.imwPageType)}');
-		    });
-    		*/
+			$('#back').click(function() {
+				$('#backForm').submit();
+				return false;
+			});
     		
     	})
     </script>

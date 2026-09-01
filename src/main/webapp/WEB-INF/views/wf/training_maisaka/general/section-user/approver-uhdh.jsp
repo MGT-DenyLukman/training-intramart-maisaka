@@ -1,4 +1,5 @@
 <%@ taglib prefix="f" uri="http://terasoluna.org/functions"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <div id="section-psd-check">
 	  <header class="imui-chapter-title">
 		<h2>PSD Check (by UH or DH, PSD)</h2>
@@ -34,7 +35,7 @@
 								class="${isUHDHDisabled}"/>	
 								<label for="psd_dic">DIC (Please describe the reason in the below)</label>
 								<c:choose>
-									<c:when test="${FormClassRows.f_dic_reason != ''}">
+									<c:when test="${isUHDHDisabled == 'unclickable'}">
 										<br><label>${f:h(FormClassRows.f_dic_reason)}</label>
 									</c:when>
 									<c:otherwise>

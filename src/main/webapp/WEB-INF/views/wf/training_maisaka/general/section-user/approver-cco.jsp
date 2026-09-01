@@ -46,7 +46,7 @@
 				</tr>
 				<c:if test="${isCCODisabled != 'unclickable' }">
 				<tr>
-					<th><label>&nbsp;</label></th>
+					<td><label>&nbsp;</label></td>
 					<td>
 						<div class="error_message"></div>
 					</td>

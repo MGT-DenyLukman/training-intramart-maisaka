@@ -29,6 +29,7 @@
     <script src="ui/js/script-detail-reapply.js" type="text/javascript"></script>
     
     <style>
+
     	table tbody tr td:last-child input[type="text"], 
     	table tbody tr td:last-child select,
     	table tbody tr td:last-child input[type="date"] {
@@ -62,6 +63,13 @@
     		background: yellow;
     		width: fit-content;
     	}
+
+    	table.imui-form#estimated_schedule tr:not(:first-child) th:first-child,
+    	table.imui-form#estimated_schedule tr:not(:first-child) td:first-child{
+    		width: 150px;
+    		text-align: center;
+    	}
+    	
     </style>
     
 
@@ -91,7 +99,7 @@
  	<div class="imui-toolbar-inner">
 		<ul class="imui-list-toolbar">
 			<li>
-				<a href="javascript:void(0);" id="back">
+				<a href="javascript:history.go(-1)" id="back">
 					<span class="im-ui-icon-common-16-back"></span>
 				</a>
 			</li>

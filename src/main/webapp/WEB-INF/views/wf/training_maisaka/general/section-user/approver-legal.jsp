@@ -1,4 +1,5 @@
 <%@ taglib prefix="im" uri="http://www.intra-mart.co.jp/taglib/im-tenant"%>
+<%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="f" uri="http://terasoluna.org/functions"%>
 <div id="section-legal">
 	  <header class="imui-chapter-title">
@@ -11,8 +12,8 @@
 						<th><label class="imui-required">Agreement Number</label></th>
 						<td>
 							<c:choose>
-								<c:when test="${FormClassRows.f_agreement_number == ''}">
-									<input type="text" name="f_agreement_number" class="${isLegalDisabled}"/>
+								<c:when test="${isLegalDisabled != 'unclickable'}">
+									<input type="text" name="f_agreement_number" class="${isLegalDisabled}" value="${f:h(FormClassRows.f_agreement_number) }"/>
 								</c:when>
 								<c:otherwise>
 									<label>${f:h(FormClassRows.f_agreement_number) }</label>
@@ -25,10 +26,10 @@
 						<th><label class="imui-required">Agreement Date</label></th>
 						<td>
 							<c:choose>
-								<c:if test="${FormClassRows.f_agreement_date == ''}">
-									<input type="text" id="agreement_date"  name="f_agreement_date" class="${isLegalDisabled}" />
+								<c:when test="${isLegalDisabled != 'unclickable'}">
+									<input type="text" id="agreement_date"  name="f_agreement_date" class="${isLegalDisabled}" value="${f:h(FormClassRows.f_agreement_date.replaceAll('-','/')) }"/>
 									<im:calendar floatable="true" altField="#agreement_date"/>
-								</c:if>
+								</c:when>
 								<c:otherwise>
 									<label>${f:h(FormClassRows.f_agreement_date.replaceAll("-","/")) }</label>
 								</c:otherwise>
