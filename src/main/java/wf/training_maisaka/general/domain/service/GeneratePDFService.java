@@ -44,23 +44,6 @@ public class GeneratePDFService {
 				    
 				    +"		<script src='ui/js/script-detail-reapply.js' type='text/javascript'></script>"
 				    
-				    +"<style>"
-				    	+"table tbody tr td:last-child input[type='text'], "
-				    	+"table tbody tr td:last-child select,"
-				    	+"table tbody tr td:last-child input[type='date'] {"
-				    		+"width: 60%;"
-				    	+"}"
-				    	+"#agreement_summary {"
-				    		+"width: 60%;"
-				    		+"height: 100px;"
-				    	+"}"
-				    	
-				    	+"#psd_dic_reason {"
-				    		+"display: none;"
-				    		+"width: 80%;"
-				    		+"height: 80px;"
-				    	+"}"
-				    	+ "</style>"
 					+ "		<style>"
 					+ "				.title {"
 					+ "						text-align: center;"
@@ -80,21 +63,57 @@ public class GeneratePDFService {
 					+ "				table td,"
 					+ "				table th {"
 					+ "						border: 1px solid black;"
-					+ "						pading: 4px;"
+					+ "						padding:4px;"
+					+ "				}"
+					+ "				"
+					+ "				div.checked {"
+					+ "					width: 15px;"
+					+ "					height:15px;"
+					+ "					background: black;"
+					+ "					border-radius:50px;"
+					+ "					display:inline-block;"
+					+ "					margin: 0px 4px;"
+					+ "				}"
+					+ "				div.unchecked {"
+					+ "					width: 14px;"
+					+ "					height:14px;"
+					+ "					border: 1px solid black;"
+					+ "					border-radius:50px;"
+					+ "					display:inline-block;"
+					+ "					margin: 0px 4px;"
 					+ "				}"
 					+ ""
 					+ ""
 					+ ""
 					+ ""
-					+ "				table#agreement_detail td {"
-					+ "						width: 600px;"
-					+ "				}"
 					+ ""
 					+ ""
 					 +"@page { size: A4; margin: 2cm; @bottom-center { content: 'Page ' counter(page) ' of ' counter(pages); } }"
 					+ "				.page-break-before {"
 					+ "						page-break-before: always;"
 					+ "				}"
+
+					+"table.imui-form:not(#agreement_detail) th {"
+						+"width: 250px;"
+					+"}"
+
+					+"table.imui-form#agreement_detail th:first-child,"
+					+"table.imui-form#agreement_detail th:nth-child(2) {"
+						+"width: 125px;"
+					+"}"
+					
+					+"button {"
+						+"border-radius:5px;"
+						+"border: none;"
+						+"padding: 4px 8px;"
+					+"}"
+					
+					
+					+"table.imui-form#estimated_schedule tr:not(:first-child) th:first-child,"
+					+"table.imui-form#estimated_schedule tr:not(:first-child) td:first-child{"
+						+"width: 100px;"
+						+"text-align: center;"
+					+"}"
 					+ "		</style>"
 					+ "</head>"
 					+ ""
@@ -329,7 +348,7 @@ public class GeneratePDFService {
 					+"<table id='estimated_schedule' class='imui-form tab_header'>"
 						+"<tbody>"
 							+"<tr>"
-								+"<th colspan='2'><label class='imui-required'>Payment (Total Cash flow Impact)</label></th>"
+								+"<th colspan='2' style='text-align:center'><label class='imui-required'>Payment (Total Cash flow Impact)</label></th>"
 							+"</tr>"
 							+"<tr>"
 									+"<th><label class='imui-required'>Amount</label></th>"
@@ -357,6 +376,206 @@ public class GeneratePDFService {
 							+"</tr>"
 						+"</tbody>"
 					+"</table>"
+						
+
+
+
+
+					  +"<header class='imui-chapter-title'>"
+						+"<h2>Agreement Classification</h2>"
+					+"</header>"
+
+					+"<table id='agreement_classification' class='imui-form tab_header'>"
+						+"<tbody>"
+							+"<tr>"
+									+"<th><label class='imui-required'>Agreement Classification</label></th>"
+									+"<td>";
+											if(entityAgreementDetail.getAgreement_classification().equals("1_1")) {
+													html+="<label for='gte_1_billion'>Agreement with amount is equal or more than 1 billion</label>";
+											}else if(entityAgreementDetail.getAgreement_classification().equals("1_2")) {
+													html+="<label for='gte_12_months'>Period is equal or more than 12 months</label>";
+											}else if(entityAgreementDetail.getAgreement_classification().equals("1_3")) {
+													html+="<label for='related_parties'>Agreement related to spesific party</label>";
+													html+="<p style='padding-left: 2em'><i>- Bank, Related Parties, Dealer, Consulatant/Lawyer/Appraiser (Vendor head-hunter, ISO Certification, HR system development, etc), Government, Production(Component and Parts), Customer, Etc</i></p>";
+											}else if(entityAgreementDetail.getAgreement_classification().equals("1_4")) {
+														html+="<label for='special_issue'>Special issue</label>"
+														+"<br>"
+														+"<p style='padding-left: 2em'><i>New project/Issue (more than 50 M), Not included in Budget Plan</i></p>";
+											}else if(entityAgreementDetail.getAgreement_classification().equals("1_5")) {
+														html+="<label for='direct_procurement'>Direct Procurement due to either of the 2 cases below</label>"
+														+"<br>"
+														+"<div style='padding-left: 2em'>"
+															+"<ul style='list-style-type: decimal'>"
+																	+"<li><i>Emergency procurement</i></li>"
+																	+"<li><i>Spesific Goods / Items (refere to PSD Guideline)</i></li>"
+															+"</ul>"
+														+"</div> ";
+											}else if(entityAgreementDetail.getAgreement_classification().equals("2")) {
+												html+="<label for='dic_approval'>DIC Director Approval</label>";
+											}
+									html+="</td>"
+							+"</tr>"
+							+"<tr>"
+									+"<th><label class='imui-required'>EC Approval is Required or Not</label></th>"
+									+"<td>";
+											if(entityAgreementDetail.getEc_approval_is_req().equals("1_1")) {
+														html+="<label for='amount_gte_1_billion'>Amount is equal or more than 1 billion</label>";
+											}else if(entityAgreementDetail.getEc_approval_is_req().equals("1_2")) {
+														html+="<label for='period_gt_12_month'>Period is equal or more than 12 months</label>";
+											}else if(entityAgreementDetail.getEc_approval_is_req().equals("1_2")) {
+														html+="<label for='escalate_issue'>Director believes it is necessary to escalate the issue to EC</label>";
+											}else if(entityAgreementDetail.getEc_approval_is_req().equals("0")) {
+														html+="<label for='ec_approval_no'>No</label>";
+
+											}
+									html+="</td>"
+							+"</tr>"
+						+"</tbody>"
+					+"</table>"
+
+					+"<c:if test='${FormClassRows.f_purchase_order_req == 1}'>"
+					+"<div id='section-psd-check'>"
+					  +"<header class='imui-chapter-title'>"
+						+"<h2>PSD Check (by UH or DH, PSD)</h2>"
+					+"</header>"
+
+					+"<table id='psd_check' class='imui-form tab_header'>"
+						+"<tbody>"
+								+"<tr>"
+										+"<th><label class='imui-required'>PSD Area or Non-PSD Area (Based on Guideline)</label></th>"
+										+"<td>";
+												if(entityAgreementDetail.getIs_psd_area().equals("1")) {
+													html+="<div class='checked'></div>";
+												}else {
+													html+="<div class='unchecked'></div>";
+												}
+												html+="<label for='psd'>PSD (go to #2)</label><br>";
+
+												if(entityAgreementDetail.getIs_psd_area().equals("0")) {
+													html+="<div class='checked'></div>";
+												}else {
+													html+="<div class='unchecked'></div>";
+												}
+												html+="<label for='psd_end'>Non-PSD (End)</label>"
+										+"</td>"
+								+"</tr>"
+								+"<tr id='f_psd_area_second'>"
+										+"<th><label class='imui-required'>In PSD Area, PSD Process or DIC Process</label></th>"
+										+"<td>";
+												if(entityAgreementDetail.getPsd_or_dic().equals("PSD")) {
+													html+="<div class='checked'></div>";
+												}else {
+													html+="<div class='unchecked'></div>";
+												}
+												html+="<label for='psd_2'>PSD (Pitching result attached)</label>"
+												+"<br>";
+												if(entityAgreementDetail.getPsd_or_dic().equals("DIC")) {
+													html+="<div class='checked'></div>";
+												}else {
+													html+="<div class='unchecked'></div>";
+												}
+												html+="<label for='psd_dic'>DIC (Please describe the reason in the below)</label>"
+												+"<br>";
+												if(entityAgreementDetail.getPsd_or_dic().equals("DIC")) {
+													html+= "<label>"+entityAgreementDetail.getDic_reason()+"</label>";
+												}
+										html+="</td>"
+								+"</tr>"
+						+"</tbody>"
+					+"</table>"
+				+"</div>"
+				+"</c:if>"
+
+				+"<div id='section-cco'>"
+					  +"<header class='imui-chapter-title'>"
+						+"<h2>Compliance Check By CCO</h2>"
+					+"</header>"
+
+					+"<table id='compliance_check' class='imui-form tab_header'>"
+						+"<tbody>"
+								+"<tr>"
+										+"<th><label class='imui-required'>D / D Process Required</label></th>"
+										+"<td>";
+												if(entityAgreementDetail.getIs_dd_req().equals("1")) {
+													html+="<div class='checked'></div>";
+												}else {
+													html+="<div class='unchecked'></div>";
+												}
+												html+="<label for='dd_process_yes'>Yes</label>";
+
+												if(entityAgreementDetail.getIs_dd_req().equals("0")) {
+													html+="<div class='checked'></div>";
+												}else {
+													html+="<div class='unchecked'></div>";
+												}
+												html+="<label for='dd_process_no'>No</label>"
+										+"</td>"
+								+"</tr>"
+								+"<tr>"
+										+"<th><label class='imui-required'>Anti Bribery Clause Include</label></th>"
+										+"<td>";
+												if(entityAgreementDetail.getIs_anti_bribery().equals("1")) {
+													html+="<div class='checked'></div>";
+												}else {
+													html+="<div class='unchecked'></div>";
+												}
+												html+="<label for='anti_bribery_yes'>Yes</label>";
+
+												if(entityAgreementDetail.getIs_anti_bribery().equals("0")) {
+													html+="<div class='checked'></div>";
+												}else {
+													html+="<div class='unchecked'></div>";
+												}
+												html+="<label for='anti_bribery_no'>No</label>"
+										+"</td>"
+								+"</tr>"
+								+"<tr>"
+										+"<th><label class='imui-required'>Audit Right Included</label></th>"
+										+"<td>";
+												if(entityAgreementDetail.getIs_audit_right().equals("1")) {
+													html+="<div class='checked'></div>";
+												}else {
+													html+="<div class='unchecked'></div>";
+												}
+												html+="<label for='audit_right_yes'>Yes</label>";
+
+												if(entityAgreementDetail.getIs_audit_right().equals("0")) {
+													html+="<div class='checked'></div>";
+												}else {
+													html+="<div class='unchecked'></div>";
+												}
+												html+="<label for='audit_right_no'>No</label>"
+										+"</td>"
+								+"</tr>"
+						+"</tbody>"
+					+"</table>"
+				+"</div>"
+					
+					
+				+"<div id='section-legal'>"
+					  +"<header class='imui-chapter-title'>"
+						+"<h2>Filled By Legal</h2>"
+					+"</header>"
+
+					+"<table id='filled_by_legal' class='imui-form tab_header'>"
+						+"<tbody>"
+								+"<tr>"
+										+"<th><label class='imui-required'>Agreement Number</label></th>"
+										+"<td>"
+											+"<label>"+entityAgreementDetail.getAgreement_number()+"</label>"
+										+"</td>"
+								+"</tr>"
+								+"<tr>"
+										+"<th><label class='imui-required'>Agreement Date</label></th>"
+										+"<td>"
+											+"<label>"+entityAgreementDetail.getAgreement_date().replaceAll("-", "/")+"</label>"
+										+"</td>"
+								+"</tr>"
+						+"</tbody>"
+					+"</table>"
+				+"</div>"
+
+
 
 
 					+ "</body>"
