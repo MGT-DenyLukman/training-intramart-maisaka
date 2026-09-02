@@ -51,6 +51,7 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 		System.out.println("MASUK APPLY");
 		
 		WorkflowService service = new WorkflowService();
+		service.debug("parameter impl actionprocess", parameter);
 		service.debug("userParameter impl actionprocess", userParameter);
 		
 
@@ -68,9 +69,12 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			
 			Collection<EstSchedulePaymentModel> entity_EstSchPayment = getEntity_EstSchedulePayment(parameter, userParameter);
 			
-			List<AttachFileModel> entity_Files = getEntity_Files(parameter, userParameter);
+			//List<AttachFileModel> entity_Files = getEntity_Files(parameter, userParameter);
 			
 			headerDB.insertData(entity_Header);
+			service.debug("HEADER INFO ACTION IMPL", entity_HeaderInfo);
+			service.debug("parameter ", parameter);
+			service.debug("userParameter", userParameter);
 			headerInfoDB.insertData(entity_HeaderInfo);
 			
 			agreementDetailTempDB.insertData(entity_AgreementDetail);
@@ -79,10 +83,12 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 				estSchedulePayDB.insertData(row);
 			}
 			
+			/*
 			for(AttachFileModel row : entity_Files) {
 				attachFileDB.insertData(row);
 				service.AttachmentFileTransfer(row.getSystem_matter_id(), row.getFile_real_name());
 			}
+			*/
 
 			String matterPropertyValuePreOrder = entity_AgreementDetail.getPurchase_order_req();
 			
