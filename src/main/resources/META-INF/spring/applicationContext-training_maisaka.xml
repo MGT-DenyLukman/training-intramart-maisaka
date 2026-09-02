@@ -8,5 +8,6 @@
     http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
 
 	<context:component-scan base-package="wf.training_maisaka" />
+	<context:component-scan base-package="com.example.workflow.api" />
 
 </beans>
