@@ -431,13 +431,14 @@ public class GeneratePDFService {
 									html+="</td>"
 							+"</tr>"
 						+"</tbody>"
-					+"</table>"
+					+"</table>";
 
-					+"<c:if test='${FormClassRows.f_purchase_order_req == 1}'>"
-					+"<div id='section-psd-check'>"
+					if(entityAgreementDetail.getPurchase_order_req().equals("1")) {
+					html+="<div id='section-psd-check'>"
 					  +"<header class='imui-chapter-title'>"
 						+"<h2>PSD Check (by UH or DH, PSD)</h2>"
 					+"</header>"
+
 
 					+"<table id='psd_check' class='imui-form tab_header'>"
 						+"<tbody>"
@@ -483,10 +484,10 @@ public class GeneratePDFService {
 								+"</tr>"
 						+"</tbody>"
 					+"</table>"
-				+"</div>"
-				+"</c:if>"
+				+"</div>";
+				}
 
-				+"<div id='section-cco'>"
+				html+="<div id='section-cco'>"
 					  +"<header class='imui-chapter-title'>"
 						+"<h2>Compliance Check By CCO</h2>"
 					+"</header>"
