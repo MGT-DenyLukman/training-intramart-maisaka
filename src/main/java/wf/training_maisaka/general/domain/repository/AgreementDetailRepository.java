@@ -23,7 +23,7 @@ public class AgreementDetailRepository {
 	
 	
 	public void insertData(AgreementDetailModel varAgreementDetailData) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setData(varAgreementDetailData, "create");
 		
 		sqlManager.insert(table_name, columnVal);
@@ -104,7 +104,7 @@ public class AgreementDetailRepository {
 	
 	public Collection<AgreementDetailModel> selectData(String column, String value) throws Exception {
 		try {
-			SQLManager sqlManager = new SQLManager();
+			SQLManager sqlManager = new SQLManager("default");
 			ArrayList<Object> parameters = new ArrayList<>();
 			
 			String select_query = this.select_data_all;

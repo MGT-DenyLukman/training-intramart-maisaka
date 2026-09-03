@@ -22,7 +22,7 @@ public class AttachFileRepository {
 	private String select_data_by_matter_id = "select * from wf_attach_file where system_matter_id = ?";
 
 	public void insertData(AttachFileModel varFileData) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setData(varFileData, "create");
 		
 		sqlManager.insert(table_name, columnVal);
@@ -30,7 +30,7 @@ public class AttachFileRepository {
 	}
 
 	public void deleteData(String column, String value) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ArrayList<Object> parameters = new ArrayList<>();
 		
 		String sql = "delete from " + table_name + " where " + column + " = ?";
@@ -40,7 +40,7 @@ public class AttachFileRepository {
 	}
 	
 	public void updateData(AttachFileModel varFileData) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setData(varFileData, "update");
 		SearchCondition searchCondition = new SearchCondition();
 	
@@ -50,7 +50,7 @@ public class AttachFileRepository {
 	}
 	
 	public Collection<AttachFileModel> selectData(String column, String value) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ArrayList<Object> parameters = new ArrayList<>();
 		
 		String sql_query = this.select_data_all;

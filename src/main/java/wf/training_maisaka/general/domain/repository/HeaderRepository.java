@@ -19,7 +19,7 @@ public class HeaderRepository {
 	private String select_data_by_mail_status = "select * from wf_header where mail_status = ? and created_at >= '2026-08-21'";
 
 	public void insertData(HeaderModel varHeaderData) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setData(varHeaderData, "create");
 		
 		sqlManager.insert(table_name, columnVal);
@@ -27,7 +27,7 @@ public class HeaderRepository {
 	}
 	
 	public void updateData(HeaderModel varHeaderData) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setData(varHeaderData, "update");
 		SearchCondition searchCondition = new SearchCondition();
 		
@@ -37,7 +37,7 @@ public class HeaderRepository {
 	}
 	
 	public Collection<HeaderModel> selectData(String column, String value) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ArrayList<Object> parameters = new ArrayList<>();
 		
 		String sql_query = this.select_data_all;
@@ -77,7 +77,7 @@ public class HeaderRepository {
 	}
 
 	public HeaderModel getMaxId() throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ArrayList<Object> parameters = new ArrayList<>();
 		
 		String sql_query = "select max(id) as id from " + this.table_name;

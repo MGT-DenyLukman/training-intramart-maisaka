@@ -21,7 +21,7 @@ public class HeaderInfoRepository {
 	private String select_data_by_matter_id = "select * from wf_header_info_application where system_matter_id = ?";
 
 	public void insertData(HeaderInfoModel varHeaderData) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setData(varHeaderData, "create");
 		
 		sqlManager.insert(table_name, columnVal);
@@ -29,7 +29,7 @@ public class HeaderInfoRepository {
 	}
 	
 	public void updateData(HeaderInfoModel varHeaderData) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setData(varHeaderData, "update");
 		SearchCondition searchCondition = new SearchCondition();
 		
@@ -39,7 +39,7 @@ public class HeaderInfoRepository {
 	}
 	
 	public Collection<HeaderInfoModel> selectData(String column, String value) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ArrayList<Object> parameters = new ArrayList<>();
 		
 		String sql_query = this.select_data_all;
@@ -88,7 +88,7 @@ public class HeaderInfoRepository {
 	}
 
 	public HeaderInfoModel getMaxId() throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ArrayList<Object> parameters = new ArrayList<>();
 		
 		String sql_query = "select max(id) as id from " + this.table_name;

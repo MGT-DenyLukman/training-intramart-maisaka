@@ -22,14 +22,14 @@ public class AgreementDetailTempRepository {
 	
 	
 	public void insertData(AgreementDetailModel varAgreementDetailData) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setData(varAgreementDetailData, "create");
 		
 		sqlManager.insert(table_name, columnVal);
 	}
 
 	public void updateData(AgreementDetailModel varAgreementDetailData) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setData(varAgreementDetailData, "update");
 		SearchCondition searchCondition = new SearchCondition();
 		
@@ -39,7 +39,7 @@ public class AgreementDetailTempRepository {
 	}
 	
 	public void updateDataByNodeId(AgreementDetailModel varAgreementDetailData, String nodeId) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setDataByNode(varAgreementDetailData, nodeId);
 		SearchCondition searchCondition = new SearchCondition();
 		
@@ -138,7 +138,7 @@ public class AgreementDetailTempRepository {
 	
 	public Collection<AgreementDetailModel> selectData(String column, String value) throws Exception {
 		try {
-			SQLManager sqlManager = new SQLManager();
+			SQLManager sqlManager = new SQLManager("default");
 			ArrayList<Object> parameters = new ArrayList<>();
 			
 			String select_query = this.select_data_all;

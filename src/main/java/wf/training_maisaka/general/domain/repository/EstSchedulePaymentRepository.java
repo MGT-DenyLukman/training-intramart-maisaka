@@ -22,14 +22,14 @@ public class EstSchedulePaymentRepository {
 	private String select_data_all = "select * from " + table_name ;
 	
 	public void insertData(EstSchedulePaymentModel varEstSchedulePayData) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ColumnValues columnVal = this.setData(varEstSchedulePayData, "create");
 		
 		sqlManager.insert(table_name, columnVal);
 	}
 	
 	public void deleteData(String column, String value) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ArrayList<Object> parameters = new ArrayList<>();
 		
 		String sql = "delete from " + table_name + " where " + column + " = ?";
@@ -72,7 +72,7 @@ public class EstSchedulePaymentRepository {
 	}
 
 	public Collection<EstSchedulePaymentModel> selectData(String column, String value) throws Exception {
-		SQLManager sqlManager = new SQLManager();
+		SQLManager sqlManager = new SQLManager("default");
 		ArrayList<Object> parameters = new ArrayList<>();
 		
 		String sql = this.select_data_all;
