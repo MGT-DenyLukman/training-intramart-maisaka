@@ -69,7 +69,6 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 			
 			Collection<EstSchedulePaymentModel> entity_EstSchPayment = getEntity_EstSchedulePayment(parameter, userParameter);
 			
-			//List<AttachFileModel> entity_Files = getEntity_Files(parameter, userParameter);
 			
 			headerDB.insertData(entity_Header);
 			service.debug("HEADER INFO ACTION IMPL", entity_HeaderInfo);
@@ -83,12 +82,15 @@ public class ActionProcessServiceImpl implements ActionProcessService{
 				estSchedulePayDB.insertData(row);
 			}
 			
-			/*
-			for(AttachFileModel row : entity_Files) {
-				attachFileDB.insertData(row);
-				service.AttachmentFileTransfer(row.getSystem_matter_id(), row.getFile_real_name());
+			// will be executed when doesn't come from API
+			if(this.getEntity_TryCatch_UserParameter(userParameter, "api_token").isEmpty()) {
+				List<AttachFileModel> entity_Files = getEntity_Files(parameter, userParameter);
+
+				for(AttachFileModel row : entity_Files) {
+					attachFileDB.insertData(row);
+					service.AttachmentFileTransfer(row.getSystem_matter_id(), row.getFile_real_name());
+				}
 			}
-			*/
 
 			String matterPropertyValuePreOrder = entity_AgreementDetail.getPurchase_order_req();
 			

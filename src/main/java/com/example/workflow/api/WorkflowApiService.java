@@ -1,5 +1,7 @@
 package com.example.workflow.api;
 
+import java.util.UUID;
+
 import jp.co.intra_mart.foundation.context.Contexts;
 import jp.co.intra_mart.foundation.context.model.AccountContext;
 import jp.co.intra_mart.foundation.workflow.application.process.ApplyManager;
@@ -24,8 +26,23 @@ import java.util.HashMap;
 import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+
+import jp.co.intra_mart.foundation.service.client.file.PublicStorage;
+import javax.servlet.http.Part;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.FileOutputStream;
+import jp.co.intra_mart.foundation.service.client.file.PublicStorage;
+import javax.servlet.annotation.MultipartConfig;
+import javax.activation.DataHandler;
+import javax.servlet.http.HttpServlet;
+
+import wf.training_maisaka.general.domain.model.AttachFileModel;
+import wf.training_maisaka.general.domain.repository.AttachFileRepository;;
+
+
 @IMAuthentication
-public class WorkflowApiService {
+public class WorkflowApiService extends HttpServlet{
 	
 	@Path("/workflow/test-get")
 	@GET
@@ -148,6 +165,7 @@ public class WorkflowApiService {
          userParameter.put("f_upload_file_type", jsonData.get("f_upload_file_type"));
          userParameter.put("f_vendor", jsonData.get("f_vendor"));
          userParameter.put("upload_file", jsonData.get("upload_file"));
+         userParameter.put("api_token", jsonData.get("api_token"));
 
 			ApplyManager applyManager = new ApplyManager();
 			applyManager.apply(applyParam, userParameter);
@@ -162,5 +180,87 @@ public class WorkflowApiService {
         }
 
         return response;
+    }
+    
+    @Path("/workflow/apply/upload-file")
+    @POST
+    public Map<String, Object> applyWorkflowUploadFile(HttpServletRequest request) throws Exception {
+    	Map<String, Object> response = new HashMap<>();
+    	
+    	try {
+    		String systemMatterId = request.getParameter("system_matter_id");
+            Part filePart = request.getPart("fileData");
+    		String fileName = getFileName(filePart);
+    		String fileRealName = UUID.randomUUID().toString();
+            String targetPath = "training_maisaka/" + systemMatterId + "/file_attachment/" + fileRealName;
+            long fileSize = filePart.getSize();                    // File size in bytes
+            String fileType = filePart.getContentType().split("/")[1];           // MIME type (e.g., application/pdf, image/png)
+            
+            if (fileType == null || fileType.isEmpty()) {
+                fileType = "application/octet-stream";
+            }
+            
+            // Initialize PublicStorage
+            PublicStorage storage = new PublicStorage(targetPath);
+
+            // Ensure parent directory exists using getParentStorage()
+            PublicStorage parentDir = storage.getParentStorage();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.makeDirectories();
+            }
+
+            // Stream the uploaded data into intra-mart PublicStorage
+            try (InputStream input = filePart.getInputStream();
+                 OutputStream output = storage.create()) {
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = input.read(buffer)) != -1) {
+                    output.write(buffer, 0, bytesRead);
+                }
+            }
+
+
+				AttachFileModel entity = new AttachFileModel();
+				
+				String userDataId = request.getParameter("user_data_id");
+				entity.setSystem_matter_id(systemMatterId);
+				entity.setUser_data_id(userDataId);
+				
+				entity.setFile_name(fileName);
+				entity.setFile_real_name(fileRealName);
+				entity.setFile_size(String.valueOf(fileSize));
+				entity.setFile_type(fileType);
+
+				entity.setFile_path(targetPath);
+				
+				AttachFileRepository attachFileDB = new AttachFileRepository();
+				attachFileDB.insertData(entity);
+					
+            response.put("success", true);
+            response.put("message", "upload file success!!");
+    	}catch(Exception e) {
+            response.put("success", false);
+            e.printStackTrace();
+            response.put("error", "ERRORR");
+    	}
+
+    	return response;
+    }
+ // Helper to extract file name from Part Content-Disposition header
+    private String getFileName(Part part) {
+        String contentDisp = part.getHeader("content-disposition");
+        for (String token : contentDisp.split(";")) {
+            if (token.trim().startsWith("filename")) {
+                return token.substring(token.indexOf('=') + 1).trim().replace("\"", "");
+            }
+        }
+        return "";
+    }
+
+    private String getFileExtension(String fileName) {
+        if (fileName != null && fileName.contains(".")) {
+            return fileName.substring(fileName.lastIndexOf(".") + 1);
+        }
+        return "";
     }
 }
