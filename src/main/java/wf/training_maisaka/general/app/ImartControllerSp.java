@@ -71,9 +71,9 @@ import wf.training_maisaka.general.domain.model.AttachFileModel;
 import wf.training_maisaka.general.domain.service.WorkflowService;
 import wf.training_maisaka.general.domain.service.GeneratePDFService;
 
-@Controller("training_maisaka_new")
-@RequestMapping("agreement/")
-public class ImartController {
+@Controller("training_maisaka_new_sp")
+@RequestMapping("sp/agreement/")
+public class ImartControllerSp {
 
 	@RequestMapping(value = "apply")
 	public final String apply(final Model model, final ImartForm ApplyForm, final HttpServletRequest request) throws Exception {
@@ -298,9 +298,14 @@ public class ImartController {
 		}
 		return "wf/training_maisaka/general/detail.jsp";
 	}
-	
-	@RequestMapping(value = "sp_process")
-	public final String sp_process(final Model model, final ImartForm ApplyForm, final HttpServletRequest request) throws Exception {
+
+	@RequestMapping(value = "process")
+	public final String process(final Model model, final ImartForm ApplyForm, final HttpServletRequest request) throws Exception {
+		
+		try {
+			
+			System.out.println("MASUK SINI LOOOO");
+
 			WorkflowService Service = new WorkflowService();
 			ImartForm FormClassRows = new ImartForm();
 			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId(), request);
@@ -392,105 +397,6 @@ public class ImartController {
 				return "wf/training_maisaka/general/sp/sp-process-legal.jsp";
 			}else {
 				return "wf/training_maisaka/general/sp/sp-process-final.jsp";
-			}
-	}
-
-	@RequestMapping(value = "process")
-	public final String process(final Model model, final ImartForm ApplyForm, final HttpServletRequest request) throws Exception {
-		
-		try {
-
-			WorkflowService Service = new WorkflowService();
-			ImartForm FormClassRows = new ImartForm();
-			FormClassRows = Service.getDataForForm("system_matter_id", ApplyForm.getImwSystemMatterId(), request);
-			
-			//check if agreement_status has "_"
-			String agreementStatus = FormClassRows.getF_agreement_status();
-			String agreementStatusRenewal = "";
-			if(agreementStatus.contains("_")) {
-				agreementStatusRenewal = agreementStatus.split("_")[1];
-			}
-			
-			//Service.debug("FormClassRows est sch pay Detail", FormClassRows.getD_estimated_schedule_payment());
-
-			int esTotalAmount = 0;
-			for(EstSchedulePaymentModel item : FormClassRows.getD_estimated_schedule_payment()) {
-				Integer amount = Integer.parseInt(item.getPayment_amount().replace(",",""));
-				esTotalAmount += amount;
-			}
-
-			//check if agreement_classification or ec_approval_is_req contain "_"
-			String agreementClassification = FormClassRows.getF_agreement_classification();
-			String agreementClassificationChildren = "";
-			if(agreementClassification.contains("_")) {
-				agreementClassificationChildren = agreementClassification.split("_")[1];
-				agreementClassification = agreementClassification.split("_")[0];
-			}
-
-			String ecApprovalIsReq = FormClassRows.getF_ec_approval_is_req();
-			String ecApprovalIsReqYesChildren = "";
-			if(ecApprovalIsReq.contains("_")) {
-				ecApprovalIsReqYesChildren = ecApprovalIsReq.split("_")[1];
-				ecApprovalIsReq = ecApprovalIsReq.split("_")[0];
-			}
-			
-			
-			//check which node
-			Service.debug("ApplyForm process controller", ApplyForm);
-			/*
-			ActvMatterNode actvMatterNode = new ActvMatterNode( ApplyForm.getImwSystemMatterId());
-
-			MatterNodeModel matterNodeModel =  actvMatterNode.getMatterNode(ApplyForm.getImwNodeId());
-			String nodeName = matterNodeModel.getNodeName();
-			
-			ProcessTargetModel processTargetModel[] = actvMatterNode.getExecProcessTargetList(ApplyForm.getImwNodeId());
-			
-			Integer count = 0;
-			for(ProcessTargetModel item : processTargetModel) {
-				Service.debug(count.toString(), item);
-				count += 1;
-			}
-			*/
-			
-			String isUHDHDisabled = "unclickable";
-			String isCCODisabled = "unclickable";
-			String isLegalDisabled = "unclickable";
-
-			if("approver_uhdh".equals(ApplyForm.getImwNodeId())) {
-				isUHDHDisabled = "";
-			}
-			else if("approver_cco".equals(ApplyForm.getImwNodeId())) {
-				isCCODisabled = "";
-			}else if("approver_legal".equals(ApplyForm.getImwNodeId())) {
-				isLegalDisabled = "";
-			}
-			
-			
-
-			Service.debug("FormClassRows process controller", FormClassRows);
-			model.addAttribute("FormClassRows", FormClassRows);
-			model.addAttribute("agreementStatus", agreementStatus);
-			model.addAttribute("agreementStatusRenewal", agreementStatusRenewal);
-			model.addAttribute("agreementClassification", agreementClassification);
-			model.addAttribute("agreementClassificationChildren", agreementClassificationChildren);
-			model.addAttribute("ecApprovalIsReq", ecApprovalIsReq);
-			model.addAttribute("ecApprovalIsReqYesChildren", ecApprovalIsReqYesChildren);
-			model.addAttribute("esTotalAmount", esTotalAmount);
-			model.addAttribute("ApplyForm", ApplyForm);
-			
-			model.addAttribute("isUHDHDisabled", isUHDHDisabled);
-			model.addAttribute("isCCODisabled", isCCODisabled);
-			model.addAttribute("isLegalDisabled", isLegalDisabled);
-
-			if("approver_uhdh".equals(ApplyForm.getImwNodeId())) {
-				return "wf/training_maisaka/general/process-uhdh.jsp";
-			}
-			else if("approver_cco".equals(ApplyForm.getImwNodeId())) {
-				return "wf/training_maisaka/general/process-cco.jsp";
-			}else if("approver_legal".equals(ApplyForm.getImwNodeId())) {
-				return "wf/training_maisaka/general/process-legal.jsp";
-			}else {
-				return "wf/training_maisaka/general/process-final.jsp";
 			}
 
 		} catch(Exception e) {

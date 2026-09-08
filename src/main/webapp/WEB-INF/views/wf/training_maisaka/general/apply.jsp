@@ -747,7 +747,7 @@
 				var value = $('input[name="f_vendor"]').val();
 				
 				$.ajax({
-					url: "training_maisaka/getRegionData",
+					url: "agreement/getRegionData",
 					type: "GET",
 					data: {
 						keyword: value,

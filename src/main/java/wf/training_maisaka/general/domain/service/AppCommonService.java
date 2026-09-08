@@ -20,6 +20,8 @@ public class AppCommonService extends AbstractFileDownloadView  {
 	
 		@Override
 	   protected InputStream getInputStream(Map<String, Object> model,HttpServletRequest request) throws IOException{
+			WorkflowService service = new WorkflowService();
+			service.debug("model on APP COMMON SERVICE", model.get("downloadFilePath"));
 			final Storage<?> storage = (Storage<?>) model.get("storage");
 			
 			return storage.open();
