@@ -288,7 +288,7 @@ public class ImartController {
 			String clientType = clientContext.getClientTypeId();
 			
 			if("sp".equals(clientType)) {
-				return "wf/training_maisaka/general/sp/detail.jsp";
+				return "wf/training_maisaka/general/sp/sp-detail.jsp";
 			}else if("pc".equals(clientType)) {
 				return "wf/training_maisaka/general/detail.jsp";
 			}

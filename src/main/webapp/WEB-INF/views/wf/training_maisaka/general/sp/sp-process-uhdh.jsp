@@ -32,6 +32,7 @@
 
 						$('input[name="f_psd_process"]').change(function() {
 							if(($('input[name="f_psd_process"]')[1]).checked == true){
+								console.log("DIC MUST BE REQUIRED")
 								$('#psd_dic_reason').show();
 								rules.f_dic_reason = {required: true, id: false}
 								messages.f_dic_reason = {required: "入力してください"}
@@ -44,6 +45,7 @@
 					})
 					
 					$(document).ready(function() {
+						console.log("ready ")
 							if(($('input[name="f_psd_area_bog"]')[0]).checked == true){
 								$('#f_psd_area_second').show();
 							}else{

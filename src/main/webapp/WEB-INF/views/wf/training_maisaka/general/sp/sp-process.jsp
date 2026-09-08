@@ -28,6 +28,7 @@
     <script src="ui/js/jquery.validate.js" type="text/javascript"></script>
     <script src="ui/js/script-detail-reapply.js" type="text/javascript"></script>
 
+	<!-- 
 	<link rel="stylesheet" href="ui/jq/jquery-ui.css">
 	<link href="ui/css/select2-4013.min.css" rel="stylesheet" />
 	<link href="ui/css/select2.min.css" rel="stylesheet" />
@@ -38,6 +39,7 @@
 	<script src="ui/libs/jquery-validation-1.9.0/jquery.validate.js"></script>
 	<script src="ui/js/select2.min.js"></script>
 	<script src="ui/js/jquery.validate.js"></script>
+ -->
     
     <style>
     	table tbody tr td:last-child input[type="text"], 
@@ -107,6 +109,15 @@
     	}
     	.ui-content {
     		padding: 0px;
+    	}
+    	
+    	table th,
+    	table td {
+    		border: 1px solid rgb(243, 243, 243);
+    	}
+    	table {
+    		width: 100%;
+    		border-collapse: collapse;
     	}
     </style>
 
@@ -207,7 +218,7 @@
 				<div class="ui-body ui-body-b" style="overflow-x:scroll">
 					<imsp:fieldContain label="Counter Party (vendor name, etc) :">
 						<div class="ui-field-contain custom-readonly" >
-							<input type="text" id="f_counter_party" name="f_counter_party" value="${FormClassRows.f_counter_party}" placeholder="Type..." readonly />
+								<label>${f:h(FormClassRows.f_counter_party) }</label>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Currency :">
@@ -221,20 +232,17 @@
 								<label>${f:h(FormClassRows.f_total_amount_no_tax) }</label>
 						</div>
 					</imsp:fieldContain>
-					<imsp:controlGroup label="要素のグルーピング">
-						  <imsp:radioButton name="radios" label="ラジオ1" value="1" />
-						  <imsp:radioButton name="radios" label="ラジオ2" value="2" />
-						  <imsp:radioButton name="radios" label="ラジオ3" value="3" checked="<%=true%>" />
-					</imsp:controlGroup>  
 					<imsp:fieldContain label="Agreement Status :">
 						<div class="ui-field-contain custom-readonly" >
 						  		<input type="radio" id="one_time" name="f_agreement_status" value="1"
+						  			data-role="none"
 						  			${FormClassRows.f_agreement_status == 1 ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
 						  		<label for="one_time">One Time/New</label>
 						  		<br>
 						  		<input type="radio" id="extension" name="f_agreement_status" value="2" 
+						  			data-role="none"
 									  ${FormClassRows.f_agreement_status == "2_a" || FormClassRows.f_agreement_status == "2_b" ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
@@ -243,231 +251,151 @@
 						  		<div id="extension-childs" style="padding-left: 2em">
 									  <p>Total Duration from first cooperation until now</p>
 									  <input type="radio" id="gt_1" name="f_renewal" value="a"
+						  			data-role="none"
 									  ${agreementStatusRenewal == "a" ? "checked" : "" }
 						  			class="unclickable"
 									  />
 									  <label for="gt_1">More than 1 year</label>
 									  <input type="radio" id="lte_1" name="f_renewal" value="b"
+						  			data-role="none"
 									  ${agreementStatusRenewal == "b" ? "checked" : "" }
 						  			class="unclickable"
 									  />
 									  <label for="lte_1">up to 1 year</label>
 						  		</div>
 						  		<input type="radio" id="umbrella" name="f_agreement_status" value="3"
+						  			data-role="none"
 						  			${FormClassRows.f_agreement_status == 3 ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
 						  		<label for="umbrella">Umbrella Agreement</label>
 						</div>
 					</imsp:fieldContain>
-				</div>
-				</imsp:collapsible>
-			</div>
-<!--
-				  <header class="imui-chapter-title">
-					<h2>Agreement Detail</h2>
-				</header>
-
-				<table id="agreement_detail" class="imui-form tab_header">
-					<tbody>
-
-						<tr>
-						  <th><label class="imui-required">Total Amount (Without Tax)</label></th>
-						  <td>
-						  </td>
-						</tr>
-
-						<tr>
-						  <th><label class="imui-required">Agreement Status</label></th>
-						  <td>
-						  		<input type="radio" id="one_time" name="f_agreement_status" value="1"
-						  			${FormClassRows.f_agreement_status == 1 ? "checked" : "" }
-						  			class="unclickable"
-						  		/>
-						  		<label for="one_time">One Time/New</label>
-						  		<br>
-						  		<input type="radio" id="extension" name="f_agreement_status" value="2" 
-									  ${FormClassRows.f_agreement_status == "2_a" || FormClassRows.f_agreement_status == "2_b" ? "checked" : "" }
-						  			class="unclickable"
-						  		/>
-						  		<label for="extension">Amendment/Extension/Renewal</label>
-						  		<br>
-						  		<div id="extension-childs" style="padding-left: 2em">
-									  <p>Total Duration from first cooperation until now</p>
-									  <input type="radio" id="gt_1" name="f_renewal" value="a"
-									  ${agreementStatusRenewal == "a" ? "checked" : "" }
-						  			class="unclickable"
-									  />
-									  <label for="gt_1">More than 1 year</label>
-									  <input type="radio" id="lte_1" name="f_renewal" value="b"
-									  ${agreementStatusRenewal == "b" ? "checked" : "" }
-						  			class="unclickable"
-									  />
-									  <label for="lte_1">up to 1 year</label>
-						  		</div>
-						  		<input type="radio" id="umbrella" name="f_agreement_status" value="3"
-						  			${FormClassRows.f_agreement_status == 3 ? "checked" : "" }
-						  			class="unclickable"
-						  		/>
-						  		<label for="umbrella">Umbrella Agreement</label>
-						  </td>
-						</tr>
-
-						<tr>
-							<th><label class="imui-required">Include auto extension condition</label></th>
-							<td>
+					<imsp:fieldContain label="Include auto extension condition :">
+						<div class="ui-field-contain custom-readonly" >
 						  		<input type="radio" id="auto_extension_y" name="f_auto_extension" value="1" 
+						  			data-role="none"
 						  			${FormClassRows.f_is_auto_extension == 1 ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
 						  		<label for="auto_extension_y">Yes</label>
-						  		<br>
 						  		<input type="radio" id="auto_extension_n" name="f_auto_extension" value="0"
+						  			data-role="none"
 						  			${FormClassRows.f_is_auto_extension == 0 ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
 						  		<label for="auto_extension_n">No</label>
-							</td>
-						</tr>
-
-						<tr>
-							<th><label class="imui-required">Purchase Order Required</label></th>
-							<td>
+						  	</div>
+					</imsp:fieldContain>
+					<imsp:fieldContain label="Purchase Order Required : ">
+						<div class="ui-field-contain custom-readonly" >
 						  		<input type="radio" id="purchase_order_req_y" name="f_purchase_order_req" value="1" 
+						  			data-role="none"
 						  			${FormClassRows.f_purchase_order_req == 1 ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
 						  		<label for="purchase_order_req_y">Yes</label>
-						  		<br>
 						  		<input type="radio" id="purchase_order_req_n" name="f_purchase_order_req" value="0"
+						  			data-role="none"
 						  			${FormClassRows.f_purchase_order_req == 0 ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
 						  		<label for="purchase_order_req_n">No</label>
-							</td>
-						</tr>
-
-						<tr>
-						  <th><label class="imui-required">Title described in Agreement</label></th>
-						  <td>
-						  	<label>${f:h(FormClassRows.f_title_in_agreement) }</label>
-						  </td>
-						</tr>
-
-						<tr class="doublerow">
-						  <th rowspan="2"><label class="imui-required">Effective Date</label></th>
-						  <th><label class="imui-required">From</label></th>
-						  <td>
-						  	<label>${f:h(FormClassRows.f_effective_date_from) }</label>
-						  </td>
-						</tr>
-						<tr class="doublerow">
-						  <th><label class="imui-required">To</label></th>
-						  <td>
-						  	<label>${f:h(FormClassRows.f_effective_date_to) }</label>
-						  </td>
-						</tr>
-
-						<tr>
-							<th><label class="imui-required">Related / Non Related Company</label></th>
-							<td>
+						  	</div>
+					</imsp:fieldContain>
+					<imsp:fieldContain label="Title described in Agreement :">
+						<div class="ui-field-contain custom-readonly" >
+								<label>${f:h(FormClassRows.f_title_in_agreement) }</label>
+						</div>
+					</imsp:fieldContain>
+					<imsp:fieldContain label="Effective Date From:">
+						<div class="ui-field-contain custom-readonly" >
+							  <label>${f:h(FormClassRows.f_effective_date_from) }</label>
+						</div>
+					</imsp:fieldContain>
+					<imsp:fieldContain label="Effective Date To :">
+						<div class="ui-field-contain custom-readonly" >
+							  <label>${f:h(FormClassRows.f_effective_date_to) }</label>
+						</div>
+					</imsp:fieldContain>
+					<imsp:fieldContain label="Related / Non Related Company :">
+						<div class="ui-field-contain custom-readonly" >
 						  		<input type="radio" id="related_parties_y" name="f_related_company" value="1"
+						  			data-role="none"
 						  			${FormClassRows.f_is_related_comp == 1 ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
 						  		<label for="related_parties_y">Related Parties [Shareholders (KY, MFTBC, MC, MCAH, Daimler), Subsidiary (i.e. KRM, MKM, BAS, BBD, BMC, etc.), Affiliates (i.e. DSF, BSI, MMKSI, MMKI, etc.)]</label>
 						  		<br>
 						  		<input type="radio" id="related_parties_n" name="f_related_company" value="0"
+						  			data-role="none"
 						  			${FormClassRows.f_is_related_comp == 0 ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
 						  		<label for="related_parties_n">Non Related Parties</label>
 						  		<br>
 						  		<p class="bg-warning"><i>Consult with Legal. SHR may be required</i></p>
-							</td>
-						</tr>
-
-						<tr class="doublerow">
-						  <th rowspan="2"><label class="imui-required">Estimated Delivery Schedule</label></th>
-						  <th><label class="imui-required">From</label></th>
-						  <td>
-									<label>${f:h(FormClassRows.f_delivery_date_from) }</label>
-						  </td>
-						</tr>
-						<tr class="doublerow">
-						  <th><label class="imui-required">To</label></th>
-						  <td>
-									<label>${f:h(FormClassRows.f_delivery_date_to) }</label>
-						  </td>
-						</tr>
-						
-						<tr>
-						  <th><label>Agreement Summary (main points only) (In case of contract in foreign currency need to describe exchange rate)</label></th>
-						  <td>
-									<label>${f:h(FormClassRows.f_agreement_summary) }</label>
-						  </td>
-						</tr>
-							
-					</tbody>
-				</table>
-
-				  <header class="imui-chapter-title">
-					<h2>Depreciation Check</h2>
-				</header>
-
-				<table id="depreciation_check" class="imui-form tab_header">
-					<tbody>
-						<tr>
-						  <th><label class="imui-required">Purchase Category</label></th>
-						  <td>
+						</div>
+					</imsp:fieldContain>
+					<imsp:fieldContain label="Estimated Delivery Schedule From:">
+						<div class="ui-field-contain custom-readonly" >
+							  <label>${f:h(FormClassRows.f_delivery_date_from) }</label>
+						</div>
+					</imsp:fieldContain>
+					<imsp:fieldContain label="Estimated Delivery Schedule To:">
+						<div class="ui-field-contain custom-readonly" >
+							  <label>${f:h(FormClassRows.f_delivery_date_to) }</label>
+						</div>
+					</imsp:fieldContain>
+					<imsp:fieldContain label="Agreement Summary (main points only) (In case of contract in foreign currency need to describe exchange rate) :">
+						<div class="ui-field-contain custom-readonly" >
+							<label>${f:h(FormClassRows.f_agreement_summary) }</label>
+					  </div>
+					</imsp:fieldContain>
+				</div>
+				</imsp:collapsible>
+				
+				<imsp:collapsible title="Depreciation Check" dataTheme="b" contentTheme="b">
+					<imsp:fieldContain label="Purchase Category :">
+						<div class="ui-field-contain custom-readonly" >
 						  		<input type="radio" id="tangible_asset" name="f_purchase_category" value="1"
+						  		 data-role="none"
 						  			${FormClassRows.f_purchase_category == 1 ? "checked" : "" }
 						  			class="unclickable"
 						  		 />
 						  		<label for="tangible_asset">Tangible Asset</label>
 
 						  		<input type="radio" id="intangible_asset" name="f_purchase_category" value="0"
+						  		 data-role="none"
 						  			${FormClassRows.f_purchase_category == 0 ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
 						  		<label for="intangible_asset">Intangible Asset</label>
 
 						  		<input type="radio" id="non_asset" name="f_purchase_category" value="9"
+						  		 data-role="none"
 						  			${FormClassRows.f_purchase_category == 9 ? "checked" : "" }
 						  			class="unclickable"
 						  		/>
 						  		<label for="non_asset">Non-Asset</label>
-						  </td>
-						</tr>
-						<tr class="depreciation_required_asset">
-						  <th><label class="imui-required">Starting Usage Date (Required if Asset)</label></th>
-						  <td>
-									<label>${f:h(FormClassRows.f_starting_usage_date) }</label>
-						  </td>
-						</tr>
-						<tr class="depreciation_required_asset">
-						  <th><label class="imui-required">Deprec Amount/Month (Required if Asset)</label></th>
-						  <td>
-									<label>${f:h(FormClassRows.f_deprec_amount_per_month) }</label>
-						  </td>
-						</tr>
-					</tbody>
-					</table>
-
-					
-					
-					  <header class="imui-chapter-title">
-						<h2>Estimated Schedule (Payment Conditions)</h2>
-					</header>
-
+						  </div>
+						 </imsp:fieldContain>
+						<imsp:fieldContain label="Starting Usage Date (Required if Asset) :" class="depreciation_required_asset">
+								<label>${f:h(FormClassRows.f_starting_usage_date) }</label>
+						</imsp:fieldContain>
+						<imsp:fieldContain label="Deprec Amount/Month (Required if Asset) :" class="depreciation_required_asset">
+								<label>${f:h(FormClassRows.f_deprec_amount_per_month) }</label>
+						</imsp:fieldContain>
+				</imsp:collapsible>
+				<imsp:collapsible title="Estimated Schedule (Payment Conditions)" dataTheme="b" contentTheme="b">
 					<table id="estimated_schedule" class="imui-form tab_header">
 						<tbody>
-							<tr>
-								<th colspan="2"><label class="imui-required">Payment (Total Cash flow Impact)</label></th>
+							<tr class="ui-body-b">
+								<th colspan="2"><label class="imui-required ">Payment (Total Cash flow Impact)</label></th>
 							</tr>
 							<tr>
-									<th><label class="imui-required">Amount</label></th>
-									<th><label class="imui-required">Date</label></th>
+									<th class="ui-body-b"><label class="imui-required">Amount</label></th>
+									<th class="ui-body-b"><label class="imui-required">Date</label></th>
 							</tr>
 							<c:forEach items="${FormClassRows. d_estimated_schedule_payment}" var="row">
 								<tr>
@@ -480,7 +408,7 @@
 								</tr>
 							</c:forEach>
 							<tr>
-									<th><label class="imui-required">Total Amount</label></th>
+									<th class="ui-body-b"><label class="imui-required">Total Amount</label></th>
 							</tr>
 							<tr>
 									<td>
@@ -489,29 +417,27 @@
 							</tr>
 						</tbody>
 					</table>
-					
-					  <header class="imui-chapter-title">
-						<h2>Agreement Classification</h2>
-					</header>
+				</imsp:collapsible>
 
-					<table id="agreement_classification" class="imui-form tab_header">
-						<tbody>
-							<tr>
-									<th><label class="imui-required">Agreement Classification</label></th>
-									<td>
+				<imsp:collapsible title="Agreement Classification" dataTheme="b" contentTheme="b">
+					<imsp:fieldContain label="Agreement Classification">
+									<div>
 											<input type="radio" id="pd_approval" name="f_agreement_classification" value="1" 
+											data-role="none"
 											${agreementClassification == 1 ? "checked" : ""}
 											class="unclickable"
 											/>
 											<label for="pd_approval">PD Approval (either one of condition below)</label>
 												<div class="pd_approval_childrens" style="padding-left: 2em">
 														<input type="radio" id="gte_1_billion" name="f_agreement_classification_1" value="1"
+														data-role="none"
 														${agreementClassificationChildren == 1 ? "checked" : ""}
 														class="unclickable"
 														/>
 														<label for="gte_1_billion">Agreement with amount is equal or more than 1 billion</label>
 														<br>
 														<input type="radio" id="gte_12_months" name="f_agreement_classification_1" value="2"
+														data-role="none"
 														${agreementClassificationChildren == 2 ? "checked" : ""}
 														class="unclickable"
 														/>
@@ -519,6 +445,7 @@
 														<br>
 														<div>
 															<input type="radio" id="related_parties" name="f_agreement_classification_1" value="3"
+															data-role="none"
 															${agreementClassificationChildren == 3 ? "checked" : ""}
 															class="unclickable"
 															/>
@@ -528,6 +455,7 @@
 														</div>
 
 														<input type="radio" id="special_issue" name="f_agreement_classification_1" value="4"
+															data-role="none"
 															${agreementClassificationChildren == 4 ? "checked" : ""}
 															class="unclickable"
 														/>
@@ -536,6 +464,7 @@
 														<p style="padding-left: 2em"><i>New project/Issue (more than 50 M), Not included in Budget Plan</i></p>
 
 														<input type="radio" id="direct_procurement" name="f_agreement_classification_1" value="5"
+															data-role="none"
 															${agreementClassificationChildren == 5 ? "checked" : ""}
 															class="unclickable"
 														/>
@@ -550,35 +479,39 @@
 												</div>
 											<div>
 												<input type="radio" id="dic_approval" name="f_agreement_classification" value="2"
+												data-role="none"
 												${agreementClassification == 2 ? "checked" : ""}
 												class="unclickable"
 												/>
 												<label for="dic_approval">DIC Director Approval</label>
 											</div>
-									</td>
-							</tr>
-							<tr>
-									<th><label class="imui-required">EC Approval is Required or Not</label></th>
-									<td>
+										</div>
+					</imsp:fieldContain>
+					<imsp:fieldContain label="EC Approval is Required or Not">
+									<div>
 											<input type="radio" id="ec_approval_yes" name="f_ec_approval_is_required" value="1"
+												data-role="none"
 												${ecApprovalIsReq == 1 ? "checked" : ""}
 												class="unclickable"
 											/>	
 											<label for="ec_approval_yes">Yes</label>
 												<div class="ec_approval_yes_childrens" style="padding-left: 2em">
 														<input type="radio" id="amount_gte_1_billion" name="f_ec_approval_yes" value="1" 
+															data-role="none"
 															${ecApprovalIsReqYesChildren == 1 ? "checked" : ""}
 															class="unclickable"
 														/>	
 														<label for="amount_gte_1_billion">Amount is equal or more than 1 billion</label>
 														<br>	
 														<input type="radio" id="period_gt_12_month" name="f_ec_approval_yes" value="2"
+															data-role="none"
 															${ecApprovalIsReqYesChildren == 2 ? "checked" : ""}
 															class="unclickable"
 														/>	
 														<label for="period_gt_12_month">Period is equal or more than 12 months</label>
 														<br>	
 														<input type="radio" id="escalate_issue" name="f_ec_approval_yes" value="3"
+															data-role="none"
 															${ecApprovalIsReqYesChildren == 3 ? "checked" : ""}
 															class="unclickable"
 														/>	
@@ -586,30 +519,24 @@
 												</div>
 												<div>
 														<input type="radio" id="ec_approval_no" name="f_ec_approval_is_required" value="0"
+															data-role="none"
 															${ecApprovalIsReq == 0 ? "checked" : ""}
 															class="unclickable"
 														/>	
 														<label for="ec_approval_no">No</label>
 												</div>
-									</td>
-							</tr>
-						</tbody>
-					</table>
-					
-					<div id="container-multi-user-input">
-					  ${param.content}
-					</div>
-					
-					-->
-					
-					
-					
-
-					
-						
-					
+									</div>
+					</imsp:fieldContain>
+				</imsp:collapsible>
+				
 
 
+				<div id="container-multi-user-input">
+				  ${param.content}
+				</div>
+
+				
+			</div>
 			
 	</workflowSmartphone:spWorkflowOpenPage>
 				
@@ -702,11 +629,12 @@
 						if($element.attr('id') == 'upload_file'){
 							$('#section-upload').find('.error_message').html(error_message);
 						} else if($element.hasClass("section_cco")){
-							$element.parents("table").find(".error_message").html(error_message);
+							$element.parents("div#compliance_check").find(".error_message").html(error_message);
 						} else if($element.attr("type") == 'checkbox' || $element.attr("type") == 'radio'){
 							$element.parent().find(".error_message").html(error_message);
 						}else{
-							$element.parents('td').find('.error_message').html(error_message);
+							//$element.parents('td').find('.error_message').html(error_message);
+							$element.parents('div[data-role="fieldcontain"]').find(".error_message").html(error_message);
 						}
 					},
 					highlight: function(element, errorClass, validClass) {
@@ -767,7 +695,6 @@
 			});
 
 			$('#openPage').click(function(){
-				console.log("LKFDJSLJ")
 
 				if(workflowValidate(rules, messages)){
                     workflowOpenPage4Sp('${f:h(ApplyForm.imwPageType)}');
