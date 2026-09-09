@@ -6,6 +6,11 @@ import java.io.FileNotFoundException;
 import java.net.URLDecoder;
 import java.util.Collection;
 import java.text.NumberFormat;
+import java.util.Base64;
+import java.io.File;
+import java.nio.file.Files;
+import javax.servlet.ServletContext;
+import java.io.ByteArrayOutputStream;
 
 import org.apache.commons.io.IOUtils;
 
@@ -34,6 +39,29 @@ public class GeneratePDFService {
 			AgreementDetailModel entityAgreementDetail = agreementDetailTempDB.selectData("system_matter_id", system_matter_id).iterator().next();
 			Collection<EstSchedulePaymentModel> entityEstSchedulePay = estSchedulePayDB.selectData("system_matter_id", system_matter_id);
 			
+		 // Load image relative to the classpath root (e.g., src/main/resources/images/logo.jpg)
+	        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+	        InputStream is = classLoader.getResourceAsStream("images/logo.jpg");
+
+	        if (is == null) {
+	            throw new IllegalArgumentException("Image file not found on classpath.");
+	        }
+
+	        // Read stream into byte array (Java 8 compatible)
+	        byte[] imageBytes;
+	        try (InputStream input = is; ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+	            int nRead;
+	            byte[] data = new byte[4096];
+	            while ((nRead = input.read(data, 0, data.length)) != -1) {
+	                buffer.write(data, 0, nRead);
+	            }
+	            buffer.flush();
+	            imageBytes = buffer.toByteArray();
+	        }
+	        
+	     // Encode to Base64
+	        String base64Image = Base64.getEncoder().encodeToString(imageBytes);
+
 			String html = ""
 					+ "<html>"
 					+ "<head>"
@@ -45,6 +73,10 @@ public class GeneratePDFService {
 				    +"		<script src='ui/js/script-detail-reapply.js' type='text/javascript'></script>"
 				    
 					+ "		<style>"
+					+ "				.logo {"
+					+ "						width: 100px;"
+					+ "						height: 100px;"
+					+ "				}"
 					+ "				.title {"
 					+ "						text-align: center;"
 					+ "						margin-bottom: 1rem;"
@@ -118,6 +150,9 @@ public class GeneratePDFService {
 					+ "</head>"
 					+ ""
 					+ "<body>"
+					+ "		<div>"
+					+ "				<img class='logo' src='data:image/png;base64,"+base64Image+"'/>"
+					+ "		</div>"
 					+ "		<h1 class='title'>Purchase Agreement</h1>"
 					+ ""
 				  +"<header class='imui-chapter-title'>"
@@ -433,7 +468,8 @@ public class GeneratePDFService {
 						+"</tbody>"
 					+"</table>";
 
-					if(entityAgreementDetail.getPurchase_order_req().equals("1")) {
+			if(entityAgreementDetail.getPurchase_order_req().equals("1")) {
+				if(entityAgreementDetail.getIs_psd_area() != null) {
 					html+="<div id='section-psd-check'>"
 					  +"<header class='imui-chapter-title'>"
 						+"<h2>PSD Check (by UH or DH, PSD)</h2>"
@@ -486,7 +522,9 @@ public class GeneratePDFService {
 					+"</table>"
 				+"</div>";
 				}
+			}
 
+			if(entityAgreementDetail.getIs_dd_req() != null) {
 				html+="<div id='section-cco'>"
 					  +"<header class='imui-chapter-title'>"
 						+"<h2>Compliance Check By CCO</h2>"
@@ -550,10 +588,11 @@ public class GeneratePDFService {
 								+"</tr>"
 						+"</tbody>"
 					+"</table>"
-				+"</div>"
+				+"</div>";
+			}
 					
-					
-				+"<div id='section-legal'>"
+			if(entityAgreementDetail.getAgreement_number() != null) {	
+				html+="<div id='section-legal'>"
 					  +"<header class='imui-chapter-title'>"
 						+"<h2>Filled By Legal</h2>"
 					+"</header>"
@@ -574,12 +613,13 @@ public class GeneratePDFService {
 								+"</tr>"
 						+"</tbody>"
 					+"</table>"
-				+"</div>"
+				+"</div>";
+			}
 
 
 
 
-					+ "</body>"
+					html+= "</body>"
 					+ "</html";
 			
 			InputStream success_pdf = HtmlToPdf.create().object(HtmlToPdfObject.forHtml(html)).convert();
