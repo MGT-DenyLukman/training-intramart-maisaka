@@ -23,7 +23,9 @@
 				<imsp:fieldContain label="Agreement Date :">
 							<c:choose>
 								<c:when test="${isLegalDisabled != 'unclickable'}">
-									<input type="text" id="agreement_date"  name="f_agreement_date" class="${isLegalDisabled}" value="${f:h(FormClassRows.f_agreement_date.replaceAll('-','/')) }" placeholder="choose date ..." onclick="toggleCalendar()"/>
+									<input type="text" id="agreement_date"  name="f_agreement_date" class="${isLegalDisabled}" value="${f:h(FormClassRows.f_agreement_date.replaceAll('-','/')) }" placeholder="choose date ..." 
+									onclick="toggleCalendar()"
+									/>
 									<div class="error_message"></div>
 									<div id="calendar" style="display: none">
 										<imsp:calendar name="pick_agreement_date" format="yyyy/MM/dd" />

@@ -283,6 +283,15 @@ public class ImartController {
 			model.addAttribute("ecApprovalIsReqYesChildren", ecApprovalIsReqYesChildren);
 			model.addAttribute("esTotalAmount", esTotalAmount);
 			model.addAttribute("ApplyForm", ApplyForm);
+			
+			
+			String isUHDHDisabled = "unclickable";
+			String isCCODisabled = "unclickable";
+			String isLegalDisabled = "unclickable";
+			
+			model.addAttribute("isUHDHDisabled", isUHDHDisabled);
+			model.addAttribute("isCCODisabled", isCCODisabled);
+			model.addAttribute("isLegalDisabled", isLegalDisabled);
 
 			ClientContext clientContext = Contexts.get(ClientContext.class);
 			String clientType = clientContext.getClientTypeId();
