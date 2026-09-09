@@ -93,6 +93,10 @@
             imwUserDataId='${f:h(ApplyForm.imwUserDataId)}'/>
             
 
+	<div data-theme="a" data-role="header" data-position="fixed">
+		<a data-role="button" data-icon="back" id="back" class="back" href="javascript:history.go(-1)">Back</a>
+		<h1>Training Maisaka Workflow</h1>
+	</div>
 
 		<!-- ワークフロー連携フォーム -->
 <workflow:workflowOpenPage name="workflowOpenPageForm"
@@ -481,28 +485,23 @@
 </workflow:workflowOpenPage>
 				
 					 <div class="imui-form-container-full">
-						  <header class="imui-chapter-title">
+						  <div class="ui-bar ui-bar-c">
 							<h2>To see the uploaded document</h2>
-						</header>
+						</div>
 
-						<table id="uploaded_document" class="imui-form tab_header">
-							<tbody>
-									<c:forEach items="${FormClassRows.d_file_attachment}" var="row">
-										<tr><td><a target="_blank" href="agreement/download/${row.file_real_name}?token=${FormClassRows.f_download_token_request}">${row.file_name}</a></td></tr>
-									</c:forEach>
-							</tbody>
-						</table>
+						<div class="ui-body ui-body-c">
+							<table id="uploaded_document" class="imui-form tab_header">
+								<tbody>
+										<c:forEach items="${FormClassRows.d_file_attachment}" var="row">
+											<tr><td><a target="_blank" href="agreement/download/${row.file_real_name}?token=${FormClassRows.f_download_token_request}">${row.file_name}</a></td></tr>
+										</c:forEach>
+								</tbody>
+							</table>
+							<input type="button" value='PDF' id="generatePDF" name="generatePDF" class="imui-large-button"
+								escapeXml="true" escapeJs="false" />
+						</div>
 				</div>
 
-<!-- アクションボタン（Apply/Re-ApplyはpageTypeで分岐） -->
-<div class="imui-operation-parts">
-	<imart:decision case="5" value="${f:h(ApplyForm.imwPageType)}">	
-		<input type="button" value='Confirm' id="openPage" name="openPage" class="imui-large-button"
-			escapeXml="true" escapeJs="false" />
-	</imart:decision>
-		<input type="button" value='PDF' id="generatePDF" name="generatePDF" class="imui-large-button"
-			escapeXml="true" escapeJs="false" />
-</div>
 
 <!-- 戻る用フォーム -->
 <form name="backForm" id="backForm" method="POST" action="${f:h(ApplyForm.imwCallOriginalPagePath)}">
