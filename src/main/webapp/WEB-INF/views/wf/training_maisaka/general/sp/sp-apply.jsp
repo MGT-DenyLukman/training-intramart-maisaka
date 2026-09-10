@@ -1,4 +1,5 @@
 
+
 <!-- 申請画面：PC購入申請の入力フォーム -->
 <%@ page contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <%@ taglib prefix="imui" uri="http://www.intra-mart.co.jp/taglib/imui"%>
@@ -16,14 +17,8 @@
 <%@ page import="java.util.Map"%>
 <%@ page import="java.util.HashMap"%>
 
-	<div data-theme="a" data-role="header" data-position="fixed">
-		<a href="javascript:history.go(-1)" data-role="button" data-icon="back" id="back" class="back">Back</a>
-		<h1>Training Maisaka Workflow</h1>
-	</div>
+<head>
 
-	<title>Training Workflow Maisaka</title>
-	<workflowSmartphone:spWorkflowOpenPageCsjs />
-	
 	<link href="ui/css/select2.min.css" rel="stylesheet" />
 	<link href="ui/css/table-style.css" rel="stylesheet" />
 
@@ -106,8 +101,32 @@
 			position: absolute;
 			z-index: -1;
 		}
+		
+		
+		.container-calendar {
+				position: fixed;
+				width: 100vw;
+				height: 100vh;
+				z-index: 10;
+				top: -5%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+		}
+		
+		.container-calendar__inside {
+			display: flex;
+			flex-flow: column;
+			gap: 8px;
+		}
+		
+		#estimated-payment-schedule table{
+			font-size: 0.7em;
+		}
     	
     </style>
+
+	
     
     
     <script type="text/javascript">
@@ -121,10 +140,11 @@
 				depends: function() {return $('#extension').prop('checked')}
 			}},
 			f_auto_extension: {required: true},
-			f_purchased_order_req: {required: true},
+			f_purchase_order_req: {required: true},
 			f_title: {required: true},
 			f_effective_from: {required: true},
 			f_effective_to: {required: true},
+			f_related_company: {required: true},
 			f_estimated_delivery_from: {required: true},
 			f_estimated_delivery_to: {required: true},
 			f_agreement_summary: {id:false},
@@ -151,6 +171,7 @@
 			f_title: {required: "Titleを入力してください！" },
 			f_effective_from: {required: "Effective Date Fromを入力してください！" },
 			f_effective_to: {required: "Effective Date Toを入力してください！" },
+			f_related_company: {required: "Related Company を選択してください！" },
 			f_estimated_delivery_from: {required: "Estimated Delivery Fromを入力してください！" },
 			f_estimated_delivery_to: {required: "Estimated Delivery Toを入力してください！" },
 			f_start_usage_date: {required: "Starting Usage Dateを入力してください！" },
@@ -487,15 +508,17 @@
     	$(function(){
     		$('#payment-schedule-button').click(() => {
     			
+    			
     			const lastElNameSplited = $('table#estimated_schedule tbody input[name^="f_es_amount"]:last').attr("name").split("_");
     			console.log(lastElNameSplited);
     			const counter = parseInt(lastElNameSplited.pop()) + 1;
     			console.log(counter);
 
     			const esAmountNameOrId = "f_es_amount_" + counter;
-    			const esDateNameOrId = "f_es_date_" + counter;
+    			const esDateNameOrIdBase = "es_date_" + counter;
+    			const esDateNameOrId = "f_" + esDateNameOrIdBase;
 				var htmlStr = '<tr class="row-payment">'
-				htmlStr += '<td><button class="remove-button" onclick="deleteRowPayment(event)"><i class="fa-regular fa-trash-can" style="color: rgb(255, 24, 9);"></i> Remove</button></td>'
+				htmlStr += '<td><button class="remove-button" onclick="deleteRowPayment(event)"><i class="fa-regular fa-trash-can" style="color: rgb(255, 24, 9);"></i> X</button></td>'
 				htmlStr += '<td><div class="row-payment__amount"><input oninput="calculateTotalAmount()" type="text" name=' +esAmountNameOrId+' class="es-amount" >'
 				htmlStr += '<select name="f_amount_curreny_' + counter + '" class="select-currency">'
 				htmlStr += 	'<option value="IDR">IDR</option>'
@@ -504,47 +527,31 @@
 				htmlStr += '</div>'
 				htmlStr += '<div class="error_message"></td>'
 				htmlStr += '<td>'
-				 htmlStr += "<input type='text' class='imuiCalendar' name='" +esDateNameOrId+"'"
+				 htmlStr += "<input type='text'  name='" +esDateNameOrId+"'"
 				  + "value='' style='height:20px;'"
+				  +"placeholder='choose_date' "
+				  + "onclick='toggleCalendar("+'"'+esDateNameOrIdBase+'"'+")'"
+				  + "inputmode='none' "
 				  + "id='" +esDateNameOrId + "'>"
 				  + "<input type='hidden' id='"+esDateNameOrId+"_hidden' name='"+esDateNameOrId+"_hidden'><div class='error_message'></div>"
 				htmlStr += '</td>'
 				htmlStr += "</tr>"
 				
 				$('table#estimated_schedule tbody tr.row-payment:last').after(htmlStr);
-				
-				//$("table#estimated_schedule tbody tr.row-payment:last .imuiCalendar").imuiCalendar(
-				$("table#estimated_schedule tbody .imuiCalendar").imuiCalendar(
-						{
-							"altField":"#f_es_date_" + counter ,
-							"nextText":"来月",
-							"format":"yyyy\/MM\/dd",
-							"dayNames":["日曜日","月曜日","火曜日","水曜日","木曜日","金曜日","土曜日"],
-							"dayNamesShort":["日","月","火","水","木","金","土"],
-							"prevText":"先月",
-							"url":"calendar\/tag\/caljson",
-							"currentText":"現在",
-							"calendarId":"JPN_CAL",
-							"firstDay":0,
-							"closeText":"閉じる",
-							"dayNamesMin":["日","月","火","水","木","金","土"],
-							"monthNamesShort":["1","2","3","4","5","6","7","8","9","10","11","12"],
-							"monthNames":["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"]
-						}
-					);
 
-				rules[$("table#estimated_schedule tbody tr.row-payment:last td  input.es-amount").attr('name')] = {required: true};
-				messages[$("table#estimated_schedule tbody tr.row-payment:last td input.es-amount").attr('name')] ={required: "estimated amount を入力してください！"} ;
-
-				rules[$("table#estimated_schedule tbody tr.row-payment:last .imuiCalendar").attr('name')] = {required: true, id:false, validDate: true};
-				messages[$("table#estimated_schedule tbody tr.row-payment:last .imuiCalendar").attr('name')] ={required: "estimated date を入力してください！"} ;
-				
-
-				console.log("RULES from add row", rules);
-				console.log("MESSAGES from add row", messages);
 				$('table#estimated_schedule tbody tr.row-payment input[name^="f_es_amount"]').each(function() {
 					formatNumberInput($(this), 2); 
 				})
+				
+				
+				// add calendar on wrapper
+				htmlStr = '<div class="container-calendar ui-body-b" id="'+esDateNameOrId+'" style="display: none">'
+						+ '<div class="container-calendar__inside">'
+							+ '<imsp:calendar name="' +esDateNameOrId+'" format="yyyy/MM/dd" />'
+							+ '<button onclick="toggleCalendar('+'"'+esDateNameOrId+'"'+')">戻る</button>'
+						+ '</div>'
+					+ '</div>';
+				$('#wrapper-estimated-payment-calendar').after(htmlStr);
     		})
     		
     		
@@ -609,7 +616,7 @@
 						if($element.attr('id') == 'upload_file'){
 							$('#section-upload').find('.error_message').html(error_message);
 						}else{
-							$element.parents('td').find('.error_message').html(error_message);
+							$element.parents('div.ui-field-contain').find('.error_message').html(error_message);
 						}
 					},
 					highlight: function(element, errorClass, validClass) {
@@ -639,25 +646,25 @@
 						if($element.attr("id") == 'f_estimated_delivery_from'){
 							$secondElement = $('#f_estimated_delivery_to');
 							$secondElement.removeClass('imui-validation-error');
-							$secondElement.parents('td').find('.error_message').empty();
+							$secondElement.parents('div[data-role="fieldcontain"]').find('.error_message').empty();
 						}else if($element.attr("id") == 'f_estimated_delivery_to'){
 							$secondElement = $('#f_estimated_delivery_from');
 							$secondElement.removeClass('imui-validation-error');
-							$secondElement.parents('td').find('.error_message').empty();
+							$secondElement.parents('div[data-role="fieldcontain"]').find('.error_message').empty();
 						}							
 
 						if($element.attr("id") == 'f_effective_from'){
 							$secondElement = $('#f_effective_to');
 							$secondElement.removeClass('imui-validation-error');
-							$secondElement.parents('td').find('.error_message').empty();
+							$secondElement.parents('div[data-role="fieldcontain"]').find('.error_message').empty();
 						}else if($element.attr("id") == 'f_effective_to'){
 							$secondElement = $('#f_effective_from');
 							$secondElement.removeClass('imui-validation-error');
-							$secondElement.parents('td').find('.error_message').empty();
+							$secondElement.parents('div[data-role="fieldcontain"]').find('.error_message').empty();
 						}							
 						
 						$element.removeClass('imui-validation-error');
-						$element.parents('td').find('.error_message').empty();
+						$element.parents('div[data-rol="fieldcontain"]').find('.error_message').empty();
 						
 					}
 				})
@@ -730,15 +737,14 @@
 		$(function(){
 
 			$('#openPage').click(function(){
-				imuiResetForm("#workflowOpenPageForm");
+				//imuiResetForm("#workflowOpenPageForm");
 				
 
 				if(workflowValidate()){
                     workflowOpenPage4Sp('${f:h(ApplyForm.imwPageType)}');
                 } else {
                     //imuiShowErrorMessage('インプットのエラーが発生しまいした。.', [], true, 2500, false);
-                    
-                    
+                    alert("インプットのエラーが発生しまいした。")
 				}
 			})
 		})
@@ -790,6 +796,24 @@
     <style type="text/css">
         
     </style>
+</head>
+<body>
+	<div id="wrapper-estimated-payment-calendar">
+		<div class="container-calendar ui-body-b" id="calendar_es_date_1" style="display: none">
+			<div class="container-calendar__inside">
+				<imsp:calendar name="es_date_1" format="yyyy/MM/dd" />
+				<button onclick="toggleCalendar('es_date_1')">戻る</button>
+			</div>
+		</div>
+	</div>
+
+	<div data-theme="a" data-role="header" data-position="fixed">
+		<a href="javascript:history.go(-1)" data-role="button" data-icon="back" id="back" class="back">Back</a>
+		<h1>Training Maisaka Workflow</h1>
+	</div>
+
+	<title>Training Workflow Maisaka</title>
+	<workflowSmartphone:spWorkflowOpenPageCsjs />
 
 <workflowSmartphone:spWorkflowUserContentsAuth imwApplyBaseDate='${f:h(ApplyForm.imwApplyBaseDate)}'
             imwAuthUserCode = '${f:h(ApplyForm.imwAuthUserCode)}'
@@ -840,6 +864,7 @@
 					<imsp:fieldContain label="Department Name :">
 						<div class="ui-field-contain custom-readonly" >
 							<input type="text" id="f_applicant_dept_name" name="f_applicant_dept_name" value="${FormClassRows.f_applicant_dept_name}" placeholder="Type..." readonly />
+							<div class="error_message"><label class="error">${dept_name_err_message }</label></div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Applicant Name :">
@@ -861,43 +886,35 @@
 				</div>
 				<div class="ui-body ui-body-b" style="overflow-x:scroll">
 					<imsp:fieldContain label="Counter Party (vendor name, etc) :">
-						<div class="ui-field-contain custom-readonly" >
-								<c:choose>
-									<c:when test="${FormClassRows.imwPageType == '10' }">
-									  <input name="f_vendor" type="text" placeholder="...">
+						<div class="ui-field-contain" >
+									  <input name="f_vendor" type="text" placeholder="..." value="${FormClassRows.f_counter_party }">
 									  <button id="call-api" onclick="searchAPI()">search</button>
 									<div class="error_message"></div>
-									</c:when>
-									<c:otherwise>
-										<label>${f:h(FormClassRows.f_counter_party) }</label>
-									</c:otherwise>
-								</c:choose>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Currency :">
-						<div class="ui-field-contain custom-readonly" >
-							<!--  <input type="text" id="f_currency" name="f_currency" value="${FormClassRows.f_currency}" placeholder="Type..." readonly />-->
-								<label>${f:h(FormClassRows.f_currency) }</label>
+						<div class="ui-field-contain" >
+									  <input name="f_currency" type="text" placeholder="..." value="${FormClassRows.f_currency }">
+									<div class="error_message"></div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Total Amount :">
-						<div class="ui-field-contain custom-readonly" >
-								<label>${f:h(FormClassRows.f_total_amount_no_tax) }</label>
+						<div class="ui-field-contain" >
+								  <input name="f_total_amount" type="text" placeholder="..." value="${FormClassRows.f_total_amount_no_tax }">
+								<div class="error_message"></div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Agreement Status :">
-						<div class="ui-field-contain custom-readonly" >
+						<div class="ui-field-contain" >
 						  		<input type="radio" id="one_time" name="f_agreement_status" value="1"
 						  			data-role="none"
 						  			${FormClassRows.f_agreement_status == 1 ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="one_time">One Time/New</label>
 						  		<br>
 						  		<input type="radio" id="extension" name="f_agreement_status" value="2" 
 						  			data-role="none"
 									  ${FormClassRows.f_agreement_status == "2_a" || FormClassRows.f_agreement_status == "2_b" ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="extension">Amendment/Extension/Renewal</label>
 						  		<br>
@@ -906,69 +923,78 @@
 									  <input type="radio" id="gt_1" name="f_renewal" value="a"
 						  			data-role="none"
 									  ${agreementStatusRenewal == "a" ? "checked" : "" }
-						  			class="unclickable"
 									  />
 									  <label for="gt_1">More than 1 year</label>
 									  <input type="radio" id="lte_1" name="f_renewal" value="b"
 						  			data-role="none"
 									  ${agreementStatusRenewal == "b" ? "checked" : "" }
-						  			class="unclickable"
 									  />
 									  <label for="lte_1">up to 1 year</label>
 						  		</div>
 						  		<input type="radio" id="umbrella" name="f_agreement_status" value="3"
 						  			data-role="none"
 						  			${FormClassRows.f_agreement_status == 3 ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="umbrella">Umbrella Agreement</label>
+								<div class="error_message"></div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Include auto extension condition :">
-						<div class="ui-field-contain custom-readonly" >
+						<div class="ui-field-contain" >
 						  		<input type="radio" id="auto_extension_y" name="f_auto_extension" value="1" 
 						  			data-role="none"
 						  			${FormClassRows.f_is_auto_extension == 1 ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="auto_extension_y">Yes</label>
 						  		<input type="radio" id="auto_extension_n" name="f_auto_extension" value="0"
 						  			data-role="none"
 						  			${FormClassRows.f_is_auto_extension == 0 ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="auto_extension_n">No</label>
+								<div class="error_message"></div>
 						  	</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Purchase Order Required : ">
-						<div class="ui-field-contain custom-readonly" >
+						<div class="ui-field-contain" >
 						  		<input type="radio" id="purchase_order_req_y" name="f_purchase_order_req" value="1" 
 						  			data-role="none"
 						  			${FormClassRows.f_purchase_order_req == 1 ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="purchase_order_req_y">Yes</label>
 						  		<input type="radio" id="purchase_order_req_n" name="f_purchase_order_req" value="0"
 						  			data-role="none"
 						  			${FormClassRows.f_purchase_order_req == 0 ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="purchase_order_req_n">No</label>
+								<div class="error_message"></div>
 						  	</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Title described in Agreement :">
 						<div class="ui-field-contain custom-readonly" >
-								<label>${f:h(FormClassRows.f_title_in_agreement) }</label>
+							  <input name="f_title" type="text" placeholder="..." value="${FormClassRows.f_title_in_agreement }">
+								<div class="error_message"></div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Effective Date From:">
-						<div class="ui-field-contain custom-readonly" >
-							  <label>${f:h(FormClassRows.f_effective_date_from) }</label>
+						<div class="ui-field-contain" >
+									<input type="text" id="f_effective_from"  name="f_effective_from" value="${f:h(FormClassRows.f_effective_date_from.replaceAll('-','/')) }" placeholder="choose date ..." 
+									onclick="toggleCalendar('effective_from')"
+									/>
+									<div class="error_message"></div>
+									<div id="calendar_effective_from" style="display: none">
+										<imsp:calendar name="effective_from" format="yyyy/MM/dd" />
+									</div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Effective Date To :">
-						<div class="ui-field-contain custom-readonly" >
-							  <label>${f:h(FormClassRows.f_effective_date_to) }</label>
+						<div class="ui-field-contain" >
+									<input type="text" id="f_effective_to"  name="f_effective_to" value="${f:h(FormClassRows.f_effective_date_to.replaceAll('-','/')) }" placeholder="choose date ..." 
+									onclick="toggleCalendar('effective_to')"
+									/>
+									<div class="error_message"></div>
+									<div id="calendar_effective_to" style="display: none">
+										<imsp:calendar name="effective_to" format="yyyy/MM/dd" />
+									</div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Related / Non Related Company :">
@@ -976,100 +1002,179 @@
 						  		<input type="radio" id="related_parties_y" name="f_related_company" value="1"
 						  			data-role="none"
 						  			${FormClassRows.f_is_related_comp == 1 ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="related_parties_y">Related Parties [Shareholders (KY, MFTBC, MC, MCAH, Daimler), Subsidiary (i.e. KRM, MKM, BAS, BBD, BMC, etc.), Affiliates (i.e. DSF, BSI, MMKSI, MMKI, etc.)]</label>
 						  		<br>
 						  		<input type="radio" id="related_parties_n" name="f_related_company" value="0"
 						  			data-role="none"
 						  			${FormClassRows.f_is_related_comp == 0 ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="related_parties_n">Non Related Parties</label>
 						  		<br>
 						  		<p class="bg-warning"><i>Consult with Legal. SHR may be required</i></p>
+								<div class="error_message"></div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Estimated Delivery Schedule From:">
-						<div class="ui-field-contain custom-readonly" >
-							  <label>${f:h(FormClassRows.f_delivery_date_from) }</label>
+						<div class="ui-field-contain" >
+									<input type="text" id="f_estimated_delivery_from"  name="f_estimated_delivery_from" value="${f:h(FormClassRows.f_delivery_date_from.replaceAll('-','/')) }" placeholder="choose date ..." 
+									onclick="toggleCalendar('estimated_delivery_from')"
+									/>
+									<div class="error_message"></div>
+									<div id="calendar_estimated_delivery_from" style="display: none">
+										<imsp:calendar name="estimated_delivery_from" format="yyyy/MM/dd" />
+									</div>
 						</div>
 					</imsp:fieldContain>
-					<imsp:fieldContain label="Estimated Delivery Schedule To:">
-						<div class="ui-field-contain custom-readonly" >
-							  <label>${f:h(FormClassRows.f_delivery_date_to) }</label>
+					<imsp:fieldContain label="Estimated Delivery Schedule To:" class="imui-required">
+						<div class="ui-field-contain" >
+									<input type="text" id="f_estimated_delivery_to"  name="f_estimated_delivery_to" value="${f:h(FormClassRows.f_delivery_date_to.replaceAll('-','/')) }" placeholder="choose date ..." 
+									onclick="toggleCalendar('estimated_delivery_to')"
+									/>
+									<div class="error_message"></div>
+									<div id="calendar_estimated_delivery_to" style="display: none">
+										<imsp:calendar name="estimated_delivery_to" format="yyyy/MM/dd" />
+									</div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Agreement Summary (main points only) (In case of contract in foreign currency need to describe exchange rate) :">
 						<div class="ui-field-contain custom-readonly" >
-							<label>${f:h(FormClassRows.f_agreement_summary) }</label>
+								  <textarea style="width: 100%" id="agreement_summary" name="f_agreement_summary"></textarea>
+								<div class="error_message"></div>
 					  </div>
 					</imsp:fieldContain>
 				</div>
 				
-				<imsp:collapsible title="Depreciation Check" dataTheme="b" contentTheme="b">
+				<div class="ui-bar ui-bar-b">
+					<h3>Depreciation Check</h3>
+				</div>
+				<div class="ui-body ui-body-b" style="overflow-x:scroll">
 					<imsp:fieldContain label="Purchase Category :">
 						<div class="ui-field-contain custom-readonly" >
 						  		<input type="radio" id="tangible_asset" name="f_purchase_category" value="1"
 						  		 data-role="none"
+						  			${ApplyForm.imwPageType == "10" ? "checked" : ""}
 						  			${FormClassRows.f_purchase_category == 1 ? "checked" : "" }
-						  			class="unclickable"
 						  		 />
 						  		<label for="tangible_asset">Tangible Asset</label>
 
 						  		<input type="radio" id="intangible_asset" name="f_purchase_category" value="0"
 						  		 data-role="none"
 						  			${FormClassRows.f_purchase_category == 0 ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="intangible_asset">Intangible Asset</label>
 
 						  		<input type="radio" id="non_asset" name="f_purchase_category" value="9"
 						  		 data-role="none"
 						  			${FormClassRows.f_purchase_category == 9 ? "checked" : "" }
-						  			class="unclickable"
 						  		/>
 						  		<label for="non_asset">Non-Asset</label>
+								<div class="error_message"></div>
 						  </div>
 						 </imsp:fieldContain>
 						<imsp:fieldContain label="Starting Usage Date (Required if Asset) :" class="depreciation_required_asset">
-								<label>${f:h(FormClassRows.f_starting_usage_date) }</label>
+							<div class="ui-field-contain" >
+										<input type="text" id="f_start_usage_date"  name="f_start_usage_date" value="${f:h(FormClassRows.f_starting_usage_date.replaceAll('-','/')) }" placeholder="choose date ..." 
+										onclick="toggleCalendar('start_usage_date')"
+										/>
+										<div class="error_message"></div>
+										<div id="calendar_start_usage_date" style="display: none">
+											<imsp:calendar name="start_usage_date" format="yyyy/MM/dd" />
+										</div>
+							</div>
 						</imsp:fieldContain>
 						<imsp:fieldContain label="Deprec Amount/Month (Required if Asset) :" class="depreciation_required_asset">
-								<label>${f:h(FormClassRows.f_deprec_amount_per_month) }</label>
+							<div class="ui-field-contain" >
+								  <input type="text" placeholder="..." name="f_deprec_amount_per_month" value="${FormClassRows.f_deprec_amount_per_month }">
+								<div class="error_message"></div>
+							</div>
 						</imsp:fieldContain>
-				</imsp:collapsible>
-				<imsp:collapsible title="Estimated Schedule (Payment Conditions)" dataTheme="b" contentTheme="b">
-					<table id="estimated_schedule" class="imui-form tab_header">
-						<tbody>
-							<tr class="ui-body-b">
-								<th colspan="2"><label class="imui-required ">Payment (Total Cash flow Impact)</label></th>
-							</tr>
-							<tr>
-									<th class="ui-body-b"><label class="imui-required">Amount</label></th>
-									<th class="ui-body-b"><label class="imui-required">Date</label></th>
-							</tr>
-							<c:forEach items="${FormClassRows. d_estimated_schedule_payment}" var="row">
+					</div>
+
+				<div class="ui-bar ui-bar-b">
+					<h3>Estimated Schedule (Payment Conditions)</h3>
+				</div>
+				<div id="estimated-payment-schedule" class="ui-body ui-body-b" style="overflow-x:scroll">
+					<c:choose>
+						<c:when test="${ApplyForm.imwPageType == '10'}">
+								<table id="estimated_schedule" class="imui-form tab_header" data-role="none">
+							<tbody>
+								<tr class="ui-body-b">
+									<th colspan="3"><label class="imui-required ">Payment (Total Cash flow Impact)</label></th>
+								</tr>
+								<tr>
+										<th><label class=""><button type="button" id="payment-schedule-button" data-role="none"><i class="fa-regular fa-square-plus"></i> +</button></label></th>
+										<th class="ui-body-b"><label class="imui-required">Amount</label></th>
+										<th class="ui-body-b"><label class="imui-required">Date</label></th>
+								</tr>
+										<tr class="row-payment">
+												<td></td>
+												<td>
+													<div class="row-payment__amount">
+													<input oninput="calculateTotalAmount()" type="text" name="f_es_amount_1" data-role="none"/>
+													<select name="f_amount_currency_1" class="select-currency" data-role="none">
+															<option value="IDR">IDR</option>
+															<option value="JPY">JPY</option>
+													</select>
+													</div>
+													<div class="error_message"></div>
+												</td>
+												<td>
+													<input data-role="none"  type="text" id="f_es_date_1"  name="f_es_date_1"  placeholder="choose date ..." 
+														onclick="toggleCalendar('es_date_1')"
+														inputmode="none"
+													/>
+													<div class="error_message"></div>
+												</td>
+										</tr>
+										<tr>
+												<td></td>
+												<th colspan="2"><label class="imui-required">Total Amount</label></th>
+										</tr>
+										<tr>
+												<td></td>
+												<td>
+												<input type="text"  name="f_es_total_amount" readonly/>
+													<div class="error_message"></div>
+												</td>
+												<td></td>
+										</tr>
+									</tbody>
+								</table>
+						</c:when>
+						<c:otherwise>
+						<table id="estimated_schedule" class="imui-form tab_header">
+							<tbody>
+								<tr class="ui-body-b">
+									<th colspan="2"><label class="imui-required ">Payment (Total Cash flow Impact)</label></th>
+								</tr>
+								<tr>
+										<th class="ui-body-b"><label class="imui-required">Amount</label></th>
+										<th class="ui-body-b"><label class="imui-required">Date</label></th>
+								</tr>
+								<c:forEach items="${FormClassRows. d_estimated_schedule_payment}" var="row">
+									<tr>
+											<td>
+												<label>${f:h(row.payment_amount) }</label>
+											</td>
+											<td>
+												<label>${f:h(row.payment_date.replaceAll("-", "/")) }</label>
+											</td>
+									</tr>
+								</c:forEach>
+								<tr>
+										<th class="ui-body-b"><label class="imui-required">Total Amount</label></th>
+								</tr>
 								<tr>
 										<td>
-											<label>${f:h(row.payment_amount) }</label>
-										</td>
-										<td>
-											<label>${f:h(row.payment_date.replaceAll("-", "/")) }</label>
+												<label>${f:h(esTotalAmount) }</label>
 										</td>
 								</tr>
-							</c:forEach>
-							<tr>
-									<th class="ui-body-b"><label class="imui-required">Total Amount</label></th>
-							</tr>
-							<tr>
-									<td>
-											<label>${f:h(esTotalAmount) }</label>
-									</td>
-							</tr>
-						</tbody>
-					</table>
-				</imsp:collapsible>
+							</tbody>
+						</table>
+						</c:otherwise>
+					</c:choose>
+				</div>
 
 				<imsp:collapsible title="Agreement Classification" dataTheme="b" contentTheme="b">
 					<imsp:fieldContain label="Agreement Classification">
@@ -1077,21 +1182,18 @@
 											<input type="radio" id="pd_approval" name="f_agreement_classification" value="1" 
 											data-role="none"
 											${agreementClassification == 1 ? "checked" : ""}
-											class="unclickable"
 											/>
 											<label for="pd_approval">PD Approval (either one of condition below)</label>
 												<div class="pd_approval_childrens" style="padding-left: 2em">
 														<input type="radio" id="gte_1_billion" name="f_agreement_classification_1" value="1"
 														data-role="none"
 														${agreementClassificationChildren == 1 ? "checked" : ""}
-														class="unclickable"
 														/>
 														<label for="gte_1_billion">Agreement with amount is equal or more than 1 billion</label>
 														<br>
 														<input type="radio" id="gte_12_months" name="f_agreement_classification_1" value="2"
 														data-role="none"
 														${agreementClassificationChildren == 2 ? "checked" : ""}
-														class="unclickable"
 														/>
 														<label for="gte_12_months">Period is equal or more than 12 months</label>
 														<br>
@@ -1099,7 +1201,6 @@
 															<input type="radio" id="related_parties" name="f_agreement_classification_1" value="3"
 															data-role="none"
 															${agreementClassificationChildren == 3 ? "checked" : ""}
-															class="unclickable"
 															/>
 															<label for="related_parties">Agreement related to spesific party</label>
 															<br>
@@ -1109,7 +1210,6 @@
 														<input type="radio" id="special_issue" name="f_agreement_classification_1" value="4"
 															data-role="none"
 															${agreementClassificationChildren == 4 ? "checked" : ""}
-															class="unclickable"
 														/>
 														<label for="special_issue">Special issue</label>
 														<br>
@@ -1118,7 +1218,6 @@
 														<input type="radio" id="direct_procurement" name="f_agreement_classification_1" value="5"
 															data-role="none"
 															${agreementClassificationChildren == 5 ? "checked" : ""}
-															class="unclickable"
 														/>
 														<label for="direct_procurement">Direct Procurement due to either of the 2 cases below</label>
 														<br>
@@ -1133,7 +1232,6 @@
 												<input type="radio" id="dic_approval" name="f_agreement_classification" value="2"
 												data-role="none"
 												${agreementClassification == 2 ? "checked" : ""}
-												class="unclickable"
 												/>
 												<label for="dic_approval">DIC Director Approval</label>
 											</div>
@@ -1144,28 +1242,24 @@
 											<input type="radio" id="ec_approval_yes" name="f_ec_approval_is_required" value="1"
 												data-role="none"
 												${ecApprovalIsReq == 1 ? "checked" : ""}
-												class="unclickable"
 											/>	
 											<label for="ec_approval_yes">Yes</label>
 												<div class="ec_approval_yes_childrens" style="padding-left: 2em">
 														<input type="radio" id="amount_gte_1_billion" name="f_ec_approval_yes" value="1" 
 															data-role="none"
 															${ecApprovalIsReqYesChildren == 1 ? "checked" : ""}
-															class="unclickable"
 														/>	
 														<label for="amount_gte_1_billion">Amount is equal or more than 1 billion</label>
 														<br>	
 														<input type="radio" id="period_gt_12_month" name="f_ec_approval_yes" value="2"
 															data-role="none"
 															${ecApprovalIsReqYesChildren == 2 ? "checked" : ""}
-															class="unclickable"
 														/>	
 														<label for="period_gt_12_month">Period is equal or more than 12 months</label>
 														<br>	
 														<input type="radio" id="escalate_issue" name="f_ec_approval_yes" value="3"
 															data-role="none"
 															${ecApprovalIsReqYesChildren == 3 ? "checked" : ""}
-															class="unclickable"
 														/>	
 														<label for="escalate_issue">Director believes it is necessary to escalate the issue to EC</label>
 												</div>
@@ -1173,7 +1267,6 @@
 														<input type="radio" id="ec_approval_no" name="f_ec_approval_is_required" value="0"
 															data-role="none"
 															${ecApprovalIsReq == 0 ? "checked" : ""}
-															class="unclickable"
 														/>	
 														<label for="ec_approval_no">No</label>
 												</div>
@@ -1731,46 +1824,22 @@
 			escapeXml="true" escapeJs="false" />
 	</imart:decision>
 	</c:if>
-
 </div>
 
     <script src="ui/js/script-detail-reapply-after-load.js" type="text/javascript"></script>
+	
+<script>
+  function toggleCalendar(target){
+	  $element = $('#calendar_' +target);
+	  $element.toggle();
+	  console.log($element)
+  }
+  function onSelectDate(dateValue, elementName) {
+	  $formInputElement = $('input[name="f_'+elementName+'"]');
 
-	<script>
-			function searchAPI() {
-				var value = $('input[name="f_vendor"]').val();
-				
-				$.ajax({
-					url: "agreement/getRegionData",
-					type: "GET",
-					data: {
-						keyword: value,
-					},
-					success: function(response){
-						console.log("Success", typeof response,  response);
-						const typeOfResponse = typeof response;
-						
-						var data = response;
-						
-						console.log(data);
-						if(typeOfResponse === 'string'){
-							data = (JSON.parse(response)).data;
-						}						
-						
-						console.log(data);
-						
-						if(data.length > 0){
-							console.log("DLKJFLSJ");
-							const type = data[0].type;
-							console.log(data[0].item[type])
-							$("input[name='f_vendor']").val("VENDOR " + data[0].item[type]);
-						}else{
-							$("input[name='f_vendor']").val("not found");
-						}
-					},
-					error: function(err) {
-						console.log("Error", err);
-					}
-				})
-			}
-	</script>
+	  $formInputElement.val(dateValue);
+	  $formInputElement.parents('div[data-role="fieldcontain"]').find(".error_message").empty()
+	  toggleCalendar(elementName)
+  }
+</script>
+</body>

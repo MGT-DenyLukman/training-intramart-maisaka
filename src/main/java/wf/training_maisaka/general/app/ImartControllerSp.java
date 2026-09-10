@@ -79,12 +79,10 @@ public class ImartControllerSp {
 	public final String apply(final Model model, final ImartForm ApplyForm, final HttpServletRequest request) throws Exception {
 		WorkflowService service = new WorkflowService();
 		
-		service.debug("page type",PageType.pageTyp_App_Sp.toString());
 		service.debug("imw page type", ApplyForm.getImwPageType());
 
 		try {
 			if (PageType.pageTyp_App_Sp.toString().equals(ApplyForm.getImwPageType())) {
-				System.out.println("masuk sini kok");
 				String userDataId = "";
 				final Identifier identifier = new Identifier();
 				userDataId = identifier.get();
@@ -416,6 +414,7 @@ public class ImartControllerSp {
 		return "wf/training_maisaka/general/process.jsp";
 	}
 
+	/*
 	@RequestMapping(value = "download/**")
 	public String download(final Model model, HttpServletRequest request) throws Exception {
 		
@@ -570,6 +569,7 @@ public class ImartControllerSp {
 			return "error : " + e.getMessage();
 		}
 	}
+	*/
 
 	/*
 	@RequestMapping(value = "detail")

@@ -1,7 +1,6 @@
 
 // ============================ START when on load detail or process =============================
 	
-		$(document).ready(function() {
 			if($('input[name="f_agreement_status"]')[1].checked == true){
 				$("#extension-childs").show();
 			}else{
@@ -26,19 +25,20 @@
 				$(".ec_approval_yes_childrens").hide();
 			}
 
-    		if(($('input[name="f_psd_area_bog"]')[0]).checked == true){
-				$('#f_psd_area_second').show();
-			}else{
-				$('#f_psd_area_second').hide();
-    		}   		
+			if(($('input[name="f_ec_approval_is_required"]')[0]).checked == true){
+					if(($('input[name="f_psd_area_bog"]')[0]).checked == true){
+						$('#f_psd_area_second').show();
+					}else{
+						$('#f_psd_area_second').hide();
+					}   		
 
-    		if(($('input[name="f_psd_process"]')[1]).checked == true){
-				$('#psd_dic_reason').show();
-			}else{
-				$('#psd_dic_reason').hide();
-    		}   		
-
-		})
+					if(($('input[name="f_psd_process"]')[1]).checked == true){
+						$('#psd_dic_reason').show();
+					}else{
+						$('#psd_dic_reason').hide();
+					}   		
+    		}
+    		
 
 // ============================ END when on load detail or process =============================
 
