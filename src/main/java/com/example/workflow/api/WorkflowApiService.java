@@ -1,6 +1,7 @@
 package com.example.workflow.api;
 
 import java.util.UUID;
+import java.util.List;
 
 import jp.co.intra_mart.foundation.context.Contexts;
 import jp.co.intra_mart.foundation.context.model.AccountContext;
@@ -182,6 +183,133 @@ public class WorkflowApiService extends HttpServlet{
         return response;
     }
     
+    @Path("/workflow/apply/with-file")
+    @POST
+    public Map<String, Object> applyWorkflowWithFile(HttpServletRequest request) throws Exception {
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            WorkflowService service = new WorkflowService();
+
+            // ==========================================
+            // 1. APPLY (TEXT ONLY) - run first
+            // ==========================================
+            final Identifier identifier = new Identifier();
+            String userDataId = identifier.get();
+
+            service.debug("accountContext workflowApiService-withFile", Contexts.get(AccountContext.class));
+
+            ApplyParam applyParam = new ApplyParam();
+            applyParam.setFlowId(request.getParameter("flowId"));
+            applyParam.setMatterName(request.getParameter("matterName"));
+            applyParam.setApplyAuthUserCode(request.getParameter("imwAuthUserCode"));
+            applyParam.setApplyExecuteUserCode(request.getParameter("imwAuthUserCode"));
+            applyParam.setApplyBaseDate(request.getParameter("imwApplyBaseDate"));
+            applyParam.setUserDataId(userDataId);
+            
+
+            Map<String, Object> userParameter = new HashMap<>();
+            userParameter.put("f_agreement_classification", request.getParameter("f_agreement_classification"));
+            userParameter.put("f_agreement_classification_1", request.getParameter("f_agreement_classification_1"));
+            userParameter.put("f_agreement_status", request.getParameter("f_agreement_status"));
+            userParameter.put("f_agreement_summary", request.getParameter("f_agreement_summary"));
+            userParameter.put("f_amount_currency_1", request.getParameter("f_amount_currency_1"));
+            userParameter.put("f_applicant_dept_name", request.getParameter("f_applicant_dept_name"));
+            userParameter.put("f_applicant_name", request.getParameter("f_applicant_name"));
+            userParameter.put("f_applicant_number", request.getParameter("f_applicant_number"));
+            userParameter.put("f_applicant_pos_name", request.getParameter("f_applicant_pos_name"));
+            userParameter.put("f_application_date", request.getParameter("f_application_date"));
+            userParameter.put("f_application_number", request.getParameter("f_application_number"));
+            userParameter.put("f_asset_number", request.getParameter("f_asset_number"));
+            userParameter.put("f_auto_extension", request.getParameter("f_auto_extension"));
+            //userParameter.put("f_book_value", request.getParameter("f_book_value"));
+            userParameter.put("f_budget_impact_month", request.getParameter("f_budget_impact_month"));
+            //userParameter.put("f_budget_impact_to_fy", request.getParameter("f_budget_impact_to_fy"));
+            //userParameter.put("f_deprec_amount_per_month", request.getParameter("f_deprec_amount_per_month"));
+            userParameter.put("f_ec_approval_is_required", request.getParameter("f_ec_approval_is_required"));
+            userParameter.put("f_ec_approval_yes", request.getParameter("f_ec_approval_yes"));
+            userParameter.put("f_effective_from", request.getParameter("f_effective_from"));
+            userParameter.put("f_effective_to", request.getParameter("f_effective_to"));
+            userParameter.put("f_estimated_delivery_from", request.getParameter("f_estimated_delivery_from"));
+            userParameter.put("f_estimated_delivery_to", request.getParameter("f_estimated_delivery_to"));
+            userParameter.put("f_pl_impact_month", request.getParameter("f_pl_impact_month"));
+            //userParameter.put("f_pl_impact_to_fy", request.getParameter("f_pl_impact_to_fy"));
+            userParameter.put("f_purchase_category", request.getParameter("f_purchase_category"));
+            userParameter.put("f_purchase_order_req", request.getParameter("f_purchase_order_req"));
+            userParameter.put("f_related_company", request.getParameter("f_related_company"));
+            userParameter.put("f_renewal", request.getParameter("f_renewal"));
+            userParameter.put("f_start_usage_date", request.getParameter("f_start_usage_date"));
+            userParameter.put("f_title", request.getParameter("f_title"));
+            userParameter.put("f_total_amount", request.getParameter("f_total_amount"));
+            userParameter.put("f_vendor", request.getParameter("f_vendor"));
+            userParameter.put("api_token", request.getParameter("api_token"));
+            userParameter.put("f_es_amount_1", request.getParameter("f_es_amount_1"));
+            userParameter.put("f_es_date_1", request.getParameter("f_es_date_1"));
+            userParameter.put("f_es_amount_2", request.getParameter("f_es_amount_2"));
+            userParameter.put("f_es_date_2", request.getParameter("f_es_date_2"));
+
+            ApplyManager applyManager = new ApplyManager();
+            ApplyResultModel applyResult = applyManager.apply(applyParam, userParameter);
+
+            String systemMatterId = applyResult.getSystemMatterId();
+            String realUserDataId = applyResult.getUserDataId();
+
+            // ==========================================
+            // 2. UPLOAD FILE - using IDs from apply result
+            // ==========================================
+            Part filePart = request.getPart("fileData");
+            String fileName = getFileName(filePart);
+            String fileRealName = UUID.randomUUID().toString();
+            String targetPath = "training_maisaka/" + systemMatterId + "/file_attachment/" + fileRealName;
+            long fileSize = filePart.getSize();
+            String fileType = filePart.getContentType().split("/")[1];
+
+            if (fileType == null || fileType.isEmpty()) {
+                fileType = "application/octet-stream";
+            }
+
+            PublicStorage storage = new PublicStorage(targetPath);
+
+            PublicStorage parentDir = storage.getParentStorage();
+            if (parentDir != null && !parentDir.exists()) {
+                parentDir.makeDirectories();
+            }
+
+            try (InputStream input = filePart.getInputStream();
+                 OutputStream output = storage.create()) {
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = input.read(buffer)) != -1) {
+                    output.write(buffer, 0, bytesRead);
+                }
+            }
+
+            AttachFileModel entity = new AttachFileModel();
+            entity.setSystem_matter_id(systemMatterId);
+            entity.setUser_data_id(realUserDataId);
+            entity.setFile_name(fileName);
+            entity.setFile_real_name(fileRealName);
+            entity.setFile_size(String.valueOf(fileSize));
+            entity.setFile_type(fileType);
+            entity.setFile_path(targetPath);
+
+            AttachFileRepository attachFileDB = new AttachFileRepository();
+            attachFileDB.insertData(entity);
+
+            response.put("success", true);
+            response.put("message", "Application and upload file completed successfully.");
+            response.put("systemMatterId", systemMatterId);
+            response.put("userDataId", realUserDataId);
+        } catch (Exception e) {
+            System.out.println("FAILESS POST API WITH FILE");
+            response.put("success", false);
+            e.printStackTrace();
+            response.put("error", "ERRORR");
+        }
+
+        return response;
+    }
+
     @Path("/workflow/apply/upload-file")
     @POST
     public Map<String, Object> applyWorkflowUploadFile(HttpServletRequest request) throws Exception {
