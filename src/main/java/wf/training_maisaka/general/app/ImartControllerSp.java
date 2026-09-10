@@ -79,8 +79,12 @@ public class ImartControllerSp {
 	public final String apply(final Model model, final ImartForm ApplyForm, final HttpServletRequest request) throws Exception {
 		WorkflowService service = new WorkflowService();
 		
+		service.debug("page type",PageType.pageTyp_App_Sp.toString());
+		service.debug("imw page type", ApplyForm.getImwPageType());
+
 		try {
-			if (PageType.pageTyp_App.toString().equals(ApplyForm.getImwPageType())) {
+			if (PageType.pageTyp_App_Sp.toString().equals(ApplyForm.getImwPageType())) {
+				System.out.println("masuk sini kok");
 				String userDataId = "";
 				final Identifier identifier = new Identifier();
 				userDataId = identifier.get();
@@ -133,15 +137,18 @@ public class ImartControllerSp {
 				}else {
 					FormClassRow.setF_application_number("PI-" + String.format("%06d", 1));
 				}
+				
+				
+				FormClassRow.setImwPageType(ApplyForm.getImwPageType());
 
-				model.addAttribute("FormClassRow", FormClassRow);
+				model.addAttribute("FormClassRows", FormClassRow);
 				// END set applicant information
 
 				model.addAttribute("ApplyForm", ApplyForm);
-				return "wf/training_maisaka/general/apply.jsp";
+				return "wf/training_maisaka/general/sp/sp-apply.jsp";
 				
-			} else if (PageType.pageTyp_UnApp.toString().equals(ApplyForm.getImwPageType())) {
-				return "wf/training_maisaka/general/apply.jsp";
+			} else if (PageType.pageTyp_UnApp_Sp.toString().equals(ApplyForm.getImwPageType())) {
+				return "wf/training_maisaka/general/sp/sp-apply.jsp";
 
 			} else {
 				// REAPPLY
@@ -213,6 +220,8 @@ public class ImartControllerSp {
 					ecApprovalIsReq = ecApprovalIsReq.split("_")[0];
 				}
 
+				FormClassRows.setImwPageType(ApplyForm.getImwPageType());
+
 				model.addAttribute("esTotalAmount", esTotalAmount);
 				model.addAttribute("FormClassRows", FormClassRows);
 				model.addAttribute("agreementStatus", agreementStatus);
@@ -223,7 +232,7 @@ public class ImartControllerSp {
 				model.addAttribute("ecApprovalIsReqYesChildren", ecApprovalIsReqYesChildren);
 				model.addAttribute("ApplyForm", ApplyForm);
 				Service.debug("APPLY FORM", ApplyForm);
-				return "wf/training_maisaka/general/reapply.jsp";
+				return "wf/training_maisaka/general/sp/sp-apply.jsp";
 				
 			}
 		}catch(Exception e) {
