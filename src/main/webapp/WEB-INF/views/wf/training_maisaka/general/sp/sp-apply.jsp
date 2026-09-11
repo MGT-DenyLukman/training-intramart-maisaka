@@ -543,15 +543,6 @@
 					formatNumberInput($(this), 2); 
 				})
 				
-				
-				// add calendar on wrapper
-				htmlStr = '<div class="container-calendar ui-body-b" id="'+esDateNameOrId+'" style="display: none">'
-						+ '<div class="container-calendar__inside">'
-							+ '<imsp:calendar name="' +esDateNameOrId+'" format="yyyy/MM/dd" />'
-							+ '<button onclick="toggleCalendar('+'"'+esDateNameOrId+'"'+')">戻る</button>'
-						+ '</div>'
-					+ '</div>';
-				$('#wrapper-estimated-payment-calendar').after(htmlStr);
     		})
     		
     		
@@ -799,10 +790,10 @@
 </head>
 <body>
 	<div id="wrapper-estimated-payment-calendar">
-		<div class="container-calendar ui-body-b" id="calendar_es_date_1" style="display: none">
+		<div class="container-calendar ui-body-b" id="calendar_picker" style="display: none">
 			<div class="container-calendar__inside">
-				<imsp:calendar name="es_date_1" format="yyyy/MM/dd" />
-				<button onclick="toggleCalendar('es_date_1')">戻る</button>
+				<imsp:calendar name="date_picker" format="yyyy/MM/dd" />
+				<button class="back-button" onclick="toggleCalendar('calendar_picker')">戻る</button>
 			</div>
 		</div>
 	</div>
@@ -981,9 +972,6 @@
 									onclick="toggleCalendar('effective_from')"
 									/>
 									<div class="error_message"></div>
-									<div id="calendar_effective_from" style="display: none">
-										<imsp:calendar name="effective_from" format="yyyy/MM/dd" />
-									</div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Effective Date To :">
@@ -992,9 +980,6 @@
 									onclick="toggleCalendar('effective_to')"
 									/>
 									<div class="error_message"></div>
-									<div id="calendar_effective_to" style="display: none">
-										<imsp:calendar name="effective_to" format="yyyy/MM/dd" />
-									</div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Related / Non Related Company :">
@@ -1021,9 +1006,6 @@
 									onclick="toggleCalendar('estimated_delivery_from')"
 									/>
 									<div class="error_message"></div>
-									<div id="calendar_estimated_delivery_from" style="display: none">
-										<imsp:calendar name="estimated_delivery_from" format="yyyy/MM/dd" />
-									</div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Estimated Delivery Schedule To:" class="imui-required">
@@ -1032,9 +1014,6 @@
 									onclick="toggleCalendar('estimated_delivery_to')"
 									/>
 									<div class="error_message"></div>
-									<div id="calendar_estimated_delivery_to" style="display: none">
-										<imsp:calendar name="estimated_delivery_to" format="yyyy/MM/dd" />
-									</div>
 						</div>
 					</imsp:fieldContain>
 					<imsp:fieldContain label="Agreement Summary (main points only) (In case of contract in foreign currency need to describe exchange rate) :">
@@ -1078,9 +1057,6 @@
 										onclick="toggleCalendar('start_usage_date')"
 										/>
 										<div class="error_message"></div>
-										<div id="calendar_start_usage_date" style="display: none">
-											<imsp:calendar name="start_usage_date" format="yyyy/MM/dd" />
-										</div>
 							</div>
 						</imsp:fieldContain>
 						<imsp:fieldContain label="Deprec Amount/Month (Required if Asset) :" class="depreciation_required_asset">
@@ -1829,17 +1805,23 @@
     <script src="ui/js/script-detail-reapply-after-load.js" type="text/javascript"></script>
 	
 <script>
-  function toggleCalendar(target){
-	  $element = $('#calendar_' +target);
-	  $element.toggle();
-	  console.log($element)
-  }
-  function onSelectDate(dateValue, elementName) {
-	  $formInputElement = $('input[name="f_'+elementName+'"]');
+	//script calendar picker on smartphone version
+  var targetElement = "";
 
+  function toggleCalendar(target){
+	  $element = $('#calendar_picker');
+	  $element.toggle();
+	  targetElement = target;
+	  console.log(targetElement);
+  }
+
+  function onSelectDate(dateValue, elementName) {
+	  //$formInputElement = $('input[name="f_'+elementName+'"]');
+
+	  $formInputElement = $('input[name="f_'+targetElement+'"]');
 	  $formInputElement.val(dateValue);
 	  $formInputElement.parents('div[data-role="fieldcontain"]').find(".error_message").empty()
-	  toggleCalendar(elementName)
+	  toggleCalendar(targetElement)
   }
 </script>
 </body>
