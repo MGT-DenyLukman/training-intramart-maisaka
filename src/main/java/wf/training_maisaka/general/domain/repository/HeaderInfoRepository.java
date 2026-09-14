@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import wf.training_maisaka.general.domain.model.HeaderInfoModel;
+import wf.training_maisaka.general.domain.service.WorkflowService;
 
 public class HeaderInfoRepository {
 
@@ -55,9 +56,12 @@ public class HeaderInfoRepository {
 
 	private	ColumnValues setData(HeaderInfoModel varHeaderData, String condition) {
 		ColumnValues result = new ColumnValues();
+		WorkflowService service = new WorkflowService();
+		
+		service.debug("setData varHeaderDataCheck", varHeaderData);
 
 		try {
-				
+			
 			 SimpleDateFormat SDF = new SimpleDateFormat("yyyy/MM/dd");
 			Date applicationDate = SDF.parse(varHeaderData.getApplication_date().replaceAll("-", "/"));
 			
