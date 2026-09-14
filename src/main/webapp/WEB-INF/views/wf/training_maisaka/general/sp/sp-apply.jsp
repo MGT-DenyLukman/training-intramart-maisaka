@@ -299,6 +299,7 @@
 			var file = data[0];
 			var fileName = file.name;
 			$("." + fileName).remove();
+			
 
 				triggerRequiredCheck();
 		}
@@ -308,6 +309,8 @@
 			var fileName = file.name;
 			var fileSize = file.size;
 			var fileType = file.type;
+
+			alert("ERROR UPLOAD FILE", data);
 			
 			triggerRequiredCheck();
 		}
@@ -1368,6 +1371,41 @@
 
 				<div class="file_attachment">
 					<input data-role="none" type="text" id="upload_file" name="upload_file" value="">
+							<c:forEach items="${FormClassRows.d_file_attachment}" var="attachment">
+								<div class="${attachment.file_real_name}">
+									<input
+											type='hidden'
+											value='${attachment.id}'
+											id='f_upload_file_id'
+											name='f_upload_file_id'
+											class="f_upload_file_id"
+									>
+									<input
+											type='hidden'
+											value="${attachment.file_name}"
+											id='f_upload_file_name'
+											name='f_upload_file_name'
+									>
+									<input
+											type='hidden'
+											value="${attachment.file_real_name}"
+											id='f_upload_file_real_name'
+											name='f_upload_file_real_name'
+									>
+									<input
+											type='hidden'
+											value="${attachment.file_size}" 
+											id="f_upload_file_size"
+											name="f_upload_file_size"
+									>
+									<input
+											type='hidden'
+											value="${attachment.file_type}" 
+											id="f_upload_file_type"
+											name="f_upload_file_type"
+									>
+								</div>
+							</c:forEach>
 				</div>	
 						
 			
@@ -1394,8 +1432,23 @@
 					</div>
 
 					<c:if test="${ApplyForm.imwPageType ==  '13'}">
+							<script>
+									triggerRequiredCheck();
+							</script>
 						  <div class="ui-bar ui-bar-b">
 							<h2>To see the uploaded document</h2>
+						</div>
+						<div class="ui-body ui-body-c">
+							<table id="uploaded_document" class="imui-form tab_header">
+								<tbody>
+										<c:forEach items="${FormClassRows.d_file_attachment}" var="row">
+											<tr>
+												<td><button type="button" onclick="removeFile(event, '${row.file_real_name}')">Delete</button></td>
+												<td><a href="training_maisaka/download/${row.file_real_name}">${row.file_name}</a></td>
+											</tr>
+										</c:forEach>
+								</tbody>
+							</table>
 						</div>
 					</c:if>
 
@@ -1451,5 +1504,12 @@
 				//hide remove button of first line payment schedule
 				$('tr.row-payment:first button').hide();
 			})
+			
+		// function to remove uploaded file that be used on reapply page
+		function removeFile(event, fileRealName) {
+			$(event.target).parents("tr").remove();
+			$("." +fileRealName).remove();
+			triggerRequiredCheck();
+		}
 	</script>
 </body>
